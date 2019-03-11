@@ -78,7 +78,7 @@ export default{
                 contentType: 'application/vnd.ms-excel'
             }
 
-            let uploadTask = storageRef.child('packing-list/'+file.name).put(file, metadata)
+            let uploadTask = storageRef.child('packing-list/'+this.ourOrder+'.xlsx').put(file, metadata)
 
             // Listen for state changes, errors, and completion of the upload.
             uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
