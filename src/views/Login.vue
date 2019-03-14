@@ -65,26 +65,21 @@ export default{
     }
   },
   methods: {
+    login: function(){
+      // evt.preventDefault()
 
-      login: function(){
-          // evt.preventDefault()
+      firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password).then(
+        (user) => {
+          this.$router.replace('home')
+        },
+        (err) => {
+          console.log(err)
+          alert(err.message)
+        }
 
-          firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password).then(
-                (user) => {
-                    this.$router.replace('home')
-                },
-                (err) => {
-                    alert(err.message)
-                }
-
-            )
-
-
-      }
-
-
+      )
+    }
   }
-
 }
 </script>
 <style scoped>
