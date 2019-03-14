@@ -13,13 +13,14 @@
       </template>
       <template slot="actions" slot-scope="row">
         <b-button @click.stop="row.toggleDetails" >Mostrar</b-button>
-        <b-button @click="deleteOrder(row.item.key, row.item.packingList)" variant="danger" class="ml-2">Eliminar</b-button>
+        <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder)" variant="danger" class="ml-2">Eliminar</b-button>
     </template>
 
     <template slot="row-details" slot-scope="row">
 
       <b-table
         :items="row.item.packingList"
+        :fields="fieldsRolls"
         striped
         >
       </b-table>
@@ -46,14 +47,22 @@ export default{
             db: firebase.database(),
             order: [],
             packingList: [],
-            fields: ['ourOrder','provided', 'shipped', 'date', 'yourOrder', 'download', 'actions']
+            fields: ['ourOrder','provided', 'shipped', 'date', 'yourOrder', 'download', 'actions'],
+            fieldsRolls: ['idNumber', 'lineal', 'paperGrade', 'tons', 'weight', 'width', 'comments']
         }
     },
     methods: {
-        deleteOrder: function(key, rolls){
+        deleteOrder: function(key, rolls, ourOrder){
             this.db.ref('/order').child(key).remove()
             rolls.forEach( rol => {
                 this.db.ref('/packing-list').child(rol.key).remove()
+            })
+
+            let xls = firebase.storage().ref().child('packing-list/'+ourOrder+'.xlsx')
+            xls.delete().then( () => {
+                console.log('borrado')
+            }).catch( (error) => {
+                console.log(error)
             })
 
         },
