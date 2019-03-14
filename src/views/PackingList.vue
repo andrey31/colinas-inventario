@@ -50,27 +50,6 @@ export default{
         }
     },
     methods: {
-        chargePackingList: function(pack){
-            if(this.packingList.length === 0){
-                pack.forEach((element) => {
-                    this.db.ref('/packing-list').child(element).once('value')
-                        .then( snapshot => {
-                            let p = snapshot.val()
-
-                            this.packingList.push({
-                                'idNumber': p.idNumber,
-                                'lineal': p.lineal,
-                                'paperGrade': p.paperGrade,
-                                'tons': p.tons,
-                                'weight': p.weight,
-                                'width': p.width,
-                                'comments': p.comments
-
-                            })
-                        })
-                })
-            }
-        },
         loadPackingList: function(data){
             let arr = []
             data.forEach( element => {
