@@ -13,7 +13,7 @@
       </template>
       <template slot="actions" slot-scope="row">
         <b-button @click.stop="row.toggleDetails" >Mostrar</b-button>
-        <b-button variant="danger" class="ml-2">Eliminar</b-button>
+        <b-button @click="deleteOrder(row.item.key, row.item.packingList)" variant="danger" class="ml-2">Eliminar</b-button>
     </template>
 
     <template slot="row-details" slot-scope="row">
@@ -50,6 +50,13 @@ export default{
         }
     },
     methods: {
+        deleteOrder: function(key, rolls){
+            this.db.ref('/order').child(key).remove()
+            rolls.forEach( rol => {
+                this.db.ref('/packing-list').child(rol.key).remove()
+            })
+
+        },
         loadPackingList: function(data){
             let arr = []
             data.forEach( element => {
@@ -57,6 +64,7 @@ export default{
                     .then(snapshot => {
                         let p = snapshot.val()
                         arr.push({
+                            'key': element,
                             'idNumber': p.idNumber,
                             'lineal': p.lineal,
                             'paperGrade': p.paperGrade,
@@ -74,6 +82,7 @@ export default{
             this.order = []
             for (let key in data){
                 this.order.push({
+                    'key': key,
                     'ourOrder': data[key].ourOrder,
                     'provided': data[key].provided,
                     'shipped': data[key].shipped,
