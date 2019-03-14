@@ -1,6 +1,9 @@
 <template>
 <b-container>
   <b-row>
+    <b-col>
+      <b-alert dismissible v-model="showAlert">Se agregó packinglist {{ourOrder}}</b-alert>
+    </b-col>
     <b-col cols="12" class="mb-4">
       <b-form-file
         v-model="file"
@@ -10,10 +13,14 @@
         @change="clear"
         class="mb-2"
         />
-      <b-button @click="load" class="mr-2">Cargar</b-button>
-      <b-button @click="uploadFile" variant="primary">Subir a base de datos</b-button>
-
+      <b-button @click="load">Cargar</b-button>
+      <b-button @click="uploadFile" variant="primary" class="mx-2" :disabled="disabledUpload">Subir a base de datos</b-button>
     </b-col>
+    <b-col cols="6" offset="3" v-if="spinner">
+      <strong class="mr-2">{{textSpinner}}</strong>
+      <b-spinner variant="primary" label="Loading..." />
+    </b-col>
+
     <template v-if="provided != ''">
       <b-col cols="6" class="bg-light">
         <p><b>Provided: </b> {{provided}}</p>
@@ -55,6 +62,10 @@ export default{
             shipped: '',
             yourOrder: '',
             db: firebase.database(),
+            spinner: false,
+            textSpinner: 'Subiendo excel...',
+            disabledUpload: true,
+            showAlert: false
         }
     },
     methods: {
@@ -70,6 +81,7 @@ export default{
 
         },
         uploadFile: function(){
+            this.spinner = true
             let storageRef = firebase.storage().ref();
 
             let file = this.file
@@ -82,9 +94,10 @@ export default{
 
             // Listen for state changes, errors, and completion of the upload.
             uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
-                          function(snapshot) {
+                          snapshot => {
                               // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
                               var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                              this.textSpinner = 'Subiendo '+progress + '%'
                               console.log('Upload is ' + progress + '% done');
                               switch (snapshot.state) {
                               case firebase.storage.TaskState.PAUSED: // or 'paused'
@@ -94,20 +107,23 @@ export default{
                                   console.log('Upload is running');
                                   break;
                               }
-                          }, function(error) {
+                          }, error => {
 
                               // A full list of error codes is available at
                               // https://firebase.google.com/docs/storage/web/handle-errors
                               switch (error.code) {
                               case 'storage/unauthorized':
                                   // User doesn't have permission to access the object
+                                  this.textSpinner = 'Error, no authorizado'
                                   break;
 
                               case 'storage/canceled':
+                                  this.textSpinner = 'Error, subida cancelada'
                                   // User canceled the upload
                                   break;
 
                               case 'storage/unknown':
+                                  this.textSpinner = 'Error, intentelo nuevamente'
                                   // Unknown error occurred, inspect error.serverResponse
                                   break;
                               }
@@ -124,12 +140,19 @@ export default{
 
         upload: function(downloadURL){
             // Subir datos a firebase
+            this.textSpinner = 'Subiendo datos ...'
             let arrayKeys = []
             this.arrayData.forEach( packing => {
                 let key = this.db.ref('packing-list').push().key;
                 this.db.ref('packing-list').child(key).set(packing)
                     .then((data) => {
+                        this.spinner = false
                         console.log('Agregado packing-list')
+                        this.disabledUpload = true
+                        this.showAlert = true
+                    })
+                    .catch(error => {
+                        this.textSpinner = 'Ocurrió un error al subir los datos'
                     })
                 arrayKeys.push(key)
 
@@ -151,6 +174,7 @@ export default{
         load: function(){
             if(this.file != null){
                 this.transformXLS()
+                this.showAlert = false
             }
 
         },
@@ -220,8 +244,10 @@ export default{
                 //LLama metodos cuando el excel ya ha
                 this.getListRolls()
                 this.othersData()
-      }
-      oReq.send();
+                this.disabledUpload = false
+
+            }
+            oReq.send();
 
         }
     }
