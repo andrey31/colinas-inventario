@@ -1,23 +1,33 @@
 <template>
 <div>
   <h2>PACKING LIST</h2>
-  <b-table
-    :items="order"
-    >
-    <template slot="download" slot-scope="row">
-      <a :href="row.item.download">Descargar</a>
-    </template>
-    <template slot="packingList" slot-scope="row">
-      <b-button @click.exact="chargePackingList(row.item.packingList)" @click.stop="row.toggleDetails" >Mostrar</b-button>
+  <b-container>
+
+    <b-table
+      :items="order"
+      :fields="fields"
+      head-variant="dark"
+      >
+      <template slot="download" slot-scope="row">
+        <a :href="row.item.download">Descargar</a>
+      </template>
+      <template slot="actions" slot-scope="row">
+        <b-button @click.stop="row.toggleDetails" >Mostrar</b-button>
+        <b-button variant="danger" class="ml-2">Eliminar</b-button>
     </template>
 
     <template slot="row-details" slot-scope="row">
+
       <b-table
-        :items="packingList"
+        :items="row.item.packingList"
+        striped
         >
       </b-table>
     </template>
   </b-table>
+
+  </b-container>
+
 </div>
 </template>
 
@@ -35,7 +45,8 @@ export default{
         return{
             db: firebase.database(),
             order: [],
-            packingList: []
+            packingList: [],
+            fields: ['ourOrder','provided', 'shipped', 'date', 'yourOrder', 'download', 'actions']
         }
     },
     methods: {
@@ -60,10 +71,28 @@ export default{
                 })
             }
         },
+        loadPackingList: function(data){
+            let arr = []
+            data.forEach( element => {
+                this.db.ref('/packing-list').child(element).once('value')
+                    .then(snapshot => {
+                        let p = snapshot.val()
+                        arr.push({
+                            'idNumber': p.idNumber,
+                            'lineal': p.lineal,
+                            'paperGrade': p.paperGrade,
+                            'tons': p.tons,
+                            'weight': p.weight,
+                            'width': p.width,
+                            'comments': p.comments
 
+                        })
+                    })
+            })
+            return arr
+        },
         loadData: function(data){
-            this.packingList = []
-
+            this.order = []
             for (let key in data){
                 this.order.push({
                     'ourOrder': data[key].ourOrder,
@@ -72,7 +101,7 @@ export default{
                     'date': data[key].date,
                     'yourOrder': data[key].yourOrder,
                     'download': data[key].downloadXLS,
-                    'packingList': data[key]['packing-list']
+                    'packingList': this.loadPackingList(data[key]['packing-list'])
                 })
             }
         },
