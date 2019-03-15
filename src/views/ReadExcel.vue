@@ -161,7 +161,7 @@ export default{
             // this.uploadFile()
         },
         uploadOrder: function(uids, downloadURL){
-            this.db.ref('order').child(this.ourOrder).set({
+            this.db.ref('order').push({
                 'provided': this.provided,
                 'date': this.date,
                 'ourOrder': this.ourOrder,
