@@ -21,6 +21,9 @@
       <b-spinner variant="primary" label="Loading..." />
     </b-col>
 
+    <b-col cols="12">
+      <b-alert variant="danger" v-model="showAlertExist">Esta packing list ya se encuentra almacenado en la base de datos</b-alert>
+    </b-col>
     <template v-if="provided != ''">
       <b-col cols="6" class="bg-light">
         <p><b>Provided: </b> {{provided}}</p>
@@ -65,7 +68,8 @@ export default{
             spinner: false,
             textSpinner: 'Subiendo excel...',
             disabledUpload: true,
-            showAlert: false
+            showAlert: false,
+            showAlertExist: false
         }
     },
     methods: {
@@ -78,6 +82,8 @@ export default{
             this.shipped = ''
             this.yourOrder = ''
             this.vehicle = ''
+            this.showAlert = false,
+            this.showAlertExist = false
 
         },
         uploadFile: function(){
@@ -199,6 +205,29 @@ export default{
             }
 
         },
+        existsPackingList: function(){
+            let storageRef = firebase.storage().ref();
+            let xls = storageRef.child('packing-list/'+this.ourOrder+'.xlsx')
+
+            xls.getDownloadURL().then(url => {
+                this.disabledUpload = true
+                this.showAlertExist = true
+                console.log('exist')
+
+            }).catch(error => {
+                if (error.code === 'storage/object-not-found'){
+                    this.disabledUpload = false
+                    this.showAlertExist = false
+                    console.log('no exist')
+                }
+                else{
+                    console.log('exist')
+                    this.disabledUpload = true
+                    this.showAlertExist = true
+                }
+            })
+
+        },
         othersData: function(){
             this.provided = Object.keys(this.arrayxls[0])[1]
             this.date = this.transformDate(Object.values(this.arrayxls[0])[1])
@@ -206,6 +235,8 @@ export default{
             this.ourOrder = Object.values(this.arrayxls[0])[5]
             this.shipped = this.transformDate(Object.values(this.arrayxls[1])[1])
             this.yourOrder = Object.values(this.arrayxls[1])[5]
+
+            this.existsPackingList()
         },
         transformDate: function(date){
             //Tranformar fecha excel la devuelve en entero
@@ -244,7 +275,7 @@ export default{
                 //LLama metodos cuando el excel ya ha
                 this.getListRolls()
                 this.othersData()
-                this.disabledUpload = false
+
 
             }
             oReq.send();
