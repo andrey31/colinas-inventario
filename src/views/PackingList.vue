@@ -2,15 +2,20 @@
 <div>
   <h2>PACKING LIST</h2>
   <b-container fluid>
-
+    <b-row class="mb-2">
+      <b-col cols="12" md="4" offset-md="8">
+          <b-form-input v-model="filter" placeholder="Busqueda" class="mb-2"></b-form-input>
+      </b-col>
+    </b-row>
     <b-table
       :items="order"
       :fields="fields"
+      :filter="filter"
       head-variant="dark"
       responsive
       >
       <template slot="download" slot-scope="row">
-        <a :href="row.item.download">Descargar</a>
+        <a class="btn btn-primary" :href="row.item.download">Descargar</a>
       </template>
       <template slot="show" slot-scope="row">
         <b-button @click.stop="row.toggleDetails" >Mostrar</b-button>
@@ -58,8 +63,8 @@ export default{
             comment: '',
             ourOrder: '',
             yourOrder: '',
-
-            fields: ['date', 'shipped', 'shipment', 'carrier', 'vehicle',
+            filter: '',
+            fields: ['provided', 'date', 'shipped', 'shipment', 'carrier', 'vehicle',
                      'booking', 'comment', 'ourOrder', 'yourOrder', 'download', 'show', 'delete'],
             fieldsRolls: ['idNumber', 'lineal', 'paperGrade', 'tons', 'weight', 'width', 'comments']
         }
