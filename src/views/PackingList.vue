@@ -1,23 +1,24 @@
 <template>
 <div>
   <h2>PACKING LIST</h2>
-  <b-container>
+  <b-container fluid>
 
     <b-table
       :items="order"
       :fields="fields"
       head-variant="dark"
+      responsive
       >
       <template slot="download" slot-scope="row">
         <a :href="row.item.download">Descargar</a>
       </template>
-      <template slot="actions" slot-scope="row">
+      <template slot="show" slot-scope="row">
         <b-button @click.stop="row.toggleDetails" >Mostrar</b-button>
-        <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder)" variant="danger" class="ml-2">Eliminar</b-button>
-    </template>
-
+      </template>
+      <template slot="delete" slot-scope="row">
+        <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder)" variant="danger" >Eliminar</b-button>
+      </template>
     <template slot="row-details" slot-scope="row">
-
       <b-table
         :items="row.item.packingList"
         :fields="fieldsRolls"
@@ -47,7 +48,19 @@ export default{
             db: firebase.database(),
             order: [],
             packingList: [],
-            fields: ['ourOrder','provided', 'shipped', 'date', 'yourOrder', 'download', 'actions'],
+            provided: '',
+            date: '',
+            shipped: '',
+            shipment: '',
+            carrier: '',
+            vehicle: '',
+            booking: '',
+            comment: '',
+            ourOrder: '',
+            yourOrder: '',
+
+            fields: ['date', 'shipped', 'shipment', 'carrier', 'vehicle',
+                     'booking', 'comment', 'ourOrder', 'yourOrder', 'download', 'show', 'delete'],
             fieldsRolls: ['idNumber', 'lineal', 'paperGrade', 'tons', 'weight', 'width', 'comments']
         }
     },
@@ -92,10 +105,15 @@ export default{
             for (let key in data){
                 this.order.push({
                     'key': key,
-                    'ourOrder': data[key].ourOrder,
                     'provided': data[key].provided,
-                    'shipped': data[key].shipped,
                     'date': data[key].date,
+                    'shipment': data[key].shipment,
+                    'carrier': data[key].carrier,
+                    'vehicle': data[key].vehicle,
+                    'booking': data[key].booking,
+                    'comment': data[key].comment,
+                    'shipped': data[key].shipped,
+                    'ourOrder': data[key].ourOrder,
                     'yourOrder': data[key].yourOrder,
                     'download': data[key].downloadXLS,
                     'packingList': this.loadPackingList(data[key]['packing-list'])

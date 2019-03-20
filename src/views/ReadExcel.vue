@@ -24,16 +24,23 @@
     <b-col cols="12">
       <b-alert variant="danger" v-model="showAlertExist">Esta packing list ya se encuentra almacenado en la base de datos</b-alert>
     </b-col>
-    <template v-if="provided != ''">
-      <b-col cols="6" class="bg-light">
+    <template v-if="provided !== ''">
+      <b-col cols="4" class="bg-light">
         <p><b>Provided: </b> {{provided}}</p>
         <p><b>Date: </b>{{date}}</p>
         <p><b>Shipped: </b>{{shipped}}</p>
+        <p><b>Shipment: </b>{{shipment}}</p>
       </b-col>
 
-      <b-col cols="6" class="bg-light">
+      <b-col cols="4" class="bg-light">
+        <p><b>Carrier: </b>{{carrier}}</p>
+        <p><b>Vehicle: </b>{{vehicle}}</p>
+        <p><b>Booking: </b>{{booking}}</p>
+      </b-col>
+      <b-col cols="4" class="bg-light">
         <p><b>Our order: </b>{{ourOrder}}</p>
         <p><b>Your order: </b>{{yourOrder}}</p>
+        <p><b>Comment: </b>{{comment}}</p>
       </b-col>
     </template>
 
@@ -58,11 +65,16 @@ export default{
         return{
             file: null,
             arrayxls: null,
-            provided: '',
             arrayData: [],
+            provided: '',
             date: '',
-            ourOrder: '',
             shipped: '',
+            shipment: '',
+            carrier: '',
+            vehicle: '',
+            booking: '',
+            comment: '',
+            ourOrder: '',
             yourOrder: '',
             db: firebase.database(),
             spinner: false,
@@ -170,8 +182,13 @@ export default{
             this.db.ref('order').push({
                 'provided': this.provided,
                 'date': this.date,
-                'ourOrder': this.ourOrder,
                 'shipped': this.shipped,
+                'shipment': this.shipment,
+                'carrier': this.carrier,
+                'vehicle': this.vehicle,
+                'booking': this.booking,
+                'comment': this.comment,
+                'ourOrder': this.ourOrder,
                 'yourOrder': this.yourOrder,
                 'packing-list': uids,
                 'downloadXLS': downloadURL
@@ -234,15 +251,18 @@ export default{
             this.vehicle = Object.values(this.arrayxls[0])[3]
             this.ourOrder = Object.values(this.arrayxls[0])[5]
             this.shipped = this.transformDate(Object.values(this.arrayxls[1])[1])
+            this.booking = Object.values(this.arrayxls[1])[3]
             this.yourOrder = Object.values(this.arrayxls[1])[5]
-
+            this.shipment = Object.values(this.arrayxls[2])[1]
+            this.comment = Object.values(this.arrayxls[2])[3]
+            this.carrier = Object.values(this.arrayxls[3])[1]
             this.existsPackingList()
         },
         transformDate: function(date){
             //Tranformar fecha excel la devuelve en entero
             let d = new Date(Math.round((date - 25569)*86400*1000));
             let format = (d.getDate()+1) + '/' + (d.getMonth()+1) + '/' + (d.getFullYear())
-            return  format
+            return format
         },
         transformXLS: function(){
             /* set up XMLHttpRequest */
