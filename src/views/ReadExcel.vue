@@ -86,14 +86,19 @@ export default{
     },
     methods: {
         clear: function(){
-            this.arrayxls = null
-            this.provided = ''
-            this.arrayData = []
-            this.date = ''
-            this.ourOrder = ''
-            this.shipped = ''
-            this.yourOrder = ''
-            this.vehicle = ''
+            this.arrayxls = null,
+            this.arrayData = [],
+            this.provided = '',
+            this.date = '',
+            this.shipped = '',
+            this.shipment = '',
+            this.carrier = '',
+            this.vehicle = '',
+            this.booking = '',
+            this.comment = '',
+            this.ourOrder = '',
+            this.yourOrder = '',
+
             this.showAlert = false,
             this.showAlertExist = false
 
