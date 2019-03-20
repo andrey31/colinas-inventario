@@ -13,8 +13,9 @@
         @change="clear"
         class="mb-2"
         />
-      <b-button @click="load">Cargar</b-button>
-      <b-button @click="uploadFile" variant="primary" class="mx-2" :disabled="disabledUpload">Subir a base de datos</b-button>
+      <b-button @click="load"><v-icon name="tasks"></v-icon> Verificar</b-button>
+      <b-button @click="uploadFile" variant="primary" class="mx-2" :disabled="disabledUpload">
+        <v-icon name="cloud-upload-alt" scale="1.5"></v-icon> Subir a base de datos</b-button>
     </b-col>
     <b-col cols="6" offset="3" v-if="spinner">
       <strong class="mr-2">{{textSpinner}}</strong>

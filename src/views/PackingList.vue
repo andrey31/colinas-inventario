@@ -2,9 +2,16 @@
 <div>
   <h2>PACKING LIST</h2>
   <b-container fluid>
+
     <b-row class="mb-2">
-      <b-col cols="12" md="4" offset-md="8">
-          <b-form-input v-model="filter" placeholder="Busqueda" class="mb-2"></b-form-input>
+      <b-col cols="12" md="4" offset-md="7">
+        <b-input-group>
+          <b-input-group-prepend is-text>
+            <v-icon name="search"></v-icon>
+          </b-input-group-prepend>
+          <b-form-input v-model="filter" placeholder="Busqueda">
+          </b-form-input>
+        </b-input-group>
       </b-col>
     </b-row>
     <b-table
@@ -15,13 +22,15 @@
       responsive
       >
       <template slot="download" slot-scope="row">
-        <a class="btn btn-primary" :href="row.item.download">Descargar</a>
+        <a class="btn btn-primary" :href="row.item.download"><v-icon name="download"></v-icon></a>
       </template>
       <template slot="show" slot-scope="row">
-        <b-button @click.stop="row.toggleDetails" >Mostrar</b-button>
+        <b-button @click.stop="row.toggleDetails"><v-icon name="expand-arrows-alt"></v-icon></b-button>
       </template>
       <template slot="delete" slot-scope="row">
-        <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder)" variant="danger" >Eliminar</b-button>
+        <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder)" variant="danger" >
+          <v-icon name="trash-alt"></v-icon>
+        </b-button>
       </template>
     <template slot="row-details" slot-scope="row">
       <b-table
