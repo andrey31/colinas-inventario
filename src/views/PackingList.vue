@@ -85,7 +85,7 @@ export default{
                 this.db.ref('/packing-list').child(rol.key).remove()
             })
 
-            let xls = firebase.storage().ref().child('packing-list/'+ourOrder+'.xlsx')
+            let xls = firebase.storage().ref().child('packing-list/'+rolls[0].idNumber+'.xlsx')
             xls.delete().then( () => {
                 console.log('borrado')
             }).catch( (error) => {
