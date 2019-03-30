@@ -3,6 +3,7 @@
   <b-row class="first-row">
 
     <b-col cols="12" md="6" offset-md="3">
+      <b-alert v-model="showAlert" variant="danger">Usuario incorrecto</b-alert>
 
       <b-form @submit.prevent="login" class="form-login bg-info">
         <!-- <label for="inputEmail">Correo</label> -->
@@ -60,7 +61,9 @@ export default{
       form: {
         email: '',
         password: ''
-      }
+
+      },
+      showAlert: false
 
     }
   },
@@ -70,7 +73,13 @@ export default{
 
       firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password).then(
         (user) => {
-          this.$router.replace('home')
+
+          if(firebase.auth().currentUser.uid === process.env.VUE_APP_USER_UID){
+            this.$router.replace('home')
+          }else{
+            this.showAlert = true
+          }
+
         },
         (err) => {
           console.log(err)

@@ -4,7 +4,7 @@
     <router-link to="/home">Inicio</router-link> |
     <router-link to="/packing-list">Packing List</router-link> |
     <!-- <router-link to="/about">Acerca de</router-link> -->
-    <a @click.prevent="logout()">Salir</a>
+    <a @click.prevent="logout()" href="">Salir</a>
     </div>
     <router-view/>
   </div>
