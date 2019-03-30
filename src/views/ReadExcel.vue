@@ -14,9 +14,30 @@
         class="mb-2"
         />
       <b-button @click="load"><v-icon name="tasks"></v-icon> Verificar</b-button>
-      <b-button @click="uploadFile" variant="primary" class="mx-2" :disabled="disabledUpload">
+      <b-button @click="showModal = true" variant="primary" class="mx-2" :disabled="disabledUpload">
         <v-icon name="cloud-upload-alt" scale="1.5"></v-icon> Subir a base de datos</b-button>
     </b-col>
+
+    <b-modal v-model="showModal">
+      <h3>Escoja el almacen fiscal</h3>
+      <b-form-group>
+        <b-form-radio v-model="almacen" name="some-radios" value="1">Almacen 1</b-form-radio>
+        <b-form-radio v-model="almacen" name="some-radios" value="2">Almacen 2</b-form-radio>
+        <b-form-radio v-model="almacen" name="some-radios" value="3">Almacen 3</b-form-radio>
+      </b-form-group>
+      <template slot="modal-footer">
+        <b-container fluid>
+          <b-row>
+            <b-col>
+              <b-btn @click="showModal = false" variant="danger" block class="mr-2">Cancel</b-btn>
+              <b-btn variant="primary" block @click="uploadFile()">Aceptar</b-btn>
+            </b-col>
+          </b-row>
+        </b-container>
+      </template>
+
+    </b-modal>
+
     <b-col cols="6" offset="3" v-if="spinner">
       <strong class="mr-2">{{textSpinner}}</strong>
       <b-spinner variant="primary" label="Loading..." />
@@ -86,6 +107,8 @@ export default{
             showAlert: false,
             showAlertError: false,
             textAlertError: '',
+            showModal: false,
+            almacen: '1'
         }
     },
     methods: {
@@ -108,6 +131,7 @@ export default{
             this.textAlertError = ''
         },
         uploadFile: function(){
+            this.showModal = false
             this.spinner = true
             let storageRef = firebase.storage().ref();
 
@@ -201,7 +225,8 @@ export default{
                 'ourOrder': this.ourOrder,
                 'yourOrder': this.yourOrder,
                 'packing-list': uids,
-                'downloadXLS': downloadURL
+                'downloadXLS': downloadURL,
+                'almacen': this.almacen
             })
         },
         load: function(){
@@ -226,8 +251,8 @@ export default{
                     {
                         'idNumber': a[0],
                         'weight': a[1],
-                        'tons': a[2],
-                        'lineal': a[3],
+                        'kg': a[2] * 1000,
+                        'meters': (a[3] / 3.2808).toFixed(2),
                         'width': a[4],
                         'paperGrade': a[5],
                         'comments': a[6] === null ? a[6] : '',

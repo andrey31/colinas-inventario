@@ -74,8 +74,8 @@ export default{
             yourOrder: '',
             filter: '',
             fields: ['provided', 'date', 'shipped', 'shipment', 'carrier', 'vehicle',
-                     'booking', 'comment', 'ourOrder', 'yourOrder', 'download', 'show', 'delete'],
-            fieldsRolls: ['idNumber', 'lineal', 'paperGrade', 'tons', 'weight', 'width', 'comments']
+                     'booking', 'comment', 'ourOrder', 'yourOrder', 'almacen', 'download', 'show', 'delete'],
+            fieldsRolls: ['idNumber', 'meters', 'paperGrade', 'kg', 'weight', 'width', 'comments']
         }
     },
     methods: {
@@ -102,9 +102,9 @@ export default{
                         arr.push({
                             'key': element,
                             'idNumber': p.idNumber,
-                            'lineal': p.lineal,
+                            'meters': p.meters,
                             'paperGrade': p.paperGrade,
-                            'tons': p.tons,
+                            'kg': p.kg,
                             'weight': p.weight,
                             'width': p.width,
                             'comments': p.comments
@@ -129,6 +129,7 @@ export default{
                     'shipped': data[key].shipped,
                     'ourOrder': data[key].ourOrder,
                     'yourOrder': data[key].yourOrder,
+                    'almacen': data[key].almacen,
                     'download': data[key].downloadXLS,
                     'packingList': this.loadPackingList(data[key]['packing-list'])
                 })
