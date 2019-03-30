@@ -1,7 +1,7 @@
 <template>
 <div id="app">
   <div id="nav" v-if="this.$route.path != '/login'">
-    <router-link to="/">Inicio</router-link> |
+    <router-link to="/home">Inicio</router-link> |
     <router-link to="/packing-list">Packing List</router-link> |
     <!-- <router-link to="/about">Acerca de</router-link> -->
     <a @click.prevent="logout()">Salir</a>
