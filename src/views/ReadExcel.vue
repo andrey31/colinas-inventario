@@ -2,7 +2,7 @@
 <b-container>
   <b-row>
     <b-col>
-      <b-alert dismissible v-model="showAlert">Se agregó packinglist {{ourOrder}}</b-alert>
+      <b-alert dismissible v-model="showAlert">Se agregó packinglist</b-alert>
     </b-col>
     <b-col cols="12" class="mb-4">
       <b-form-file
@@ -23,8 +23,10 @@
     </b-col>
 
     <b-col cols="12">
-      <b-alert variant="danger" v-model="showAlertExist">Esta packing list ya se encuentra almacenado en la base de datos</b-alert>
+      <b-alert variant="danger" v-model="showAlertError">{{textAlertError}}
+      </b-alert>
     </b-col>
+
     <template v-if="provided !== ''">
       <b-col cols="4" class="bg-light">
         <p><b>Provided: </b> {{provided}}</p>
@@ -82,7 +84,8 @@ export default{
             textSpinner: 'Subiendo excel...',
             disabledUpload: true,
             showAlert: false,
-            showAlertExist: false
+            showAlertError: false,
+            textAlertError: '',
         }
     },
     methods: {
@@ -101,8 +104,8 @@ export default{
             this.yourOrder = '',
 
             this.showAlert = false,
-            this.showAlertExist = false
-
+            this.showAlertError = false,
+            this.textAlertError = ''
         },
         uploadFile: function(){
             this.spinner = true
@@ -114,7 +117,7 @@ export default{
                 contentType: 'application/vnd.ms-excel'
             }
 
-            let uploadTask = storageRef.child('packing-list/'+this.ourOrder+'.xlsx').put(file, metadata)
+            let uploadTask = storageRef.child('packing-list/'+this.arrayData[0].idNumber+'.xlsx').put(file, metadata)
 
             // Listen for state changes, errors, and completion of the upload.
             uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
@@ -167,8 +170,9 @@ export default{
             this.textSpinner = 'Subiendo datos ...'
             let arrayKeys = []
             this.arrayData.forEach( packing => {
-                let key = this.db.ref('packing-list').push().key;
-                this.db.ref('packing-list').child(key).set(packing)
+                // console.log(packing.idNumber)
+                // let key = this.db.ref('packing-list').push().key;
+                this.db.ref('packing-list').child(packing.idNumber).set(packing)
                     .then((data) => {
                         this.spinner = false
                         console.log('Agregado packing-list')
@@ -178,7 +182,7 @@ export default{
                     .catch(error => {
                         this.textSpinner = 'Ocurrió un error al subir los datos'
                     })
-                arrayKeys.push(key)
+                arrayKeys.push(packing.idNumber)
 
                 arrayKeys.length === this.arrayData.length ? this.uploadOrder(arrayKeys, downloadURL) : null
             })
@@ -211,9 +215,13 @@ export default{
 
             this.arrayData = []
             console.log(this.arrayxls.length)
+            let idNumbers = []
             // menos 3 los campos no necesarios datos como total y el uno del arreglo
             for(let i = 8; i<= (this.arrayxls.length - 3); ++i){
                 let a = Object.values(this.arrayxls[i])
+
+                idNumbers.push(a[0])
+
                 this.arrayData.push(
                     {
                         'idNumber': a[0],
@@ -226,30 +234,42 @@ export default{
                     }
                 )
             }
+            this.existsPackingList(idNumbers)
 
         },
-        existsPackingList: function(){
-            let storageRef = firebase.storage().ref();
-            let xls = storageRef.child('packing-list/'+this.ourOrder+'.xlsx')
+        hasDuplicates: function(idNumbers){
 
-            xls.getDownloadURL().then(url => {
+                return (new Set(idNumbers)).size !== idNumbers.length;
+
+        },
+        existsPackingList: function(idNumbers){
+
+            if(this.hasDuplicates(idNumbers)){
                 this.disabledUpload = true
-                this.showAlertExist = true
-                console.log('exist')
+                this.showAlertError = true
+                this.textAlertError = 'Este packing list cuenta con un id del rollo duplicado'
+                console.log('esta duplicado')
+            }else{
+                let exist = false
+                this.textAlertError = 'Estos rollos ya se encuentran en la base de datos'
+                for (let i = 0; i < idNumbers.length; i++) {
+                    let packing = this.db.ref('packing-list').child(idNumbers[i]).once('value')
+                        .then(snapshot => {
+                            if (snapshot.val()){
+                                this.disabledUpload = true
+                                this.showAlertError = true
+                                this.textAlertError += ' ' + snapshot.val().idNumber + ', '
+                                exist = true
+                            }
+                            if(i === idNumbers.length-1 && !exist){
+                                this.disabledUpload = false
+                                this.showAlertExist = false
+                            }
+                        })
 
-            }).catch(error => {
-                if (error.code === 'storage/object-not-found'){
-                    this.disabledUpload = false
-                    this.showAlertExist = false
-                    console.log('no exist')
-                }
-                else{
-                    console.log('exist')
-                    this.disabledUpload = true
-                    this.showAlertExist = true
-                }
-            })
 
+                }
+            }
         },
         othersData: function(){
             this.provided = Object.keys(this.arrayxls[0])[1]
@@ -262,7 +282,7 @@ export default{
             this.shipment = Object.values(this.arrayxls[2])[1]
             this.comment = Object.values(this.arrayxls[2])[3]
             this.carrier = Object.values(this.arrayxls[3])[1]
-            this.existsPackingList()
+            // this.existsPackingList()
         },
         transformDate: function(date){
             //Tranformar fecha excel la devuelve en entero
