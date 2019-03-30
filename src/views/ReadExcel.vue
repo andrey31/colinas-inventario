@@ -21,9 +21,9 @@
     <b-modal v-model="showModal">
       <h3>Escoja el almacen fiscal</h3>
       <b-form-group>
-        <b-form-radio v-model="almacen" name="some-radios" value="1">Almacen 1</b-form-radio>
-        <b-form-radio v-model="almacen" name="some-radios" value="2">Almacen 2</b-form-radio>
-        <b-form-radio v-model="almacen" name="some-radios" value="3">Almacen 3</b-form-radio>
+        <b-form-radio v-model="almacen" name="some-radios" value="almacen1">Almacen 1</b-form-radio>
+        <b-form-radio v-model="almacen" name="some-radios" value="almacen2">Almacen 2</b-form-radio>
+        <b-form-radio v-model="almacen" name="some-radios" value="almacen3">Almacen 3</b-form-radio>
       </b-form-group>
       <template slot="modal-footer">
         <b-container fluid>
@@ -108,7 +108,7 @@ export default{
             showAlertError: false,
             textAlertError: '',
             showModal: false,
-            almacen: '1'
+            almacen: 'almacen1'
         }
     },
     methods: {
@@ -196,7 +196,7 @@ export default{
             this.arrayData.forEach( packing => {
                 // console.log(packing.idNumber)
                 // let key = this.db.ref('packing-list').push().key;
-                this.db.ref('packing-list').child(packing.idNumber).set(packing)
+                this.db.ref('packing-list').child(this.almacen).child(packing.idNumber).set(packing)
                     .then((data) => {
                         this.spinner = false
                         console.log('Agregado packing-list')
@@ -252,7 +252,7 @@ export default{
                         'idNumber': a[0],
                         'weight': a[1],
                         'kg': a[2] * 1000,
-                        'meters': (a[3] / 3.2808).toFixed(2),
+                        'meters': Number((a[3] / 3.2808).toFixed(2)),
                         'width': a[4],
                         'paperGrade': a[5],
                         'comments': a[6] === null ? a[6] : '',
@@ -264,7 +264,7 @@ export default{
         },
         hasDuplicates: function(idNumbers){
 
-                return (new Set(idNumbers)).size !== idNumbers.length;
+            return (new Set(idNumbers)).size !== idNumbers.length;
 
         },
         existsPackingList: function(idNumbers){
@@ -277,23 +277,28 @@ export default{
             }else{
                 let exist = false
                 this.textAlertError = 'Estos rollos ya se encuentran en la base de datos'
-                for (let i = 0; i < idNumbers.length; i++) {
-                    let packing = this.db.ref('packing-list').child(idNumbers[i]).once('value')
-                        .then(snapshot => {
-                            if (snapshot.val()){
-                                this.disabledUpload = true
-                                this.showAlertError = true
-                                this.textAlertError += ' ' + snapshot.val().idNumber + ', '
-                                exist = true
-                            }
-                            if(i === idNumbers.length-1 && !exist){
-                                this.disabledUpload = false
-                                this.showAlertExist = false
-                            }
-                        })
+                for (let j=1; j<=3 ; j++){
 
+                    for (let i = 0; i < idNumbers.length; i++) {
+                        let packing = this.db.ref('packing-list').child('almacen'+j).child(idNumbers[i]).once('value')
+                            .then(snapshot => {
+                                if (snapshot.val()){
+                                    this.disabledUpload = true
+                                    this.showAlertError = true
+                                    this.textAlertError += ' ' + snapshot.val().idNumber + ', '
+                                    exist = true
+                                }
+                                if(i === idNumbers.length-1 && !exist){
+                                    this.disabledUpload = false
+                                    this.showAlertExist = false
+                                }
+                            })
+
+
+                    }
 
                 }
+
             }
         },
         othersData: function(){

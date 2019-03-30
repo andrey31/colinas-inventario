@@ -28,7 +28,7 @@
         <b-button @click.stop="row.toggleDetails"><v-icon name="expand-arrows-alt"></v-icon></b-button>
       </template>
       <template slot="delete" slot-scope="row">
-        <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder)" variant="danger" >
+        <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder, row.item.almacen)" variant="danger" >
           <v-icon name="trash-alt"></v-icon>
         </b-button>
       </template>
@@ -79,10 +79,10 @@ export default{
         }
     },
     methods: {
-        deleteOrder: function(key, rolls, ourOrder){
+        deleteOrder: function(key, rolls, ourOrder, almacen){
             this.db.ref('/order').child(key).remove()
             rolls.forEach( rol => {
-                this.db.ref('/packing-list').child(rol.key).remove()
+                this.db.ref('/packing-list').child(almacen).child(rol.key).remove()
             })
 
             let xls = firebase.storage().ref().child('packing-list/'+rolls[0].idNumber+'.xlsx')
@@ -93,10 +93,11 @@ export default{
             })
 
         },
-        loadPackingList: function(data){
+        loadPackingList: function(data, almacen){
             let arr = []
             data.forEach( element => {
-                this.db.ref('/packing-list').child(element).once('value')
+
+                this.db.ref('/packing-list').child(almacen).child(element).once('value')
                     .then(snapshot => {
                         let p = snapshot.val()
                         arr.push({
@@ -131,7 +132,7 @@ export default{
                     'yourOrder': data[key].yourOrder,
                     'almacen': data[key].almacen,
                     'download': data[key].downloadXLS,
-                    'packingList': this.loadPackingList(data[key]['packing-list'])
+                    'packingList': this.loadPackingList(data[key]['packing-list'], data[key].almacen)
                 })
             }
         },
