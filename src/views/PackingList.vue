@@ -82,10 +82,10 @@ export default{
         deleteOrder: function(key, rolls, ourOrder, almacen){
             this.db.ref('/order').child(key).remove()
             rolls.forEach( rol => {
-                this.db.ref('/packing-list').child(almacen).child(rol.key).remove()
+                this.db.ref(almacen).child(rol.key).remove()
             })
 
-            let xls = firebase.storage().ref().child('packing-list/'+rolls[0].idNumber+'.xlsx')
+            let xls = firebase.storage().ref().child('packing-list/'+key+'.xlsx')
             xls.delete().then( () => {
                 console.log('borrado')
             }).catch( (error) => {
@@ -97,7 +97,7 @@ export default{
             let arr = []
             data.forEach( element => {
 
-                this.db.ref('/packing-list').child(almacen).child(element).once('value')
+                this.db.ref(almacen).child(element).once('value')
                     .then(snapshot => {
                         let p = snapshot.val()
                         arr.push({

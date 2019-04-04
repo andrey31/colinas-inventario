@@ -25,6 +25,8 @@
         <b-form-radio v-model="almacen" name="some-radios" value="almacen2">Almacen 2</b-form-radio>
         <b-form-radio v-model="almacen" name="some-radios" value="almacen3">Almacen 3</b-form-radio>
       </b-form-group>
+      <p>Se subiran {{rollsNotExistsInDb.length}} rollos de {{arrayData.length}}</p>
+
       <template slot="modal-footer">
         <b-container fluid>
           <b-row>
@@ -90,6 +92,8 @@ export default{
             file: null,
             arrayxls: null,
             arrayData: [],
+            rollsExistsInDb: [],
+            rollsNotExistsInDb: [],
             provided: '',
             date: '',
             shipped: '',
@@ -128,7 +132,11 @@ export default{
 
             this.showAlert = false,
             this.showAlertError = false,
-            this.textAlertError = ''
+            this.textAlertError = '',
+
+            this.disabledUpload = true,
+            this.rollsExistsInDb = [],
+            this.rollsNotExistsInDb = []
         },
         uploadFile: function(){
             this.showModal = false
@@ -141,7 +149,9 @@ export default{
                 contentType: 'application/vnd.ms-excel'
             }
 
-            let uploadTask = storageRef.child('packing-list/'+this.arrayData[0].idNumber+'.xlsx').put(file, metadata)
+            let date = Math.floor(Date.now());
+            let keyOrder = this.db.ref('order').push().key;
+            let uploadTask = storageRef.child('packing-list/'+keyOrder+'.xlsx').put(file, metadata)
 
             // Listen for state changes, errors, and completion of the upload.
             uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
@@ -183,20 +193,20 @@ export default{
                               uploadTask.snapshot.ref.getDownloadURL().then( (downloadURL) => {
                                   console.log('File available at', downloadURL);
                                   // this.upload()
-                                  this.upload(downloadURL)
+                                  this.upload(downloadURL, keyOrder)
                               });
                           });
 
         },
 
-        upload: function(downloadURL){
+        upload: function(downloadURL, keyOrder){
             // Subir datos a firebase
             this.textSpinner = 'Subiendo datos ...'
             let arrayKeys = []
-            this.arrayData.forEach( packing => {
+            this.rollsNotExistsInDb.forEach( packing => {
                 // console.log(packing.idNumber)
                 // let key = this.db.ref('packing-list').push().key;
-                this.db.ref('packing-list').child(this.almacen).child(packing.idNumber).set(packing)
+                this.db.ref(this.almacen).child(packing.idNumber).set(packing)
                     .then((data) => {
                         this.spinner = false
                         console.log('Agregado packing-list')
@@ -208,12 +218,12 @@ export default{
                     })
                 arrayKeys.push(packing.idNumber)
 
-                arrayKeys.length === this.arrayData.length ? this.uploadOrder(arrayKeys, downloadURL) : null
+                arrayKeys.length === this.rollsNotExistsInDb.length ? this.uploadOrder(arrayKeys, downloadURL, keyOrder) : null
             })
             // this.uploadFile()
         },
-        uploadOrder: function(uids, downloadURL){
-            this.db.ref('order').push({
+        uploadOrder: function(uids, downloadURL, keyOrder){
+            this.db.ref('order').child(keyOrder).set({
                 'provided': this.provided,
                 'date': this.date,
                 'shipped': this.shipped,
@@ -255,7 +265,7 @@ export default{
                         'meters': Number((a[3] / 3.2808).toFixed(2)),
                         'width': a[4],
                         'paperGrade': a[5],
-                        'comments': a[6] === null ? a[6] : '',
+                        'comments': a[6] === null ? a[6] : ''
                     }
                 )
             }
@@ -277,29 +287,47 @@ export default{
             }else{
                 let exist = false
                 this.textAlertError = 'Estos rollos ya se encuentran en la base de datos'
-                for (let j=1; j<=3 ; j++){
 
-                    for (let i = 0; i < idNumbers.length; i++) {
-                        let packing = this.db.ref('packing-list').child('almacen'+j).child(idNumbers[i]).once('value')
+                let pivot = []
+                for (let j=1; j<=3 ; j++){
+                    this.arrayData.forEach( data => {
+
+                        this.db.ref('almacen'+j).child(data.idNumber).once('value')
                             .then(snapshot => {
-                                if (snapshot.val()){
-                                    this.disabledUpload = true
-                                    this.showAlertError = true
-                                    this.textAlertError += ' ' + snapshot.val().idNumber + ', '
-                                    exist = true
+                                if(snapshot.val()) {
+                                    data._rowVariant = 'danger'
+                                    this.rollsExistsInDb.push(data)
                                 }
-                                if(i === idNumbers.length-1 && !exist){
-                                    this.disabledUpload = false
-                                    this.showAlertExist = false
+                                pivot.push(data)
+
+                                if(pivot.length/3 === this.arrayData.length){
+
+                                    if(this.rollsExistsInDb.length === this.arrayData.length){
+                                        this.showAlertError = true
+                                        this.disabledUpload = true
+                                        console.log('todos los rollos existen en db')
+                                    }else{
+                                        this.arrayData.forEach( roll => {
+                                            if(this.rollsExistsInDb.indexOf(roll) === -1){
+                                                roll._rowVariant = 'primary'
+                                                this.rollsNotExistsInDb.push(roll)
+                                            }
+                                        })
+                                        this.disabledUpload = false
+
+                                    }
+
                                 }
+
                             })
 
+                    })
 
-                    }
 
                 }
-
             }
+
+
         },
         othersData: function(){
             this.provided = Object.keys(this.arrayxls[0])[1]
