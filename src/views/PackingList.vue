@@ -75,7 +75,7 @@ export default{
             filter: '',
             fields: ['provided', 'date', 'shipped', 'shipment', 'carrier', 'vehicle',
                      'booking', 'comment', 'ourOrder', 'yourOrder', 'almacen', 'download', 'show', 'delete'],
-            fieldsRolls: ['idNumber', 'meters', 'paperGrade', 'kg', 'weight', 'width', 'comments']
+            fieldsRolls: ['idNumber', 'meters', 'gramaje', 'typePaper', 'kg', 'weight', 'width', 'comments']
         }
     },
     methods: {
@@ -104,7 +104,8 @@ export default{
                             'key': element,
                             'idNumber': p.idNumber,
                             'meters': p.meters,
-                            'paperGrade': p.paperGrade,
+                            'gramaje': p.gramaje,
+                            'typePaper': p.typePaper,
                             'kg': p.kg,
                             'weight': p.weight,
                             'width': p.width,

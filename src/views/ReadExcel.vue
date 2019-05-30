@@ -264,7 +264,8 @@ export default{
                         'kg': a[2] * 1000,
                         'meters': Number((a[3] / 3.2808).toFixed(2)),
                         'width': a[4],
-                        'paperGrade': a[5],
+                        'gramaje': a[5].split('#')[0],
+                        'typePaper': a[5].split('#')[1].split(' ')[1],
                         'comments': a[6] === null ? a[6] : ''
                     }
                 )
@@ -309,8 +310,8 @@ export default{
                                     }else{
                                         this.arrayData.forEach( roll => {
                                             if(this.rollsExistsInDb.indexOf(roll) === -1){
+                                                this.rollsNotExistsInDb.push({...roll})
                                                 roll._rowVariant = 'primary'
-                                                this.rollsNotExistsInDb.push(roll)
                                             }
                                         })
                                         this.disabledUpload = false
