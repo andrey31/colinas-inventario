@@ -3,6 +3,7 @@
   <div id="nav" v-if="this.$route.path != '/login'">
     <router-link to="/home">Inicio</router-link> |
     <router-link to="/packing-list">Packing List</router-link> |
+    <router-link to="/inventario">Inventario</router-link> |
     <!-- <router-link to="/about">Acerca de</router-link> -->
     <a @click.prevent="logout()" href="">Salir</a>
     </div>

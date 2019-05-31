@@ -5,6 +5,7 @@ import Router from 'vue-router'
 import Login from './views/Login.vue'
 import PackingList from './views/PackingList.vue'
 import ReadExcel from './views/ReadExcel.vue'
+import Inventario from './views/Inventario.vue'
 
 Vue.use(Router)
 
@@ -37,6 +38,14 @@ const router = new Router({
       path: '/packing-list',
       name: 'packingList',
       component: PackingList,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/inventario',
+      name: 'inventario',
+      component: Inventario,
       meta: {
         requiresAuth: true
       }
