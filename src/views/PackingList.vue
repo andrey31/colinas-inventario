@@ -24,7 +24,7 @@
       <template slot="download" slot-scope="row">
         <a class="btn btn-primary" :href="row.item.download"><v-icon name="download"></v-icon></a>
       </template>
-      <template slot="show" slot-scope="row">
+      <template slot="rolls" slot-scope="row">
         <b-button @click.stop="row.toggleDetails"><v-icon name="expand-arrows-alt"></v-icon></b-button>
       </template>
       <template slot="delete" slot-scope="row">
@@ -74,7 +74,7 @@ export default{
             yourOrder: '',
             filter: '',
             fields: ['provided', 'date', 'shipped', 'shipment', 'carrier', 'vehicle',
-                     'booking', 'comment', 'ourOrder', 'yourOrder', 'almacen', 'download', 'show', 'delete'],
+                     'booking', 'comment', 'ourOrder', 'yourOrder', 'almacen', 'download', 'rolls', 'delete'],
             fieldsRolls: ['idNumber', 'meters', 'gramaje', 'typePaper', 'kg', 'weight', 'width', 'comments']
         }
     },

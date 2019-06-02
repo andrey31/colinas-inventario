@@ -20,11 +20,14 @@
 
     <b-modal v-model="showModal">
       <h3>Escoja el almacen fiscal</h3>
-      <b-form-group>
-        <b-form-radio v-model="almacen" name="some-radios" value="almacen1">Almacen 1</b-form-radio>
-        <b-form-radio v-model="almacen" name="some-radios" value="almacen2">Almacen 2</b-form-radio>
-        <b-form-radio v-model="almacen" name="some-radios" value="almacen3">Almacen 3</b-form-radio>
-      </b-form-group>
+      <b-container class="p-4">
+        <b-row>
+          <b-col><b-form-radio v-model="almacen" name="some-radios" value="telisa">Telisa</b-form-radio></b-col>
+          <b-col><b-form-radio v-model="almacen" name="some-radios" value="syslocar">Syslocar</b-form-radio></b-col>
+          <b-col><b-form-radio v-model="almacen" name="some-radios" value="otro">Otro</b-form-radio></b-col>
+        </b-row>
+      </b-container>
+
       <p>Se subiran {{rollsNotExistsInDb.length}} rollos de {{arrayData.length}}</p>
 
       <template slot="modal-footer">
@@ -112,7 +115,7 @@ export default{
             showAlertError: false,
             textAlertError: '',
             showModal: false,
-            almacen: 'almacen1'
+            almacen: 'syslocar'
         }
     },
     methods: {
@@ -290,10 +293,12 @@ export default{
                 this.textAlertError = 'Estos rollos ya se encuentran en la base de datos'
 
                 let pivot = []
-                for (let j=1; j<=3 ; j++){
+                let almacenes = ['syslocar', 'telisa', 'otro']
+
+                for (let almacen in almacenes){
                     this.arrayData.forEach( data => {
 
-                        this.db.ref('almacen'+j).child(data.idNumber).once('value')
+                        this.db.ref(almacenes[almacen]).child(data.idNumber).once('value')
                             .then(snapshot => {
                                 if(snapshot.val()) {
                                     data._rowVariant = 'danger'
