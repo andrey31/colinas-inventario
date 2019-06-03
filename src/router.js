@@ -27,9 +27,21 @@ const router = new Router({
       component: Login
     },
     {
+      path: '/hometo',
+      component: ReadExcel,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
       path: '/home',
       name: 'home',
       component: ReadExcel,
+      redirect: to => {
+        const currentUser = firebase.auth().currentUser;
+        if ( currentUser.email !== 'omar.duran@corrugadosaltavista.com') return { path: '/packing-list'}
+        else return {path: '/hometo'}
+      },
       meta: {
         requiresAuth: true
       }
@@ -64,11 +76,20 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   const currentUser = firebase.auth().currentUser;
   const requiresAuth = to.matched.some( record => record.meta.requiresAuth)
-
+  let emails = [
+        'omar.duran@corrugadosaltavista.com',
+        'guillermo.hernandez@corrugadosaltavista.com',
+        'jose.rodriguez@corrugadosaltavista.com',
+        'contabilidad@corrugadosaltavista.com'
+  ]
   if(requiresAuth) {
     if (currentUser){
-      if(currentUser.uid === process.env.VUE_APP_USER_UID) next()
+      if(currentUser.email === emails[0]) next()
+      else if(currentUser.email === emails[1]) next()
+      else if(currentUser.email === emails[2]) next()
+      else if(currentUser.email === emails[3]) next()
       else next('login')
+
     }
     else next('login')
 

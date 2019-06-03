@@ -60,10 +60,15 @@ export default{
     return {
       form: {
         email: '',
-        password: ''
-
+        password: '',
       },
-      showAlert: false
+      showAlert: false,
+      emails: [
+        'omar.duran@corrugadosaltavista.com',
+        'guillermo.hernandez@corrugadosaltavista.com',
+        'jose.rodriguez@corrugadosaltavista.com',
+        'contabilidad@corrugadosaltavista.com'
+      ]
 
     }
   },
@@ -73,12 +78,17 @@ export default{
 
       firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password).then(
         (user) => {
+          for( let email in this.emails){
+            if(firebase.auth().currentUser.email === this.emails[email]){
+              this.$router.replace('home')
+              break
+            }
+            // else if(email === this.emails.length){
+            //   this.showAlert = true
 
-          if(firebase.auth().currentUser.uid === process.env.VUE_APP_USER_UID){
-            this.$router.replace('home')
-          }else{
-            this.showAlert = true
+            // }
           }
+
 
         },
         (err) => {
