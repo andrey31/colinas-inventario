@@ -2,7 +2,6 @@
 <div>
   <h2>PACKING LIST</h2>
   <b-container fluid>
-
     <b-row class="mb-2">
       <b-col cols="12" md="4" offset-md="7">
         <b-input-group>
@@ -14,33 +13,54 @@
         </b-input-group>
       </b-col>
     </b-row>
-    <b-table
-      :items="order"
-      :fields="fields"
-      :filter="filter"
-      head-variant="dark"
-      responsive
-      >
-      <template slot="download" slot-scope="row">
-        <a class="btn btn-primary" :href="row.item.download"><v-icon name="download"></v-icon></a>
-      </template>
-      <template slot="rolls" slot-scope="row">
-        <b-button @click.stop="row.toggleDetails"><v-icon name="expand-arrows-alt"></v-icon></b-button>
-      </template>
-      <template slot="delete" slot-scope="row">
-        <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder, row.item.almacen)" variant="danger" >
-          <v-icon name="trash-alt"></v-icon>
-        </b-button>
-      </template>
-    <template slot="row-details" slot-scope="row">
-      <b-table
-        :items="row.item.packingList"
-        :fields="fieldsRolls"
-        striped
-        >
-      </b-table>
-    </template>
-  </b-table>
+
+    <b-tabs class="bg-light" pills crd>
+
+      <b-tab title="Packing list">
+        <b-table
+          :items="order"
+          :fields="fields"
+          :filter="filter"
+          head-variant="dark"
+          responsive
+          >
+          <template slot=""></template>
+          <template slot="download" slot-scope="row">
+            <a class="btn btn-primary" :href="row.item.download"><v-icon name="download"></v-icon></a>
+          </template>
+          <template slot="rolls" slot-scope="row">
+            <b-button @click.stop="row.toggleDetails"><v-icon name="expand-arrows-alt"></v-icon></b-button>
+          </template>
+          <template slot="delete" slot-scope="row">
+            <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder, row.item.almacen)" variant="danger" >
+              <v-icon name="trash-alt"></v-icon>
+            </b-button>
+          </template>
+          <template slot="row-details" slot-scope="row">
+            <b-table
+              :items="row.item.packingList"
+              :fields="fieldsRolls"
+              striped
+              >
+            </b-table>
+          </template>
+        </b-table>
+      </b-tab>
+
+
+      <b-tab title="Rolls" >
+        <b-table
+          :items="getRolls"
+          :fields="fieldsRolls2"
+          :filter="filter"
+          head-variant="dark"
+          >
+
+        </b-table>
+
+      </b-tab>
+
+    </b-tabs>
 
   </b-container>
 
@@ -56,6 +76,18 @@ export default{
         // datos de firebase
         this.db.ref('/order')
             .on('value', snapshot => this.loadData(snapshot.val()))
+    },
+    computed: {
+        getRolls(){
+            let rolls = []
+            for(let key in this.order){
+                this.order[key].packingList.forEach( element => {
+                    element.almacen = this.order[key].almacen
+                    rolls.push(element)
+                })
+            }
+            return rolls
+        }
     },
     data(){
         return{
@@ -75,7 +107,8 @@ export default{
             filter: '',
             fields: ['provided', 'date', 'shipped', 'shipment', 'carrier', 'vehicle',
                      'booking', 'comment', 'ourOrder', 'yourOrder', 'almacen', 'download', 'rolls', 'delete'],
-            fieldsRolls: ['idNumber', 'meters', 'gramaje', 'typePaper', 'kg', 'weight', 'width', 'comments']
+            fieldsRolls: ['idNumber', 'meters', 'gramaje', 'typePaper', 'kg', 'weight', 'width', 'comments'],
+            fieldsRolls2: ['idNumber', 'almacen', 'meters', 'gramaje', 'typePaper', 'kg', 'weight', 'width', 'comments']
         }
     },
     methods: {
