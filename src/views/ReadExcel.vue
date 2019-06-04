@@ -23,7 +23,7 @@
       <b-container class="p-4">
         <b-row>
           <b-col><b-form-radio v-model="almacen" name="some-radios" value="telisa">Telisa</b-form-radio></b-col>
-          <b-col><b-form-radio v-model="almacen" name="some-radios" value="syslocar">Syslocar</b-form-radio></b-col>
+          <b-col><b-form-radio v-model="almacen" name="some-radios" value="sislocar">Sislocar</b-form-radio></b-col>
           <b-col><b-form-radio v-model="almacen" name="some-radios" value="otro">Otro</b-form-radio></b-col>
         </b-row>
       </b-container>
@@ -115,7 +115,7 @@ export default{
             showAlertError: false,
             textAlertError: '',
             showModal: false,
-            almacen: 'syslocar'
+            almacen: 'sislocar'
         }
     },
     methods: {
@@ -293,7 +293,7 @@ export default{
                 this.textAlertError = 'Estos rollos ya se encuentran en la base de datos'
 
                 let pivot = []
-                let almacenes = ['syslocar', 'telisa', 'otro']
+                let almacenes = ['sislocar', 'telisa', 'otro']
 
                 for (let almacen in almacenes){
                     this.arrayData.forEach( data => {
