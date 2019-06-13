@@ -2,21 +2,62 @@
 <div>
   <h2>PACKING LIST</h2>
   <b-container fluid>
-    <b-row class="mb-2">
-      <b-col cols="12" md="4" offset-md="7">
-        <b-input-group>
-          <b-input-group-prepend is-text>
-            <v-icon name="search"></v-icon>
-          </b-input-group-prepend>
-          <b-form-input v-model="filter" placeholder="Busqueda">
-          </b-form-input>
-        </b-input-group>
-      </b-col>
-    </b-row>
+    <template v-if="showFilters">
+      <b-row class="mb-2">
+        <b-col>
+          <b-input-group>
+            <b-input-group-text slot="prepend">Almacen</b-input-group-text>
+            <b-form-input v-model="filterAlmacen"></b-form-input>
+          </b-input-group>
+        </b-col>
+        <b-col>
+          <b-input-group>
+            <b-input-group-text slot="prepend">Gramaje</b-input-group-text>
+            <b-form-input v-model="filterGramaje"></b-form-input>
+          </b-input-group>
+        </b-col>
+        <b-col>
+          <b-input-group>
+            <b-input-group-text slot="prepend">Tipo papel</b-input-group-text>
+            <b-form-input v-model="filterType"></b-form-input>
+          </b-input-group>
+        </b-col>
+        <!-- <b-col cols="12" md="4" offset-md="7"> -->
+        <!--   <b-input-group> -->
+        <!--     <b-input-group-prepend is-text> -->
+        <!--       <v-icon name="search"></v-icon> -->
+        <!--     </b-input-group-prepend> -->
+        <!--     <b-form-input v-model="filter" placeholder="Busqueda"> -->
+        <!--     </b-form-input> -->
+        <!--   </b-input-group> -->
+        <!-- </b-col> -->
+      </b-row>
+      <b-row>
+        <b-col cols="4">
+          <b-input-group>
+            <b-input-group-text slot="prepend">Width</b-input-group-text>
+            <b-form-input v-model="filterWidth"></b-form-input>
+          </b-input-group>
+        </b-col>
+        <b-col cols="4">
+          <label for="">Total de rollos: {{totalRolls.length}}</label> <br/>
+          <label for="">Total de metros: {{totalRolls.meters}}</label>
 
-    <b-tabs class="bg-light" pills crd>
+        </b-col>
+        <b-col cols="4">
+          <label for="">Gramajes</label>
 
-      <b-tab title="Packing list">
+          <ul>
+            <li v-for="gramaje in totalRolls.rollsByGramaje">{{gramaje.count}} rollos tienen gramaje: {{gramaje.gramaje}}</li>
+          </ul>
+        </b-col>
+      </b-row>
+
+    </template>
+
+    <b-tabs class="bg-light" pills card>
+
+      <b-tab title="Packing list" @click="showFilters = false">
         <b-table
           :items="order"
           :fields="fields"
@@ -48,7 +89,7 @@
       </b-tab>
 
 
-      <b-tab title="Rolls" >
+      <b-tab title="Rolls" @click="showFilters=true" >
         <b-table
           :items="getRolls"
           :fields="fieldsRolls2"
@@ -86,8 +127,42 @@ export default{
                     rolls.push(element)
                 })
             }
-            return rolls
+            this.rollsFilter = rolls.filter( el => {
+                return el.almacen.indexOf(this.filterAlmacen.toLowerCase()) > -1 &&
+                    el.gramaje.indexOf(this.filterGramaje) > -1 &&
+                    el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
+                    el.width.indexOf(this.filterWidth) > -1
+            })
+            return this.rollsFilter
+        },
+        totalRolls(){
+            let total = {}
+            total.length = this.rollsFilter.length
+
+            // this.rollsFilter.forEach( roll => {
+            //     console.log(roll.meters)
+            //     total.meters += roll.meters
+            // })
+            total.meters = this.rollsFilter.reduce( (a, b) => a + b.meters, 0).toFixed(2)
+
+            let rollsByGramaje = {}
+            this.rollsFilter.forEach( roll => {
+                rollsByGramaje[roll.gramaje] = rollsByGramaje[roll.gramaje] || []
+                rollsByGramaje[roll.gramaje].push('')
+            })
+
+            let gramajes = []
+            Object.keys(rollsByGramaje).forEach( key => {
+                console.log(key)
+                gramajes.push( { 'gramaje': key, 'count': rollsByGramaje[key].length })
+            })
+            total.rollsByGramaje = gramajes
+            console.log(total)
+            // console.log(rollsByGramaje['10'].length)
+            // console.log(Object.keys(rollsByGramaje))
+            return total
         }
+
     },
     data(){
         return{
@@ -108,10 +183,19 @@ export default{
             fields: ['provided', 'date', 'shipped', 'shipment', 'carrier', 'vehicle',
                      'booking', 'comment', 'ourOrder', 'yourOrder', 'almacen', 'download', 'rolls', 'delete'],
             fieldsRolls: ['idNumber', 'meters', 'gramaje', 'typePaper', 'kg', 'weight', 'width', 'comments'],
-            fieldsRolls2: ['idNumber', 'almacen', 'meters', 'gramaje', 'typePaper', 'kg', 'weight', 'width', 'comments']
+            fieldsRolls2: ['idNumber', 'almacen', 'meters', 'gramaje', 'typePaper', 'kg', 'weight', 'width', 'comments'],
+            showFilters: false,
+            filterAlmacen: '',
+            filterGramaje: '',
+            filterType: '',
+            filterKgMin: 0,
+            filterKgMax: 10000,
+            filterWidth: '',
+            rollsFilter: []
         }
     },
     methods: {
+
         deleteOrder: function(key, rolls, ourOrder, almacen){
             this.db.ref('/order').child(key).remove()
             rolls.forEach( rol => {
@@ -141,7 +225,7 @@ export default{
                             'typePaper': p.typePaper,
                             'kg': p.kg,
                             'weight': p.weight,
-                            'width': p.width,
+                            'width': `${p.width}"`,
                             'comments': p.comments
 
                         })
