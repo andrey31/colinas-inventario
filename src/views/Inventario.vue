@@ -17,7 +17,7 @@
            @click="loadSobrantes()"
            >
       <IndexInventario
-        :items="items"
+        :items="itemsSobrantes"
         :fields="fields">
       </IndexInventario>
     </b-tab>
@@ -26,7 +26,7 @@
            @click="loadHistorial"
            >
       <IndexInventario
-        :items="items"
+        :items="itemsHistorial"
         :fields="fields">
       </IndexInventario>
     </b-tab>
@@ -52,6 +52,8 @@ export default{
       db: firebase.database(),
       fields: [],
       items: [],
+      itemsSobrantes: [],
+      itemsHistorial: []
 
     }
   },
@@ -60,25 +62,25 @@ export default{
       this.items = []
       this.fields = ['idNumber', 'bodega', 'enUso', 'kgs', 'meters', 'width', 'gramaje', 'typePaper', 'comments']
       this.db.ref('/Inventario')
-        .on('value', snapshot => this.loadData( snapshot.val()))
+        .once('value', snapshot => this.loadData( snapshot.val(), this.items))
     },
     loadSobrantes: function(){
-      this.items = []
+      this.itemsSobrantes = []
       this.fields = ['idNumber', 'bodega', 'enUso', 'kgs', 'gramaje', 'typePaper', 'desperdicio', 'causaDesperdicio']
       this.db.ref('/InventarioSobrantes')
-        .on('value', snapshot => this.loadData( snapshot.val()))
+        .once('value', snapshot => this.loadData( snapshot.val(), this.itemsSobrantes))
     },
     loadHistorial: function(){
-      this.items = []
+      this.itemsHistorial = []
       this.fields = [
-        'idNumber', 'fecha', 'kgs', 'meters', 'gramaje', 'typePaper', 'desperdicio', 'causaDesperdicio', 'comments'
+        'idNumber', 'fecha', 'kgs', 'meters', 'gramaje', 'typePaper', 'desperdicio', 'causaDesperdicio', 'width', 'comments'
       ]
       this.db.ref('/HistorialInventario')
-        .on('value', snapshot => this.loadData( snapshot.val()))
+        .once('value', snapshot => this.loadData( snapshot.val(), this.itemsHistorial))
     },
-    loadData: function(data){
+    loadData: function(data, items){
       for(let key in data){
-        this.items.push({
+        items.push({
           'idNumber': data[key].idNumber,
           'bodega': data[key].bodega,
           'enUso': data[key].enUso,
