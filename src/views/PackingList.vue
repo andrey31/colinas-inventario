@@ -4,19 +4,19 @@
   <b-container fluid>
     <template v-if="showFilters">
       <b-row class="mb-2">
-        <b-col>
+        <b-col cols="4">
           <b-input-group>
             <b-input-group-text slot="prepend">Almacen</b-input-group-text>
             <b-form-input v-model="filterAlmacen"></b-form-input>
           </b-input-group>
         </b-col>
-        <b-col>
+        <b-col cols="4">
           <b-input-group>
             <b-input-group-text slot="prepend">Gramaje</b-input-group-text>
             <b-form-input v-model="filterGramaje"></b-form-input>
           </b-input-group>
         </b-col>
-        <b-col>
+        <b-col cols="4">
           <b-input-group>
             <b-input-group-text slot="prepend">Tipo papel</b-input-group-text>
             <b-form-input v-model="filterType"></b-form-input>
@@ -38,18 +38,27 @@
             <b-input-group-text slot="prepend">Width</b-input-group-text>
             <b-form-input v-model="filterWidth"></b-form-input>
           </b-input-group>
+          <b-button class="mt-4">Exportar</b-button>
         </b-col>
-        <b-col cols="4">
-          <label for="">Total de rollos: {{totalRolls.length}}</label> <br/>
-          <label for="">Total de metros: {{totalRolls.meters}}</label>
+        <b-col cols="8">
+          <b-card bg-variant="light" text-variant="dark" title="Rollos información">
+            <b-card-text>
+              <b-row>
+                <div v-for="gramaje, index in totalRolls.rollsByGramaje">
 
-        </b-col>
-        <b-col cols="4">
-          <label for="">Gramajes</label>
+                  <b-col >
+                    <b>{{gramaje.gramaje}} cantidad: {{gramaje.count}}</b>
+                    <br/>
 
-          <ul>
-            <li v-for="gramaje in totalRolls.rollsByGramaje">{{gramaje.count}} rollos tienen gramaje: {{gramaje.gramaje}}</li>
-          </ul>
+                  </b-col>
+
+                </div>
+                <b-col>
+                  Total de rollos: <b>{{totalRolls.length}}</b>
+                </b-col>
+              </b-row>
+            </b-card-text>
+          </b-card>
         </b-col>
       </b-row>
 
@@ -143,23 +152,28 @@ export default{
             //     console.log(roll.meters)
             //     total.meters += roll.meters
             // })
-            total.meters = this.rollsFilter.reduce( (a, b) => a + b.meters, 0).toFixed(2)
+            // total.meters = this.rollsFilter.reduce( (a, b) => a + b.meters, 0).toFixed(2)
 
             let rollsByGramaje = {}
             this.rollsFilter.forEach( roll => {
                 rollsByGramaje[roll.gramaje] = rollsByGramaje[roll.gramaje] || []
-                rollsByGramaje[roll.gramaje].push('')
+                rollsByGramaje[roll.gramaje].push(roll)
             })
 
             let gramajes = []
+            let rollsByGramajeType = {}
             Object.keys(rollsByGramaje).forEach( key => {
-                console.log(key)
-                gramajes.push( { 'gramaje': key, 'count': rollsByGramaje[key].length })
+                rollsByGramaje[key].forEach( roll => {
+                    let keyGramajeType = `${key} - ${roll.typePaper}`
+                    rollsByGramajeType[keyGramajeType] = rollsByGramajeType[keyGramajeType] || []
+                    rollsByGramajeType[keyGramajeType].push('')
+                })
+            })
+            Object.keys(rollsByGramajeType).forEach( key => {
+                console.log(rollsByGramajeType[key].length)
+                gramajes.push({'gramaje': key, 'count': rollsByGramajeType[key].length})
             })
             total.rollsByGramaje = gramajes
-            console.log(total)
-            // console.log(rollsByGramaje['10'].length)
-            // console.log(Object.keys(rollsByGramaje))
             return total
         }
 
@@ -188,8 +202,6 @@ export default{
             filterAlmacen: '',
             filterGramaje: '',
             filterType: '',
-            filterKgMin: 0,
-            filterKgMax: 10000,
             filterWidth: '',
             rollsFilter: []
         }
