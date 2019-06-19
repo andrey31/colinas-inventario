@@ -27,23 +27,12 @@ const router = new Router({
       component: Login
     },
     {
-      path: '/hometo',
-      component: ReadExcel,
-      meta: {
-        requiresAuth: true
-      }
-    },
-    {
       path: '/home',
       name: 'home',
       component: ReadExcel,
-      redirect: to => {
-        const currentUser = firebase.auth().currentUser;
-        if ( currentUser.email !== 'omar.duran@corrugadosaltavista.com') return { path: '/packing-list'}
-        else return {path: '/hometo'}
-      },
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        permissionAdmin: true
       }
     },
     {
@@ -76,20 +65,26 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   const currentUser = firebase.auth().currentUser;
   const requiresAuth = to.matched.some( record => record.meta.requiresAuth)
-  let emails = [
-        'omar.duran@corrugadosaltavista.com',
-        'guillermo.hernandez@corrugadosaltavista.com',
-        'jose.rodriguez@corrugadosaltavista.com',
-        'contabilidad@corrugadosaltavista.com'
-  ]
-  if(requiresAuth) {
+  const permissionAdmin = to.matched.some(record => record.meta.permissionAdmin)
+  if (requiresAuth && permissionAdmin){
     if (currentUser){
-      if(currentUser.email === emails[0]) next()
-      else if(currentUser.email === emails[1]) next()
-      else if(currentUser.email === emails[2]) next()
-      else if(currentUser.email === emails[3]) next()
-      else next('login')
-
+      console.log(checkEmail(currentUser))
+      if (checkEmail(currentUser).admin) {
+        next()
+      }else if( checkEmail(currentUser)){
+        next( { path: 'packing-list'})
+      }else {
+        next('login')
+      }
+    }
+  }
+  else if(requiresAuth) {
+    if (currentUser){
+      if (checkEmail(currentUser).access) {
+        next()
+      }else {
+        next('login')
+      }
     }
     else next('login')
 
@@ -97,4 +92,22 @@ router.beforeEach((to, from, next) => {
   else next()
 })
 
+function checkEmail( currentUser ){
+
+  let emails = [
+    'omar.duran@corrugadosaltavista.com',
+    'guillermo.hernandez@corrugadosaltavista.com',
+    'jose.rodriguez@corrugadosaltavista.com',
+    'contabilidad@corrugadosaltavista.com',
+    'ronny@corrugadosaltavista.com'
+  ]
+  console.log(currentUser.email === emails[3])
+  for(let email in emails){
+    if (emails[email] === currentUser.email && emails[email] === emails[0]) return { 'access': true, 'admin': true}
+    else if(emails[email] === currentUser.email) return {'access': true, 'admin': false}
+    else if( email === emails.length) return {'access': false, 'admin': false}
+
+  }
+
+}
 export default router

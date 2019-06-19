@@ -66,14 +66,14 @@ export default{
     },
     loadSobrantes: function(){
       this.itemsSobrantes = []
-      this.fields = ['idNumber', 'bodega', 'enUso', 'kgs', 'gramaje', 'typePaper', 'desperdicio', 'causaDesperdicio']
+      this.fields = ['idNumber', 'bodega', 'enUso', 'kgs', 'gramaje', 'typePaper', 'desperdicio']
       this.db.ref('/InventarioSobrantes')
         .once('value', snapshot => this.loadData( snapshot.val(), this.itemsSobrantes))
     },
     loadHistorial: function(){
       this.itemsHistorial = []
       this.fields = [
-        'idNumber', 'fecha', 'kgs', 'meters', 'gramaje', 'typePaper', 'desperdicio', 'causaDesperdicio', 'width', 'comments'
+        'idNumber', 'fecha', 'kgs', 'meters', 'gramaje', 'typePaper', 'desperdicio', 'width', 'comments'
       ]
       this.db.ref('/HistorialInventario')
         .once('value', snapshot => this.loadData( snapshot.val(), this.itemsHistorial))
@@ -91,7 +91,6 @@ export default{
           'typePaper': data[key].typePaper,
           'comments': data[key].comments,
           'desperdicio': data[key].desperdicio,
-          'causaDesperdicio': data[key].causaDesperdicio,
           'fecha': data[key].fecha
 
         })

@@ -67,7 +67,8 @@ export default{
         'omar.duran@corrugadosaltavista.com',
         'guillermo.hernandez@corrugadosaltavista.com',
         'jose.rodriguez@corrugadosaltavista.com',
-        'contabilidad@corrugadosaltavista.com'
+        'contabilidad@corrugadosaltavista.com',
+        'ronny@corrugadosaltavista.com'
       ]
 
     }

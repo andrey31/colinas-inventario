@@ -82,7 +82,7 @@
             <b-button @click.stop="row.toggleDetails"><v-icon name="expand-arrows-alt"></v-icon></b-button>
           </template>
           <template slot="delete" slot-scope="row">
-            <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder, row.item.almacen)" variant="danger" >
+            <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder, row.item.almacen)" variant="danger" :disabled="disableButtonDelete">
               <v-icon name="trash-alt"></v-icon>
             </b-button>
           </template>
@@ -113,7 +113,6 @@
     </b-tabs>
 
   </b-container>
-
 </div>
 </template>
 
@@ -128,6 +127,11 @@ export default{
             .on('value', snapshot => this.loadData(snapshot.val()))
     },
     computed: {
+        disableButtonDelete(){
+            if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com') return false
+            else return true
+
+        },
         getRolls(){
             let rolls = []
             for(let key in this.order){
@@ -181,6 +185,7 @@ export default{
     data(){
         return{
             db: firebase.database(),
+            currentUser: firebase.auth().currentUser,
             order: [],
             packingList: [],
             provided: '',
