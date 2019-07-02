@@ -38,7 +38,17 @@
             <b-input-group-text slot="prepend">Width</b-input-group-text>
             <b-form-input v-model="filterWidth"></b-form-input>
           </b-input-group>
-          <b-button class="mt-4">Exportar</b-button>
+          <b-input-group class="pt-2">
+            <b-input-group-text slot="prepend">Numero papel</b-input-group-text>
+            <b-form-input v-model="filterNumberRoll"></b-form-input>
+          </b-input-group>
+          <download-excel
+            class="btn btn-primary mt-4"
+            :data="getRolls"
+            name="datos.xls" v-if="getRolls.length != 0">
+            Exportar datos a excel
+          </download-excel>
+          <!-- <b-button class="mt-4">Exportar</b-button> -->
         </b-col>
         <b-col cols="8">
           <b-card bg-variant="light" text-variant="dark" title="Rollos información">
@@ -61,7 +71,6 @@
           </b-card>
         </b-col>
       </b-row>
-
     </template>
 
     <b-tabs class="bg-light" pills card>
@@ -144,7 +153,8 @@ export default{
                 return el.almacen.indexOf(this.filterAlmacen.toLowerCase()) > -1 &&
                     el.gramaje.indexOf(this.filterGramaje) > -1 &&
                     el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
-                    el.width.indexOf(this.filterWidth) > -1
+                    el.width.indexOf(this.filterWidth) > -1 &&
+                    el.idNumber.toString().toLowerCase().indexOf(this.filterNumberRoll.toLowerCase()) > -1
             })
             return this.rollsFilter
         },
@@ -174,7 +184,6 @@ export default{
                 })
             })
             Object.keys(rollsByGramajeType).forEach( key => {
-                console.log(rollsByGramajeType[key].length)
                 gramajes.push({'gramaje': key, 'count': rollsByGramajeType[key].length})
             })
             total.rollsByGramaje = gramajes
@@ -201,13 +210,14 @@ export default{
             filter: '',
             fields: ['provided', 'date', 'shipped', 'shipment', 'carrier', 'vehicle',
                      'booking', 'comment', 'ourOrder', 'yourOrder', 'almacen', 'download', 'rolls', 'delete'],
-            fieldsRolls: ['idNumber', 'meters', 'gramaje', 'typePaper', 'kg', 'weight', 'width', 'comments'],
-            fieldsRolls2: ['idNumber', 'almacen', 'meters', 'gramaje', 'typePaper', 'kg', 'weight', 'width', 'comments'],
+            fieldsRolls: ['idNumber', 'meters', 'gramaje', 'width', 'typePaper', 'kg', 'weight', 'comments'],
+            fieldsRolls2: ['idNumber', 'almacen', 'meters', 'gramaje', 'width', 'typePaper', 'kg', 'weight', 'comments'],
             showFilters: false,
             filterAlmacen: '',
             filterGramaje: '',
             filterType: '',
             filterWidth: '',
+            filterNumberRoll: '',
             rollsFilter: []
         }
     },

@@ -13,7 +13,7 @@
         @change="clear"
         class="mb-2"
         />
-      <b-button @click="load"><v-icon name="tasks"></v-icon> Verificar</b-button>
+      <b-button @click="load"><v-icon name="tasks" class="secondary"></v-icon> Verificar</b-button>
       <b-button @click="showModal = true" variant="primary" class="mx-2" :disabled="disabledUpload">
         <v-icon name="cloud-upload-alt" scale="1.5"></v-icon> Subir a base de datos</b-button>
     </b-col>

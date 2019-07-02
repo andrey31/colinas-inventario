@@ -40,23 +40,41 @@
     </b-row>
     <b-row>
       <b-col cols="4">
-          <b-input-group>
+        <b-input-group>
           <b-input-group-text slot="prepend" >Bodega</b-input-group-text>
           <b-form-input v-model="filterBodega" :disabled="disabledBodega"></b-form-input>
-          </b-input-group>
-                  <b-button class="mt-4">Exportar</b-button>
+        </b-input-group>
+        <!-- <b-button class="mt-4">Exportar</b-button> -->
       </b-col>
+      <b-col cols="4">
+        <b-input-group>
+          <b-input-group-text slot="prepend" >Numero rollo</b-input-group-text>
+          <b-form-input v-model="filterNumberRoll"></b-form-input>
+        </b-input-group>
+      </b-col>
+      <b-col cols="4">
+        <b-input-group>
+          <b-input-group-text slot="prepend" >Fecha Inicio</b-input-group-text>
+          <b-form-input v-model="dateFilterBegin" type="date"></b-form-input>
+        </b-input-group>
 
-      <b-col cols="8">
+
+        <!-- <b-input-group> -->
+        <!--   <b-input-group-text slot="prepend" >Hora</b-input-group-text> -->
+        <!--   <b-form-input type="time" :disabled="disabledBodega"></b-form-input> -->
+        <!-- </b-input-group> -->
+      </b-col>
+    </b-row>
+    <b-row class="">
+      <b-col cols="8" class="my-2">
         <b-card bg-variant="light" text-variant="dark" title="Rollos información">
           <b-card-text>
             <b-row>
-              <div v-for="gramaje, index in totalRolls.rollsByGramaje">
+              <div v-for="gramaje, index in totalRolls.rollsByGramaje" :key="index">
 
                 <b-col >
                   <b>{{gramaje.gramaje}} cantidad: {{gramaje.count}}</b>
                   <br/>
-
                 </b-col>
 
               </div>
@@ -66,6 +84,18 @@
             </b-row>
           </b-card-text>
         </b-card>
+      </b-col>
+      <b-col cols="4">
+        <b-input-group>
+          <b-input-group-text slot="prepend" >Fecha Final</b-input-group-text>
+          <b-form-input v-model="dateFilterFinish" type="date"></b-form-input>
+        </b-input-group>
+        <download-excel
+          class="btn btn-primary mt-4"
+          :data="getRolls"
+          name="datos.xls" v-if="getRolls.length != 0">
+          Exportar datos a excel
+        </download-excel>
       </b-col>
     </b-row>
 
@@ -80,9 +110,12 @@
         responsive
         >
 
-        <template slot="enUso" slot-scope="row">
-          <label v-if="row.item.enUso">Sí</label>
-          <label v-else>No</label>
+        <!-- <template slot="enUso" slot-scope="row"> -->
+        <!--   <label v-if="row.item.enUso">Sí</label> -->
+        <!--   <label v-else>No</label> -->
+        <!-- </template> -->
+        <template v-if="row.item.fecha" slot="fecha" slot-scope="row">
+          {{row.item.fecha.toISOString().slice(0, 10)}}
         </template>
       </b-table>
 
@@ -99,22 +132,24 @@ export default{
   computed: {
     getRolls(){
 
-
       this.rollsFilter = this.items.filter( el => {
         let bodega = el.bodega
 
         typeof bodega === 'undefined' ? this.disabledBodega = true : this.disabledBodega = false
 
-        if (typeof bodega === 'undefined'){
-          return el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
-            el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
-            el.width.indexOf(this.filterWidth) > -1
-
-        }else {
-          return el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
+        let r = el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
             el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
             el.width.indexOf(this.filterWidth) > -1 &&
-            el.bodega.toString().indexOf(this.filterBodega) > -1
+            el.idNumber.indexOf(this.filterNumberRoll) > -1
+
+        if(el.fecha !== null){
+          r = r && el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00')
+              && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
+        }
+
+        if(typeof bodega === 'undefined') return r
+        else {
+          return r && el.bodega.toString().indexOf(this.filterBodega) > -1
         }
 
       })
@@ -159,9 +194,15 @@ export default{
       filterType: '',
       filterWidth: '',
       filterBodega: '',
+      filterNumberRoll: '',
       rollsFilter: [],
+      dateFilterBegin: new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10).toString(),
+      dateFilterFinish: new Date().toISOString().slice(0, 10).toString(),
       disabledBodega: false
     }
+  },
+  methods: {
+
   }
 
 }
