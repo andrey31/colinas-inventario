@@ -32,7 +32,7 @@
       <!-- </b-col> -->
       <b-col cols="4">
         <b-input-group>
-          <b-input-group-text slot="prepend">Width</b-input-group-text>
+          <b-input-group-text slot="prepend">Ancho</b-input-group-text>
           <b-form-input v-model="filterWidth"></b-form-input>
         </b-input-group>
 
@@ -52,7 +52,7 @@
           <b-form-input v-model="filterNumberRoll"></b-form-input>
         </b-input-group>
       </b-col>
-      <b-col cols="4">
+      <b-col cols="4" v-if="showFilterDate">
         <b-input-group>
           <b-input-group-text slot="prepend" >Fecha Inicio</b-input-group-text>
           <b-form-input v-model="dateFilterBegin" type="date"></b-form-input>
@@ -86,7 +86,7 @@
         </b-card>
       </b-col>
       <b-col cols="4">
-        <b-input-group>
+        <b-input-group v-if="showFilterDate">
           <b-input-group-text slot="prepend" >Fecha Final</b-input-group-text>
           <b-form-input v-model="dateFilterFinish" type="date"></b-form-input>
         </b-input-group>
@@ -117,18 +117,134 @@
         <template v-if="row.item.fecha" slot="fecha" slot-scope="row">
           {{row.item.fecha.toISOString().slice(0, 10)}}
         </template>
+        <template slot="acciones" slot-scope="row">
+          <a class="btn btn-primary mr-2" href="" @click.stop.prevent="modalShowEdit(row.item)">
+            <v-icon name="edit"></v-icon>
+          </a>
+          <a class="btn btn-danger" href="" @click.stop.prevent="modalDeleteShowEdit(row.item.key)">
+            <v-icon name="trash-alt"></v-icon>
+          </a>
+        </template>
       </b-table>
-
     </b-col>
   </b-row>
+  <b-modal v-model="modalShow"
+           header-bg-variant="primary"
+           size="lg"
+           no-close-on-backdrop >
+
+    <template slot="modal-title">
+      Editar
+    </template>
+    <b-container fluid>
+
+
+      <b-form class="row">
+        <b-form-group class="col-4" id="idNumber" label="Numero de rollo" label-for="input-id">
+          <b-form-input
+            id="input-id"
+            type="text"
+            v-model="modalRow.idNumber"
+            required>
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group class="col-4" id="idBodega" label="Bodega" label-for="input-bodega">
+          <b-form-input
+            id="input-bodega"
+            type="text"
+            v-model="modalRow.bodega"
+            required>
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group class="col-4" id="idKg" label="Kilogramos" label-for="input-kg">
+          <b-form-input
+            id="input-kg"
+            type="text"
+            v-model="modalRow.kgs"
+            required>
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group class="col-4" id="idMeters" label="Metros" label-for="input-meters">
+          <b-form-input
+            id="input-meters"
+            type="text"
+            v-model="modalRow.meters"
+            required>
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group class="col-4" id="idWidth" label="Ancho" label-for="input-width">
+          <b-form-input
+            id="input-width"
+            type="text"
+            v-model="modalRow.width"
+            required>
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group class="col-4" id="idTypePaper" label="Tipo de papel" label-for="input-typePaper">
+          <b-form-input
+            id="input-typePaper"
+            type="text"
+            v-model="modalRow.typePaper"
+            required>
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group class="col-12" id="idComment" label="Comentario" label-for="input-comment">
+
+          <b-form-textarea
+            id="input-comment"
+            type="text"
+            v-model="modalRow.comments"
+            rows="3"
+            max-rows="6"
+            required>
+          </b-form-textarea>
+        </b-form-group>
+      </b-form>
+    </b-container>
+    <div slot="modal-footer" class="">
+      <b-button variant="danger" class="mr-2">Cancelar</b-button>
+      <b-button variant="primary">Guardar</b-button>
+    </div>
+  </b-modal>
+
+  <b-modal v-model="modalDeleteShow"
+           hide-header
+           hide-footer
+           >
+    <b-container  class="text-center">
+      <b-row>
+        <b-col>
+          <h3>¿Esta seguro de eliminar el registro?</h3>
+        </b-col>
+      </b-row>
+      <b-row class="pt-4">
+
+        <b-col>
+          <b-button block variant="danger" class="mr-2">No</b-button>
+          <b-button block variant="primary" class="mr-2">Si</b-button>
+        </b-col>
+      </b-row>
+    </b-container>
+
+    <template slot="modal-footer">
+
+    </template>
+  </b-modal>
 </b-container>
 
 </template>
 
 <script>
-
 export default{
   props: ['items', 'fields'],
+  components: {
+  },
   computed: {
     getRolls(){
 
@@ -136,6 +252,9 @@ export default{
         let bodega = el.bodega
 
         typeof bodega === 'undefined' ? this.disabledBodega = true : this.disabledBodega = false
+
+        this.showFilterDate = el.fecha === null ? false : true
+
 
         let r = el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
             el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
@@ -198,11 +317,24 @@ export default{
       rollsFilter: [],
       dateFilterBegin: new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10).toString(),
       dateFilterFinish: new Date().toISOString().slice(0, 10).toString(),
-      disabledBodega: false
+      disabledBodega: false,
+      showFilterDate: false,
+      modalShow: false,
+      modalRow: {},
+      modalDeleteShow: false,
+      keyRoll: 0
+
     }
   },
   methods: {
-
+    modalShowEdit: function(row){
+      this.modalRow = Object.assign({}, row)
+      this.modalShow = true
+    },
+    modalDeleteShowEdit: function(key){
+      this.keyRoll = key
+      this.modalDeleteShow = true
+    }
   }
 
 }
