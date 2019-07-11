@@ -150,7 +150,10 @@ export default{
           label: 'Tipo de papel',
           sortable: true
         },
-        'desperdicio',
+        {
+          key: 'desperdicio',
+          label: 'Hojas desperdiciadas'
+        },
         'diametro',
         'fecha',
         'hora',
