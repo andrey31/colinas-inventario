@@ -39,7 +39,7 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col cols="4">
+      <b-col cols="4" v-if="fields[1].key === 'bodega'">
         <b-input-group>
           <b-input-group-text slot="prepend" >Bodega</b-input-group-text>
           <b-form-input v-model="filterBodega" :disabled="disabledBodega"></b-form-input>
@@ -64,6 +64,12 @@
         <!--   <b-form-input type="time" :disabled="disabledBodega"></b-form-input> -->
         <!-- </b-input-group> -->
       </b-col>
+      <b-col>
+        <b-input-group v-if="showFilterDate">
+          <b-input-group-text slot="prepend" >Fecha Final</b-input-group-text>
+          <b-form-input v-model="dateFilterFinish" type="date"></b-form-input>
+        </b-input-group>
+      </b-col>
     </b-row>
     <b-row class="">
       <b-col cols="8" class="my-2">
@@ -82,14 +88,24 @@
                 Total de rollos: <b>{{totalRolls.length}}</b>
               </b-col>
             </b-row>
+            <b-row class="pt-4">
+              <b-col v-if="getTotalKgsMeters.kg > 0">
+                Total de kilos <b>{{getTotalKgsMeters.kg}}</b>
+              </b-col>
+              <b-col v-if="getTotalKgsMeters.meters > 0">
+                Total de metros <b>{{getTotalKgsMeters.meters}}</b>
+              </b-col>
+              <b-col v-if="getTotalKgsMeters.desperdicio > 0">
+                Total de desperdicio <b>{{getTotalKgsMeters.desperdicio}}</b>
+              </b-col>
+              <b-col v-if="getTotalKgsMeters.diametro > 0">
+                Total de diametro <b>{{getTotalKgsMeters.diametro}}</b>
+              </b-col>
+            </b-row>
           </b-card-text>
         </b-card>
       </b-col>
       <b-col cols="4">
-        <b-input-group v-if="showFilterDate">
-          <b-input-group-text slot="prepend" >Fecha Final</b-input-group-text>
-          <b-form-input v-model="dateFilterFinish" type="date"></b-form-input>
-        </b-input-group>
         <download-excel
           class="btn btn-primary mt-4"
           :data="getRolls"
@@ -101,7 +117,7 @@
 
   </template>
   <b-row class="mb-2">
-    <b-col cols="12">
+
 
       <b-table
         :fields="fields"
@@ -126,7 +142,7 @@
           </a>
         </template>
       </b-table>
-    </b-col>
+
   </b-row>
   <b-modal v-model="modalShow"
            header-bg-variant="primary"
@@ -246,6 +262,24 @@ export default{
   components: {
   },
   computed: {
+    getTotalKgsMeters(){
+      let kgsM = {}
+      let kg = 0
+      let meters = 0
+      let desperdicio = 0
+      let diametro = 0
+      this.rollsFilter.forEach( roll => {
+        kg += parseFloat(roll.kgs)
+        if (roll.meters) meters += parseFloat(roll.meters)
+        if (roll.desperdicio) desperdicio += parseFloat(roll.desperdicio)
+        if(roll.diametro) diametro += parseFloat(roll.diametro)
+      })
+      kgsM.kg = kg
+      kgsM.meters = meters
+      kgsM.desperdicio = desperdicio
+      kgsM.diametro = diametro
+      return kgsM
+    },
     getRolls(){
 
       this.rollsFilter = this.items.filter( el => {
@@ -322,8 +356,7 @@ export default{
       modalShow: false,
       modalRow: {},
       modalDeleteShow: false,
-      keyRoll: 0
-
+      keyRoll: 0,
     }
   },
   methods: {
