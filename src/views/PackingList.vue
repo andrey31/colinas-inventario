@@ -107,7 +107,7 @@
       </b-tab>
 
 
-      <b-tab title="Rolls" @click="showFilters=true" >
+      <b-tab title="Almacenes" @click="showFilters=true" >
         <b-table
           :items="getRolls"
           :fields="fieldsRolls2"
