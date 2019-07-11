@@ -67,13 +67,54 @@ export default{
       itemsSobrantes: [],
       itemsHistorial: [],
       desperdiciosDiariosItems: [],
-      desperdiciosDiariosFields: ['fecha', 'cantidad']
+      desperdiciosDiariosFields: ['fecha', 'cantidad'],
 
     }
   },
   methods: {
     loadIndex: function(){
-      this.fields = ['idNumber', 'bodega', 'enUso', 'kgs', 'meters', 'gramaje', 'width', 'typePaper', 'comments']
+      this.fields = [
+        {
+          key: 'idNumber',
+          label: 'Numero rollo'
+        },
+        {
+          key: 'bodega',
+          sortable: true
+        },
+        {
+          key: 'enUso',
+          label: 'En uso',
+          sortable: true
+        },
+        {
+          key: 'kgs',
+          label: 'Kilogramos'
+        },
+        {
+          key: 'meters',
+          label: 'Metros lineales'
+        },
+        {
+          key: 'gramaje',
+          label: 'Gramaje',
+          sortable: true
+        },
+        {
+          key: 'width',
+          label: 'Ancho'
+        },
+        {
+          key: 'typePaper',
+          label: 'Tipo de papel',
+          sortable: true
+        },
+        {
+          key: 'comments',
+          label: 'Comentario'
+        },
+        'acciones'
+      ]
       this.db.ref('/Inventario')
         .once('value').then( snapshot => {
           this.items = []
@@ -81,7 +122,40 @@ export default{
         })
     },
     loadSobrantes: function(){
-      this.fields = ['idNumber', 'bodega', 'enUso', 'kgs', 'gramaje', 'width', 'typePaper', 'desperdicio', 'diametro', 'fecha', 'hora']
+      this.fields = [
+        {
+          key: 'idNumber',
+          label: 'Numero de rollo',
+        },
+        {
+          key: 'enUso',
+          label: 'En uso',
+          sortable: true
+        },
+        {
+          key: 'kgs',
+          label: 'Kilogramos'
+        },
+        {
+          key: 'gramaje',
+          sortable: true
+        },
+        {
+          key: 'width',
+          label: 'Ancho',
+          sortable: true
+        },
+        {
+          key: 'typePaper',
+          label: 'Tipo de papel',
+          sortable: true
+        },
+        'desperdicio',
+        'diametro',
+        'fecha',
+        'hora',
+        'acciones'
+      ]
       this.db.ref('/InventarioSobrantes')
         .once('value').then( snapshot => {
           this.itemsSobrantes = []
@@ -91,7 +165,42 @@ export default{
     loadHistorial: function(){
 
       this.fields = [
-        'idNumber', 'fecha', 'kgs', 'meters', 'gramaje', 'width', 'typePaper', 'desperdicio', 'comments'
+        {
+          key: 'idNumber',
+          label: 'Numero de rollo'
+        },
+        {
+          key: 'fecha',
+          label: 'Fecha'
+        },
+        {
+          key: 'kgs',
+          label: 'Kilogramos'
+        },
+        {
+          key: 'meters',
+          label: 'Metros'
+        },
+        {
+          key: 'gramaje',
+          sortable: true
+        },
+        {
+          key: 'width',
+          label: 'Ancho',
+          sortable: true
+        },
+        {
+          key: 'typePaper',
+          label: 'Tipo de papel',
+          sortable: true
+        },
+        'desperdicio',
+        {
+          key: 'comments',
+          label: 'Comentario'
+        },
+        'acciones'
       ]
       this.db.ref('/HistorialInventario')
         .once('value').then( snapshot => {
@@ -115,6 +224,7 @@ export default{
         }
 
         items.push({
+          'key': key,
           'idNumber': data[key].idNumber,
           'bodega': data[key].bodega,
           'enUso': data[key].enUso,
