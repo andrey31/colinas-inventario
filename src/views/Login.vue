@@ -16,7 +16,7 @@
           >
           <b-form-input
             id="inputEmail"
-            type=""
+            type="text"
             v-model="form.email"
             required
             placeholder="Escriba su email"
@@ -63,14 +63,6 @@ export default{
         password: '',
       },
       showAlert: false,
-      emails: [
-        'omar.duran@corrugadosaltavista.com',
-        'guillermo.hernandez@corrugadosaltavista.com',
-        'jose.rodriguez@corrugadosaltavista.com',
-        'contabilidad@corrugadosaltavista.com',
-        'ronny@corrugadosaltavista.com'
-      ]
-
     }
   },
   methods: {
@@ -80,18 +72,7 @@ export default{
       if (!(this.form.email).includes(dominio)) this.form.email += dominio
       firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password).then(
         (user) => {
-          for( let email in this.emails){
-            if(firebase.auth().currentUser.email === this.emails[email]){
-              this.$router.replace('home')
-              break
-            }
-            // else if(email === this.emails.length){
-            //   this.showAlert = true
-
-            // }
-          }
-
-
+           this.$router.replace('home')
         },
         (err) => {
           console.log(err)

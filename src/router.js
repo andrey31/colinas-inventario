@@ -99,9 +99,12 @@ function checkEmail( currentUser ){
     'guillermo.hernandez@corrugadosaltavista.com',
     'jose.rodriguez@corrugadosaltavista.com',
     'contabilidad@corrugadosaltavista.com',
-    'ronny@corrugadosaltavista.com'
+    'ronny@corrugadosaltavista.com',
+    'jose.mora@corrugadosaltavista.com',
+    'montacargas1@corrugadosaltavista.com',
+    'montacargas2@corrugadosaltavista.com'
   ]
-  console.log(currentUser.email === emails[3])
+
   for(let email in emails){
     if (emails[email] === currentUser.email && emails[email] === emails[0]) return { 'access': true, 'admin': true}
     else if(emails[email] === currentUser.email) return {'access': true, 'admin': false}
