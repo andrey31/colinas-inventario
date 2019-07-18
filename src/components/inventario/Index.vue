@@ -122,36 +122,35 @@
   <b-row class="mb-2">
 
 
-      <b-table
-        :fields="fields"
-        :items="getRolls"
-        head-variant="dark"
-        responsive
-        >
+    <b-table
+      :fields="fields"
+      :items="getRolls"
+      head-variant="dark"
+      responsive
+      >
 
-        <!-- <template slot="enUso" slot-scope="row"> -->
-        <!--   <label v-if="row.item.enUso">Sí</label> -->
-        <!--   <label v-else>No</label> -->
-        <!-- </template> -->
-        <template v-if="row.item.fecha" slot="fecha" slot-scope="row">
-          {{row.item.fecha.toISOString().slice(0, 10)}}
-        </template>
-        <template slot="acciones" slot-scope="row">
-          <a class="btn btn-primary mr-2" href="" @click.stop.prevent="modalShowEdit(row.item)">
-            <v-icon name="edit"></v-icon>
-          </a>
-          <a class="btn btn-danger" href="" @click.stop.prevent="modalDeleteShowEdit(row.item.key)">
-            <v-icon name="trash-alt"></v-icon>
-          </a>
-        </template>
-      </b-table>
+      <!-- <template slot="enUso" slot-scope="row"> -->
+      <!--   <label v-if="row.item.enUso">Sí</label> -->
+      <!--   <label v-else>No</label> -->
+      <!-- </template> -->
+      <template v-if="row.item.fecha" slot="fecha" slot-scope="row">
+        {{row.item.fecha.toISOString().slice(0, 10)}}
+      </template>
+      <template slot="acciones" slot-scope="row">
+        <a class="btn btn-primary mr-2" href="" @click.stop.prevent="modalShowEdit(row.item)">
+          <v-icon name="edit"></v-icon>
+        </a>
+        <a class="btn btn-danger" href="" @click.stop.prevent="modalDeleteShowEdit(row.item.key)">
+          <v-icon name="trash-alt"></v-icon>
+        </a>
+      </template>
+    </b-table>
 
   </b-row>
   <b-modal v-model="modalShow"
            header-bg-variant="primary"
            size="lg"
            no-close-on-backdrop >
-
     <template slot="modal-title">
       Editar
     </template>
@@ -168,7 +167,7 @@
           </b-form-input>
         </b-form-group>
 
-        <b-form-group class="col-4" id="idBodega" label="Bodega" label-for="input-bodega">
+        <b-form-group class="col-4" id="idBodega" label="Bodega" label-for="input-bodega" v-if="modalRow.bodega">
           <b-form-input
             id="input-bodega"
             type="text"
@@ -186,7 +185,7 @@
           </b-form-input>
         </b-form-group>
 
-        <b-form-group class="col-4" id="idMeters" label="Metros" label-for="input-meters">
+        <b-form-group class="col-4" id="idMeters" label="Metros" label-for="input-meters" v-if="modalRow.meters">
           <b-form-input
             id="input-meters"
             type="text"
@@ -194,7 +193,14 @@
             required>
           </b-form-input>
         </b-form-group>
-
+        <b-form-group class="col-4" id="idGramaje" label="Gramaje" label-for="input-gramaje">
+          <b-form-input
+            id="input-gramaje"
+            type="text"
+            v-model="modalRow.gramaje"
+            required>
+          </b-form-input>
+        </b-form-group>
         <b-form-group class="col-4" id="idWidth" label="Ancho" label-for="input-width">
           <b-form-input
             id="input-width"
@@ -209,6 +215,22 @@
             id="input-typePaper"
             type="text"
             v-model="modalRow.typePaper"
+            required>
+          </b-form-input>
+        </b-form-group>
+        <b-form-group class="col-4" id="idSheet" label="Hojas desperdiciadas" label-for="input-sheet" v-if="modalRow.desperdicio">
+          <b-form-input
+            id="input-sheet"
+            type="text"
+            v-model="modalRow.desperdicio"
+            required>
+          </b-form-input>
+        </b-form-group>
+        <b-form-group class="col-4" id="idDiametro" label="Diametro" label-for="input-diametro" v-if="modalRow.diametro">
+          <b-form-input
+            id="input-diametro"
+            type="text"
+            v-model="modalRow.diametro"
             required>
           </b-form-input>
         </b-form-group>
@@ -245,7 +267,7 @@
 
         <b-col>
           <b-button block variant="danger" class="mr-2">No</b-button>
-          <b-button block variant="primary" class="mr-2">Si</b-button>
+          <b-button block variant="primary" class="mr-2" @click="deleteItem()">Si</b-button>
         </b-col>
       </b-row>
     </b-container>
@@ -366,6 +388,7 @@ export default{
   },
   methods: {
     modalShowEdit: function(row){
+
       if(typeof row.comments === 'undefined') {
         this.isUndefinedComment = true
       }
@@ -373,40 +396,111 @@ export default{
         this.isUndefinedComment = false
       }
 
-      if (this.actualTab === 0){
-      }
-
       this.modalRow = Object.assign({}, row)
+      let w = (this.modalRow.width).substr(0,2) //Remover comillas de pulgadas
+      // if (this.modalRow.fecha) this.modalRow.fecha = (this.formatDate(this.modalRow.fecha))
+      if (this.modalRow.fecha) {
+        let fecha = this.formatDate(this.modalRow.fecha).split('-')
+        console.log(fecha)
+        let formatFecha = `${fecha[2]}-${fecha[1]}-${fecha[0]}`
+        this.modalRow.fecha = formatFecha
+      }
+      this.modalRow.width = w
       this.modalShow = true
     },
     modalDeleteShowEdit: function(key){
       this.keyRoll = key
       this.modalDeleteShow = true
+      // this.db.ref('/order').child(key).remove()
     },
-    editar: function(){
-      if (this.actualTab === 0){
-        console.log(this.modalRow)
-        let key = this.modalRow.key
-        let objEdit = {
-
-        }
-        // console.log(this.modalRow)
-        // console.log(this.modalRow.idNumber)
-        // this.db.ref('inventario').set(this.modalRow).then( (data) => {
-        //   console.log('agregado')
-        // }).catch( error => {
-        //   console.log(error)
-        // })
-        // console.log(key)
-      }else if(this.actualTab === 1) {
-
+    deleteItem: function(){
+      if(this.actualTab === 0){
+        this.db.ref('/Inventario').child(this.keyRoll).remove()
+      }else if(this.actualTab === 1){
+        this.db.ref('InventarioSobrantes').child(this.keyRoll).remove()
       }else if(this.actualTab === 2){
-
+        this.db.ref('HistorialInventario').child(this.keyRoll).remove()
       }
 
+      this.modalDeleteShow = false
+    },
+    formatDate: function (date) {
+      var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+      if (month.length < 2) month = '0' + month;
+      if (day.length < 2) day = '0' + day;
+
+      return [year, month, day].join('-');
+    },
+    editar: function(){
+      let key = this.modalRow.key
+
+      if (this.actualTab === 0){
+        let obj = {
+          bodega: this.modalRow.bodega,
+          comments: this.modalRow.comments,
+          enUso: this.modalRow.enUso,
+          gramaje: this.modalRow.gramaje,
+          idNumber: this.modalRow.idNumber,
+          kgs: this.modalRow.kgs,
+          meters: this.modalRow.meters,
+          typePaper: this.modalRow.typePaper,
+          width: this.modalRow.width
+        }
+        this.db.ref('Inventario').child(key).set(obj).then( (data) => {
+          this.modalShow = false
+          console.log('agregado')
+        }).catch( error => {
+          console.log(error)
+        })
+
+      }else if(this.actualTab === 1) {
+
+        let obj = {
+          bodega: this.modalRow.bodega,
+          causaDesperdicio: this.modalRow.causaDesperdicio,
+          diametro: this.modalRow.diametro,
+          enUso: this.modalRow.enUso,
+          fecha: this.modalRow.fecha,
+          gramaje: this.modalRow.gramaje,
+          hora: this.modalRow.hora,
+          idNumber: this.modalRow.idNumber,
+          kgs: this.modalRow.kgs,
+          typePaper: this.modalRow.typePaper,
+          desperdicio: this.modalRow.desperdicio,
+          width: this.modalRow.width
+        }
+        this.db.ref('InventarioSobrantes').child(key).set(obj).then( (data) => {
+          this.modalShow = false
+        }).catch( error => {
+          console.log(error)
+        })
 
 
-      console.log('hola')
+      }else if(this.actualTab === 2){
+        let obj = {
+          causaDesperdicio: this.modalRow.causaDesperdicio,
+          comments: this.modalRow.comments,
+          desperdicio: this.modalRow.desperdicio,
+          fecha: this.modalRow.fecha,
+          gramaje: this.modalRow.gramaje,
+          idNumber: this.modalRow.idNumber,
+          kgs: this.modalRow.kgs,
+          meters: this.modalRow.meters,
+          typePaper: this.modalRow.typePaper,
+          width: this.modalRow.width
+        }
+
+        this.db.ref('HistorialInventario').child(key).set(obj).then( data => {
+          this.modalShow = false
+        }).catch( error => {
+          console.log(error)
+        })
+
+      }
 
       // this.db.ref(key).set
       // console.log(this.modalRow)

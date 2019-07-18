@@ -128,10 +128,15 @@ export default{
         this.disableActions ? null : 'acciones'
       ]
       this.db.ref('/Inventario')
-        .once('value').then( snapshot => {
+        .on('value', snapshot => {
           this.items = []
-          this.loadData( snapshot.val(), this.items)
+          this.loadData(snapshot.val(), this.items)
         })
+      // this.db.ref('/Inventario')
+      //   .once('value').then( snapshot => {
+      //     this.items = []
+      //     this.loadData( snapshot.val(), this.items)
+      //   })
     },
     loadSobrantes: function(){
       this.actualTab = 1
@@ -173,7 +178,7 @@ export default{
         this.disableActions ? null : 'acciones'
       ]
       this.db.ref('/InventarioSobrantes')
-        .once('value').then( snapshot => {
+        .on('value', snapshot => {
           this.itemsSobrantes = []
           this.loadData( snapshot.val(), this.itemsSobrantes)
         })
@@ -219,7 +224,7 @@ export default{
         this.disableActions ? null : 'acciones'
       ]
       this.db.ref('/HistorialInventario')
-        .once('value').then( snapshot => {
+        .on('value', snapshot => {
           this.itemsHistorial = []
           this.loadData( snapshot.val(), this.itemsHistorial)
         })
@@ -245,13 +250,14 @@ export default{
           'idNumber': data[key].idNumber,
           'bodega': data[key].bodega,
           'enUso': data[key].enUso,
-          'kgs': data[key].kgs.toFixed(2),
-          'meters': typeof data[key].meters !== 'undefined' ? data[key].meters.toFixed(2) : null,
+          'kgs': data[key].kgs,
+          'meters': typeof data[key].meters !== 'undefined' ? data[key].meters : null,
           'width': `${data[key].width}"`,
           'gramaje': data[key].gramaje,
           'typePaper': data[key].typePaper,
           'comments': data[key].comments,
           'desperdicio': data[key].desperdicio,
+          'causaDesperdicio': data[key].causaDesperdicio,
           'diametro': data[key].diametro,
           'fecha': fechaFormat,
           'hora': data[key].hora
