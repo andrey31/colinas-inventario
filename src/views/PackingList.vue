@@ -35,7 +35,7 @@
       <b-row>
         <b-col cols="4">
           <b-input-group>
-            <b-input-group-text slot="prepend">Width</b-input-group-text>
+            <b-input-group-text slot="prepend">Ancho</b-input-group-text>
             <b-form-input v-model="filterWidth"></b-form-input>
           </b-input-group>
           <b-input-group class="pt-2">
@@ -51,7 +51,7 @@
           <!-- <b-button class="mt-4">Exportar</b-button> -->
         </b-col>
         <b-col cols="8">
-          <b-card bg-variant="light" text-variant="dark" title="Rollos información">
+          <b-card bg-variant="light" text-varbiant="dark" title="Rollos información">
             <b-card-text>
               <b-row>
                 <div v-for="gramaje, index in totalRolls.rollsByGramaje">
@@ -65,6 +65,14 @@
                 </div>
                 <b-col>
                   Total de rollos: <b>{{totalRolls.length}}</b>
+                </b-col>
+              </b-row>
+              <b-row class="pt-4">
+                <b-col v-if="getTotalKgsMeters.kg > 0">
+                  Total de kilos <b>{{getTotalKgsMeters.kg}}</b>
+                </b-col>
+                <b-col v-if="getTotalKgsMeters.meters > 0">
+                  Total de metros <b>{{getTotalKgsMeters.meters}}</b>
                 </b-col>
               </b-row>
             </b-card-text>
@@ -101,6 +109,9 @@
               :fields="fieldsRolls"
               striped
               >
+              <template slot="kg" slot-scope="row">
+                {{(row.item.kg).toFixed(2)}}
+              </template>
             </b-table>
           </template>
         </b-table>
@@ -110,11 +121,13 @@
       <b-tab title="Almacenes" @click="showFilters=true" >
         <b-table
           :items="getRolls"
-          :fields="fieldsRolls2"
+          :fields="fieldsRolls"
           :filter="filter"
           head-variant="dark"
           >
-
+          <template slot="kg" slot-scope="row">
+            {{(row.item.kg).toFixed(2)}}
+          </template>
         </b-table>
 
       </b-tab>
@@ -136,6 +149,20 @@ export default{
             .on('value', snapshot => this.loadData(snapshot.val()))
     },
     computed: {
+        getTotalKgsMeters(){
+            let kgsM = {}
+            let kg = 0
+            let meters = 0
+            this.getRolls.forEach( roll => {
+                kg += parseFloat(roll.kg)
+                if (roll.meters) meters += parseFloat(roll.meters)
+            })
+            kgsM.kg = kg.toFixed(2)
+            kgsM.meters = meters.toFixed(2)
+
+            return kgsM
+        },
+
         disableButtonDelete(){
             if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com') return false
             else return true
@@ -210,8 +237,15 @@ export default{
             filter: '',
             fields: ['provided', 'date', 'shipped', 'shipment', 'carrier', 'vehicle',
                      'booking', 'comment', 'ourOrder', 'yourOrder', 'almacen', 'download', 'rolls', 'delete'],
-            fieldsRolls: ['idNumber', 'meters', 'gramaje', 'width', 'typePaper', 'kg', 'comments'],
-            fieldsRolls2: ['idNumber', 'almacen', 'meters', 'gramaje', 'width', 'typePaper', 'kg', 'comments'],
+            fieldsRolls: [
+                {key: 'idNumber', label: 'Numero de rollo'},
+                'almacen',
+                {key: 'meters', label: 'Metros lineales'},
+                'gramaje',
+                {key: 'width', label: 'Ancho'},
+                {key: 'typePaper', label: 'Tipo de papel'},
+                {key: 'kg', label: 'Kilogramos'},
+                {key: 'comments', label: 'Comentario'}],
             showFilters: false,
             filterAlmacen: '',
             filterGramaje: '',

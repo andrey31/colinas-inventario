@@ -39,13 +39,16 @@
       </b-col>
     </b-row>
     <b-row>
-      <b-col cols="4" v-if="fields[1].key === 'bodega'">
-        <b-input-group>
-          <b-input-group-text slot="prepend" >Bodega</b-input-group-text>
-          <b-form-input v-model="filterBodega" :disabled="disabledBodega"></b-form-input>
-        </b-input-group>
-        <!-- <b-button class="mt-4">Exportar</b-button> -->
-      </b-col>
+      <template v-if="fields.length > 0">
+        <b-col cols="4" v-if="fields[1].key === 'bodega'">
+          <b-input-group>
+            <b-input-group-text slot="prepend" >Bodega</b-input-group-text>
+            <b-form-input v-model="filterBodega" :disabled="disabledBodega"></b-form-input>
+          </b-input-group>
+          <!-- <b-button class="mt-4">Exportar</b-button> -->
+        </b-col>
+      </template>
+
       <b-col cols="4">
         <b-input-group>
           <b-input-group-text slot="prepend" >Numero rollo</b-input-group-text>
@@ -209,8 +212,7 @@
             required>
           </b-form-input>
         </b-form-group>
-
-        <b-form-group class="col-12" id="idComment" label="Comentario" label-for="input-comment">
+        <b-form-group class="col-12" id="idComment" label="Comentario" label-for="input-comment" v-if="!isUndefinedComment">
 
           <b-form-textarea
             id="input-comment"
@@ -225,7 +227,7 @@
     </b-container>
     <div slot="modal-footer" class="">
       <b-button variant="danger" class="mr-2">Cancelar</b-button>
-      <b-button variant="primary">Guardar</b-button>
+      <b-button variant="primary" @click="editar">Guardar</b-button>
     </div>
   </b-modal>
 
@@ -257,8 +259,9 @@
 </template>
 
 <script>
+import firebase from 'firebase/app'
 export default{
-  props: ['items', 'fields'],
+  props: ['items', 'fields', 'actualTab'],
   components: {
   },
   computed: {
@@ -274,14 +277,13 @@ export default{
         if (roll.desperdicio) desperdicio += parseFloat(roll.desperdicio)
         if(roll.diametro) diametro += parseFloat(roll.diametro)
       })
-      kgsM.kg = kg
-      kgsM.meters = meters
-      kgsM.desperdicio = desperdicio
-      kgsM.diametro = diametro
+      kgsM.kg = kg.toFixed(2)
+      kgsM.meters = meters.toFixed(2)
+      kgsM.desperdicio = desperdicio.toFixed(2)
+      kgsM.diametro = diametro.toFixed(2)
       return kgsM
     },
     getRolls(){
-
       this.rollsFilter = this.items.filter( el => {
         let bodega = el.bodega
 
@@ -357,16 +359,56 @@ export default{
       modalRow: {},
       modalDeleteShow: false,
       keyRoll: 0,
+      db: firebase.database(),
+      isUndefinedComment: false
     }
   },
   methods: {
     modalShowEdit: function(row){
+      if(typeof row.comments === 'undefined') {
+        this.isUndefinedComment = true
+      }
+      else {
+        this.isUndefinedComment = false
+      }
+
+      if (this.actualTab === 0){
+      }
+
       this.modalRow = Object.assign({}, row)
       this.modalShow = true
     },
     modalDeleteShowEdit: function(key){
       this.keyRoll = key
       this.modalDeleteShow = true
+    },
+    editar: function(){
+      if (this.actualTab === 0){
+        console.log(this.modalRow)
+        let key = this.modalRow.key
+        let objEdit = {
+
+        }
+        // console.log(this.modalRow)
+        // console.log(this.modalRow.idNumber)
+        // this.db.ref('inventario').set(this.modalRow).then( (data) => {
+        //   console.log('agregado')
+        // }).catch( error => {
+        //   console.log(error)
+        // })
+        // console.log(key)
+      }else if(this.actualTab === 1) {
+
+      }else if(this.actualTab === 2){
+
+      }
+
+
+
+      console.log('hola')
+
+      // this.db.ref(key).set
+      // console.log(this.modalRow)
     }
   }
 

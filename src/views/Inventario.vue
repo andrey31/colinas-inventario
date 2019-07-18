@@ -9,7 +9,8 @@
 
       <IndexInventario
         :items="items"
-        :fields="fields">
+        :fields="fields"
+        :actualTab="actualTab">
       </IndexInventario>
     </b-tab>
 
@@ -18,7 +19,8 @@
            >
       <IndexInventario
         :items="itemsSobrantes"
-        :fields="fields">
+        :fields="fields"
+        :actualTab="actualTab">
       </IndexInventario>
     </b-tab>
 
@@ -27,7 +29,8 @@
            >
       <IndexInventario
         :items="itemsHistorial"
-        :fields="fields">
+        :fields="fields"
+        :actualTab="actualTab">
       </IndexInventario>
     </b-tab>
 
@@ -68,11 +71,13 @@ export default{
       itemsHistorial: [],
       desperdiciosDiariosItems: [],
       desperdiciosDiariosFields: ['fecha', 'cantidad'],
+      actualTab: ''
 
     }
   },
   methods: {
     loadIndex: function(){
+      this.actualTab = 0
       this.fields = [
         {
           key: 'idNumber',
@@ -122,6 +127,7 @@ export default{
         })
     },
     loadSobrantes: function(){
+      this.actualTab = 1
       this.fields = [
         {
           key: 'idNumber',
@@ -166,7 +172,7 @@ export default{
         })
     },
     loadHistorial: function(){
-
+      this.actualTab = 2
       this.fields = [
         {
           key: 'idNumber',
@@ -210,6 +216,7 @@ export default{
           this.itemsHistorial = []
           this.loadData( snapshot.val(), this.itemsHistorial)
         })
+
 
     },
     loadData: function(data, items){
