@@ -299,7 +299,7 @@ export default{
 
         if(el.fecha !== null){
           r = r && el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00')
-              && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
+            && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
         }
 
         if(typeof bodega === 'undefined') return r
@@ -360,6 +360,7 @@ export default{
       modalDeleteShow: false,
       keyRoll: 0,
       db: firebase.database(),
+      currentUser: firebase.auth().currentUser,
       isUndefinedComment: false
     }
   },

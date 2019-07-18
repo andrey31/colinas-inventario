@@ -59,12 +59,19 @@ export default{
     DesperdiciosDiarios,
     IndexInventario
   },
+  computed: {
+    disableActions(){
+      if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com') return false
+      else return true
+    },
+  },
   mounted(){
     this.loadIndex()
   },
   data(){
     return {
       db: firebase.database(),
+      currentUser: firebase.auth().currentUser,
       fields: [],
       items: [],
       itemsSobrantes: [],
@@ -118,7 +125,7 @@ export default{
           key: 'comments',
           label: 'Comentario'
         },
-        'acciones'
+        this.disableActions ? null : 'acciones'
       ]
       this.db.ref('/Inventario')
         .once('value').then( snapshot => {
@@ -163,7 +170,7 @@ export default{
         'diametro',
         'fecha',
         'hora',
-        'acciones'
+        this.disableActions ? null : 'acciones'
       ]
       this.db.ref('/InventarioSobrantes')
         .once('value').then( snapshot => {
@@ -209,7 +216,7 @@ export default{
           key: 'comments',
           label: 'Comentario'
         },
-        'acciones'
+        this.disableActions ? null : 'acciones'
       ]
       this.db.ref('/HistorialInventario')
         .once('value').then( snapshot => {

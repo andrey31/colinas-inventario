@@ -99,9 +99,11 @@
             <b-button @click.stop="row.toggleDetails"><v-icon name="expand-arrows-alt"></v-icon></b-button>
           </template>
           <template slot="delete" slot-scope="row">
-            <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder, row.item.almacen)" variant="danger" :disabled="disableButtonDelete">
+            <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder, row.item.almacen)"
+                      variant="danger" v-if="!disableButtonDelete">
               <v-icon name="trash-alt"></v-icon>
             </b-button>
+            <b-button variant="danger" disabled v-else><v-icon name="trash-alt"></v-icon></b-button>
           </template>
           <template slot="row-details" slot-scope="row">
             <b-table
