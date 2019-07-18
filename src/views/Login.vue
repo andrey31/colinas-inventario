@@ -16,7 +16,7 @@
           >
           <b-form-input
             id="inputEmail"
-            type="email"
+            type=""
             v-model="form.email"
             required
             placeholder="Escriba su email"
@@ -76,7 +76,8 @@ export default{
   methods: {
     login: function(){
       // evt.preventDefault()
-
+      let dominio = '@corrugadosaltavista.com'
+      if (!(this.form.email).includes(dominio)) this.form.email += dominio
       firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password).then(
         (user) => {
           for( let email in this.emails){
