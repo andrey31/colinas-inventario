@@ -19,7 +19,7 @@
             type="text"
             v-model="form.email"
             required
-            placeholder="Escriba su email"
+            placeholder="Ingrese su email"
             >
 
           </b-form-input>
