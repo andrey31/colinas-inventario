@@ -266,7 +266,7 @@
       <b-row class="pt-4">
 
         <b-col>
-          <b-button block variant="danger" class="mr-2">No</b-button>
+          <b-button block variant="danger" class="mr-2" @click="modalDeleteShow = false">No</b-button>
           <b-button block variant="primary" class="mr-2" @click="deleteItem()">Si</b-button>
         </b-col>
       </b-row>

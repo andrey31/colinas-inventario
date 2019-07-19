@@ -6,6 +6,7 @@ import Login from './views/Login.vue'
 import PackingList from './views/PackingList.vue'
 import ReadExcel from './views/ReadExcel.vue'
 import Inventario from './views/Inventario.vue'
+import RegistroCambios from './views/RegistroCambios.vue'
 
 Vue.use(Router)
 
@@ -47,6 +48,14 @@ const router = new Router({
       path: '/inventario',
       name: 'inventario',
       component: Inventario,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/registro-cambios',
+      name: 'registroCambios',
+      component: RegistroCambios,
       meta: {
         requiresAuth: true
       }
