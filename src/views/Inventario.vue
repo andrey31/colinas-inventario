@@ -61,7 +61,10 @@ export default{
   },
   computed: {
     disableActions(){
-      if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com') return false
+      if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com' ||  
+      this.currentUser.email === 'guillermo.hernandez@corrugadosaltavista.com' ||
+      this.currentUser.email === 'jose.rodriguez@corrugadosaltavista.com' ||
+      this.currentUser.email === 'jose.mora@corrugadosaltavista.com') return false
       else return true
     },
   },
@@ -152,7 +155,11 @@ export default{
         },
         {
           key: 'kgs',
-          label: 'Kilogramos'
+          label: 'Kgs'
+        },
+        {
+          key: 'kgsConsumidos',
+          label: 'Kgs Consumidos'
         },
         {
           key: 'gramaje',

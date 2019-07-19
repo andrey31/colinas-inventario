@@ -99,10 +99,11 @@ function checkEmail( currentUser ){
     'guillermo.hernandez@corrugadosaltavista.com',
     'jose.rodriguez@corrugadosaltavista.com',
     'contabilidad@corrugadosaltavista.com',
-    'ronny@corrugadosaltavista.com',
     'jose.mora@corrugadosaltavista.com',
     'montacargas1@corrugadosaltavista.com',
-    'montacargas2@corrugadosaltavista.com'
+    'montacargas2@corrugadosaltavista.com',
+    'operador1@corrugadosaltavista.com',
+    'operador2@corrugadosaltavista.com'
   ]
 
   for(let email in emails){
