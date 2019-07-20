@@ -46,7 +46,12 @@
               <div v-for="gramaje, index in totalRolls.rollsByGramaje">
 
                 <b-col >
-                  <b>{{gramaje.gramaje}} cantidad: {{gramaje.count}}</b>
+
+                  <b>
+                    <label :class="[(gramaje.gramaje).includes('LINER R') ? 'color-red' : '']" class="px-2">
+                      {{gramaje.gramaje}}
+                    </label> cantidad: {{gramaje.count}}
+                  </b>
                   <br/>
 
                 </b-col>
