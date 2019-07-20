@@ -3,6 +3,7 @@
   <div id="nav" v-if="this.$route.path != '/login'">
     <router-link to="/home">Inicio</router-link> |
     <router-link to="/packing-list">Packing List</router-link> |
+    <router-link to="/almacenes">Almacenes</router-link> |
     <router-link to="/inventario">Inventario</router-link> |
     <router-link to="/registro-cambios">Registro de cambios</router-link> |
     <!-- <router-link to="/about">Acerca de</router-link> -->
@@ -43,5 +44,8 @@ export default{
 
 #nav a.router-link-exact-active {
   color: #007bff;
+}
+.color-red {
+    background-color: #ee0017cc;
 }
 </style>

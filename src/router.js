@@ -7,6 +7,7 @@ import PackingList from './views/PackingList.vue'
 import ReadExcel from './views/ReadExcel.vue'
 import Inventario from './views/Inventario.vue'
 import RegistroCambios from './views/RegistroCambios.vue'
+import Almacenes from './views/Almacenes.vue'
 
 Vue.use(Router)
 
@@ -40,6 +41,14 @@ const router = new Router({
       path: '/packing-list',
       name: 'packingList',
       component: PackingList,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/almacenes',
+      name: 'almacenes',
+      component: Almacenes,
       meta: {
         requiresAuth: true
       }
