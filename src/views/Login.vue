@@ -14,13 +14,35 @@
           label-for="inputEmail"
           class="custom-text"
           >
-          <b-form-input
-            id="inputEmail"
-            type="text"
-            v-model="form.email"
-            required
-            placeholder="Ingrese su email"
-            >
+          <!-- 'omar.duran@corrugadosaltavista.com', -->
+          <!-- 'guillermo.hernandez@corrugadosaltavista.com', -->
+          <!-- 'jose.rodriguez@corrugadosaltavista.com', -->
+          <!-- 'contabilidad@corrugadosaltavista.com', -->
+          <!-- 'jose.mora@corrugadosaltavista.com', -->
+          <!-- 'montacargas1@corrugadosaltavista.com', -->
+          <!-- 'montacargas2@corrugadosaltavista.com', -->
+          <!-- 'operador1@corrugadosaltavista.com', -->
+          <!-- 'operador2@corrugadosaltavista.com' -->
+          <b-form-select v-model="form.email">
+            <option value="omar.duran@corrugadosaltavista.com">omar.duran@corrugadosaltavista.com</option>
+            <option value="guillermo.hernandez@corrugadosaltavista.com">guillermo.hernandez@corrugadosaltavista.com</option>
+            <option value="jose.rodriguez@corrugadosaltavista.com">jose.rodriguez@corrugadosaltavista.com</option>
+            <option value="contabilidad@corrugadosaltavista.com">contabilidad@corrugadosaltavista.com</option>
+            <option value="jose.mora@corrugadosaltavista.com">jose.mora@corrugadosaltavista.com</option>
+            <option value="montacargas1@corrugadosaltavista.com">montacargas1@corrugadosaltavista.com</option>
+            <option value="montacargas2@corrugadosaltavista.com">montacargas2@corrugadosaltavista.com</option>
+            <option value="operador1@corrugadosaltavista.com">operador1@corrugadosaltavista.com</option>
+            <option value="operador2@corrugadosaltavista.com">operador2@corrugadosaltavista.com</option>
+            <!-- <option value="a">Option A</option> -->
+            <!-- <option value="b" disabled>Option B (disabled)</option> -->
+          </b-form-select>
+          <!-- <b-form-input -->
+          <!--   id="inputEmail" -->
+          <!--   type="text" -->
+          <!--   v-model="form.email" -->
+          <!--   required -->
+          <!--   placeholder="Ingrese su email" -->
+          <!--   > -->
 
           </b-form-input>
 
@@ -68,14 +90,13 @@ export default{
   methods: {
     login: function(){
       // evt.preventDefault()
-      let dominio = '@corrugadosaltavista.com'
-      if (!(this.form.email).includes(dominio)) this.form.email += dominio
+      // let dominio = '@corrugadosaltavista.com'
+      // if (!(this.form.email).includes(dominio)) this.form.email += dominio
       firebase.auth().signInWithEmailAndPassword(this.form.email, this.form.password).then(
         (user) => {
            this.$router.replace('home')
         },
         (err) => {
-          console.log(err)
           alert(err.message)
         }
 
