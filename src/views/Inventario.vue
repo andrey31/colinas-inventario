@@ -80,7 +80,7 @@ export default{
       itemsSobrantes: [],
       itemsHistorial: [],
       desperdiciosDiariosItems: [],
-      desperdiciosDiariosFields: ['fecha', 'cantidad'],
+      desperdiciosDiariosFields: ['fecha', 'cantidad', 'turno'],
       actualTab: ''
 
     }
@@ -177,7 +177,7 @@ export default{
         },
         {
           key: 'desperdicio',
-          label: 'Hojas desperdiciadas'
+          label: 'Hojas desperd'
         },
         'diametro',
         'fecha',
@@ -286,7 +286,8 @@ export default{
 
             this.desperdiciosDiariosItems.push({
               'fecha': new Date(year, month, day),
-              'cantidad': data[key].cantidad
+              'cantidad': data[key].cantidad,
+              'turno': data[key].turno
             })
           }
 
