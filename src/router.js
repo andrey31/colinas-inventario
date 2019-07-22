@@ -42,7 +42,8 @@ const router = new Router({
       name: 'packingList',
       component: PackingList,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        permissionAdmin: true
       }
     },
     {
@@ -86,11 +87,10 @@ router.beforeEach((to, from, next) => {
   const permissionAdmin = to.matched.some(record => record.meta.permissionAdmin)
   if (requiresAuth && permissionAdmin){
     if (currentUser){
-      console.log(checkEmail(currentUser))
       if (checkEmail(currentUser).admin) {
         next()
       }else if( checkEmail(currentUser)){
-        next( { path: 'packing-list'})
+        next( { path: 'almacenes'})
       }else {
         next('login')
       }
@@ -127,7 +127,7 @@ function checkEmail( currentUser ){
   for(let email in emails){
     if (emails[email] === currentUser.email && emails[email] === emails[0]) return { 'access': true, 'admin': true}
     else if(emails[email] === currentUser.email) return {'access': true, 'admin': false}
-    else if( email === emails.length) return {'access': false, 'admin': false}
+    else if( email === (emails.length - 1) ) return {'access': false, 'admin': false}
 
   }
 
