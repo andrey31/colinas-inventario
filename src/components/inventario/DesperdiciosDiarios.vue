@@ -19,6 +19,9 @@
         <b-card bg-variant="light" text-variant="dark" title="Información">
           <b-card-text>
             <b-row>
+                <b-col>
+                  Cantidad Total: {{getTotalCantidad.kg}}
+                </b-col>
 
             </b-row>
           </b-card-text>
@@ -49,6 +52,18 @@ export default{
       })
       return it
     },
+
+    getTotalCantidad(){
+      let kgsM = {}
+      let kg = 0
+      this.getItems.forEach( roll => {
+        kg += parseFloat(roll.cantidad)
+      })
+      kgsM.kg = kg.toFixed(2)
+      return kgsM
+    }
+
+
   },
 
   data(){
