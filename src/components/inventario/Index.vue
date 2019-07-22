@@ -18,7 +18,12 @@
       <b-col cols="4">
         <b-input-group>
           <b-input-group-text slot="prepend">Tipo papel</b-input-group-text>
-          <b-form-input v-model="filterType"></b-form-input>
+          <b-form-select v-model="filterType">
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="LINER R">LINER</option>
+            <option value="LINER R">LINER R</option>
+            <option value="WHITE TOP">WHITE TOP</option>
+          </b-form-select>
         </b-input-group>
       </b-col>
       <!-- <b-col cols="12" md="4" offset-md="7"> -->
