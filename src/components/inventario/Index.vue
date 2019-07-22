@@ -19,6 +19,7 @@
         <b-input-group>
           <b-input-group-text slot="prepend">Tipo papel</b-input-group-text>
           <b-form-select v-model="filterType">
+            <option value="">TODOS</option>
             <option value="MEDIUM">MEDIUM</option>
             <option value="LINER">LINER</option>
             <option value="LINER R">LINER R</option>
@@ -26,6 +27,8 @@
           </b-form-select>
         </b-input-group>
       </b-col>
+
+
       <!-- <b-col cols="12" md="4" offset-md="7"> -->
       <!--   <b-input-group> -->
       <!--     <b-input-group-prepend is-text> -->
@@ -60,6 +63,18 @@
           <b-form-input v-model="filterNumberRoll"></b-form-input>
         </b-input-group>
       </b-col>
+
+      <b-col cols="4" v-if="actualTab === 0 || actualTab === 1">
+        <b-input-group>
+          <b-input-group-text slot="prepend">En Uso</b-input-group-text>
+          <b-form-select v-model="filterEnUso">
+            <option value="">TODOS</option>
+            <option value="si">SI</option>
+            <option value="no">NO</option>
+          </b-form-select>
+        </b-input-group>
+      </b-col>
+
       <b-col cols="4" v-if="showFilterDate">
         <b-input-group>
           <b-input-group-text slot="prepend" >Fecha Inicio</b-input-group-text>
@@ -354,6 +369,7 @@ export default{
 
         let r = el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
             el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
+            el.enUso.indexOf(this.filterEnUso) > -1 &&
             el.width.indexOf(this.filterWidth) > -1 &&
             el.idNumber.toString().indexOf(this.filterNumberRoll) > -1
 
@@ -408,6 +424,7 @@ export default{
       filterGramaje: '',
       filterType: '',
       filterWidth: '',
+      filterEnUso: '',
       filterBodega: '',
       filterNumberRoll: '',
       rollsFilter: [],
