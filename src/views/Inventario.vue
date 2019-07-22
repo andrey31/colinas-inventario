@@ -91,7 +91,7 @@ export default{
       this.fields = [
         {
           key: 'idNumber',
-          label: 'Numero rollo'
+          label: 'Num Rollo'
         },
         {
           key: 'bodega',
@@ -99,7 +99,7 @@ export default{
         },
         {
           key: 'enUso',
-          label: 'En uso',
+          label: 'En Uso',
           sortable: true
         },
         {
@@ -121,7 +121,7 @@ export default{
         },
         {
           key: 'typePaper',
-          label: 'Tipo de papel',
+          label: 'Tipo Papel',
           sortable: true
         },
         {
@@ -146,11 +146,11 @@ export default{
       this.fields = [
         {
           key: 'idNumber',
-          label: 'Numero de rollo',
+          label: 'Num Rollo',
         },
         {
           key: 'enUso',
-          label: 'En uso',
+          label: 'En Uso',
           sortable: true
         },
         {
@@ -159,7 +159,7 @@ export default{
         },
         {
           key: 'kgsConsumidos',
-          label: 'Kgs Consumidos'
+          label: 'Kgs Consum'
         },
         {
           key: 'gramaje',
@@ -172,12 +172,16 @@ export default{
         },
         {
           key: 'typePaper',
-          label: 'Tipo de papel',
+          label: 'Tipo Papel',
           sortable: true
         },
         {
           key: 'desperdicio',
           label: 'Hojas desperd'
+        },
+        {
+          key: 'causaDesperdicio',
+          label: 'Causa Desperd'
         },
         'diametro',
         'fecha',
@@ -195,7 +199,7 @@ export default{
       this.fields = [
         {
           key: 'idNumber',
-          label: 'Numero de rollo'
+          label: 'Num Rollo'
         },
         {
           key: 'fecha',
@@ -203,7 +207,7 @@ export default{
         },
         {
           key: 'kgs',
-          label: 'Kilogramos'
+          label: 'Kgs'
         },
         {
           key: 'meters',
@@ -220,7 +224,7 @@ export default{
         },
         {
           key: 'typePaper',
-          label: 'Tipo de papel',
+          label: 'Tipo Papel',
           sortable: true
         },
         'desperdicio',
