@@ -82,7 +82,11 @@
               <div v-for="gramaje, index in totalRolls.rollsByGramaje" :key="index">
 
                 <b-col >
-                  <b>{{gramaje.gramaje}} cantidad: {{gramaje.count}}</b>
+                  <b>
+                    <label :class="[(gramaje.gramaje).includes('LINER R') ? 'color-red' : '']" class="px-2">
+                      {{gramaje.gramaje}}
+                    </label> cantidad: {{gramaje.count}}
+                  </b>
                   <br/>
                 </b-col>
 
@@ -136,11 +140,16 @@
       <template v-if="row.item.fecha" slot="fecha" slot-scope="row">
         {{row.item.fecha.toISOString().slice(0, 10)}}
       </template>
+      <template slot="typePaper" slot-scope="row">
+        <label for="" :class="[(row.item.typePaper).includes('LINER R') ? 'color-red' : '']" class="px-2">
+          {{row.item.typePaper}}
+        </label>
+      </template>
       <template slot="acciones" slot-scope="row">
         <a class="btn btn-primary mr-2" href="" @click.stop.prevent="modalShowEdit(row.item)">
           <v-icon name="edit"></v-icon>
         </a>
-        <a class="btn btn-danger" href="" @click.stop.prevent="modalDeleteShowEdit(row.item.key)">
+        <a class="btn btn-danger" href="" @click.stop.prevent="modalDeleteShowEdit(row.item)">
           <v-icon name="trash-alt"></v-icon>
         </a>
       </template>
@@ -167,7 +176,8 @@
           </b-form-input>
         </b-form-group>
 
-        <b-form-group class="col-4" id="idBodega" label="Bodega" label-for="input-bodega" v-if="modalRow.bodega">
+        <b-form-group class="col-4" id="idBodega" label="Bodega" label-for="input-bodega"
+                      v-if="actualTab === 0 || actualTab === 1">
           <b-form-input
             id="input-bodega"
             type="text"
@@ -185,7 +195,8 @@
           </b-form-input>
         </b-form-group>
 
-        <b-form-group class="col-4" id="idMeters" label="Metros" label-for="input-meters" v-if="modalRow.meters">
+        <b-form-group class="col-4" id="idMeters" label="Metros" label-for="input-meters"
+                      v-if="actualTab === 0 || actualTab === 2">
           <b-form-input
             id="input-meters"
             type="text"
@@ -218,7 +229,8 @@
             required>
           </b-form-input>
         </b-form-group>
-        <b-form-group class="col-4" id="idSheet" label="Hojas desperdiciadas" label-for="input-sheet" v-if="modalRow.desperdicio">
+        <b-form-group class="col-4" id="idSheet" label="Hojas desperdiciadas" label-for="input-sheet"
+                      v-if="actualTab === 1 || actualTab === 2">
           <b-form-input
             id="input-sheet"
             type="text"
@@ -226,7 +238,8 @@
             required>
           </b-form-input>
         </b-form-group>
-        <b-form-group class="col-4" id="idDiametro" label="Diametro" label-for="input-diametro" v-if="modalRow.diametro">
+        <b-form-group class="col-4" id="idDiametro" label="Diametro" label-for="input-diametro"
+                      v-if="actualTab === 1">
           <b-form-input
             id="input-diametro"
             type="text"
@@ -248,7 +261,7 @@
       </b-form>
     </b-container>
     <div slot="modal-footer" class="">
-      <b-button variant="danger" class="mr-2">Cancelar</b-button>
+      <b-button variant="danger" class="mr-2" @click="modalShow = false">Cancelar</b-button>
       <b-button variant="primary" @click="editar">Guardar</b-button>
     </div>
   </b-modal>
@@ -257,10 +270,10 @@
            hide-header
            hide-footer
            >
-    <b-container  class="text-center">
+    <b-container  class="text-center" v-if="!modalChangeAddHistorial">
       <b-row>
         <b-col>
-          <h3>¿Esta seguro de eliminar el registro?</h3>
+          <h3>¿Esta seguro de eliminar el rollo {{modalRow.idNumber}}?</h3>
         </b-col>
       </b-row>
       <b-row class="pt-4">
@@ -270,6 +283,26 @@
           <b-button block variant="primary" class="mr-2" @click="deleteItem()">Si</b-button>
         </b-col>
       </b-row>
+    </b-container>
+
+    <b-container class="text-center" v-else>
+      <b-row>
+        <b-col>
+          <h3>Seleccione una opción</h3>
+        </b-col>
+      </b-row>
+      <b-row class="pt-4">
+        <b-col cols="6">
+          <b-form-radio v-model="selectedMoveHistory" name="some-radios" value="true">Mover a historial</b-form-radio>
+        </b-col>
+        <b-col cols="6">
+          <b-form-radio v-model="selectedMoveHistory" name="some-radios" value="false">Eliminar</b-form-radio>
+        </b-col>
+        <b-col cols="12">
+          <b-button block variant="primary" class="mt-4" @click="deleteOrMove"> Enviar</b-button>
+        </b-col>
+      </b-row>
+
     </b-container>
 
     <template slot="modal-footer">
@@ -317,7 +350,7 @@ export default{
         let r = el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
             el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
             el.width.indexOf(this.filterWidth) > -1 &&
-            el.idNumber.indexOf(this.filterNumberRoll) > -1
+            el.idNumber.toString().indexOf(this.filterNumberRoll) > -1
 
         if(el.fecha !== null){
           r = r && el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00')
@@ -383,7 +416,9 @@ export default{
       keyRoll: 0,
       db: firebase.database(),
       currentUser: firebase.auth().currentUser,
-      isUndefinedComment: false
+      isUndefinedComment: false,
+      modalChangeAddHistorial: false,
+      selectedMoveHistory: 'false'
     }
   },
   methods: {
@@ -408,21 +443,51 @@ export default{
       this.modalRow.width = w
       this.modalShow = true
     },
-    modalDeleteShowEdit: function(key){
-      this.keyRoll = key
+    modalDeleteShowEdit: function(item){
+      this.keyRoll = item.key
+      this.modalRow = Object.assign({}, item)
+      this.modalChangeAddHistorial = false
       this.modalDeleteShow = true
       // this.db.ref('/order').child(key).remove()
     },
+    deleteOrMove: function(){
+      if (this.selectedMoveHistory === 'true') {
+        let key = this.db.ref('HistorialInventario').push().key;
+
+        let roll = {
+          comments: this.modalRow.comments,
+          desperdicio: '',
+          fecha: '',
+          gramaje: this.modalRow.gramaje,
+          idNumber: this.modalRow.idNumber,
+          kgs: this.modalRow.kgs,
+          meters: this.modalRow.meters,
+          typePaper: this.modalRow.typePaper,
+          width: this.modalRow.width
+        }
+
+        this.db.ref('HistorialInventario').child(key).set(roll)
+        this.db.ref('Inventario').child(this.keyRoll).remove()
+      }
+      else if(this.selectedMoveHistory === 'false') {
+        this.db.ref('Inventario').child(this.keyRoll).remove()
+      }
+      this.modalDeleteShow = false
+
+      // this.db.ref('/Inventario').child(this.keyRoll).remove()
+    },
     deleteItem: function(){
       if(this.actualTab === 0){
-        this.db.ref('/Inventario').child(this.keyRoll).remove()
+        this.modalChangeAddHistorial = true
       }else if(this.actualTab === 1){
+        this.modalDeleteShow = false
         this.db.ref('InventarioSobrantes').child(this.keyRoll).remove()
       }else if(this.actualTab === 2){
+        this.modalDeleteShow = false
         this.db.ref('HistorialInventario').child(this.keyRoll).remove()
       }
 
-      this.modalDeleteShow = false
+
     },
     formatDate: function (date) {
       var d = new Date(date),
