@@ -20,7 +20,7 @@
           <b-input-group-text slot="prepend">Tipo papel</b-input-group-text>
           <b-form-select v-model="filterType">
             <option value="MEDIUM">MEDIUM</option>
-            <option value="LINER R">LINER</option>
+            <option value="LINER">LINER</option>
             <option value="LINER R">LINER R</option>
             <option value="WHITE TOP">WHITE TOP</option>
           </b-form-select>
