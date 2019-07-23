@@ -157,7 +157,6 @@
               <v-icon name="edit"></v-icon>
             </a>
           </b-col>
-
           <b-col cols="6" class="mx-0 px-0">
             <a class="btn btn-danger" href="" @click.stop.prevent="modalDeleteShowEdit(row.item)">
               <v-icon name="trash-alt"></v-icon>
@@ -316,10 +315,6 @@
       </b-row>
 
     </b-container>
-
-    <template slot="modal-footer">
-
-    </template>
   </b-modal>
 </b-container>
 
