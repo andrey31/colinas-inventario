@@ -372,19 +372,25 @@ export default{
 
         let r = el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
             el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
-            el.enUso.indexOf(this.filterEnUso) > -1 &&
             el.width.indexOf(this.filterWidth) > -1 &&
             el.idNumber.toString().indexOf(this.filterNumberRoll) > -1
+
+        if (typeof el.enUso !== 'undefined') {
+          r = r && el.enUso.toLowerCase().indexOf(this.filterEnUso) > -1
+        }
 
         if(el.fecha !== null){
           r = r && el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00')
             && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
         }
 
-        if(typeof bodega === 'undefined') return r
+        if(typeof bodega === 'undefined') {
+          return r
+        }
         else {
           return r && el.bodega.toString().indexOf(this.filterBodega) > -1
         }
+
 
       })
       return this.rollsFilter
