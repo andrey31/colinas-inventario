@@ -73,5 +73,14 @@ flycheck_*.el
 # network security
 /network-security.data
 
+### Firebase ###
+.idea
+**/.firebaserc
+
+### Firebase Patch ###
+.runtimeconfig.json
+.firebase/
+firebase.json
+
 
 # End of https://www.gitignore.io/api/emacs
