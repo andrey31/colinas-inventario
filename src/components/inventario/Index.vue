@@ -151,12 +151,19 @@
         </label>
       </template>
       <template slot="acciones" slot-scope="row">
-        <a class="btn btn-primary mr-2" href="" @click.stop.prevent="modalShowEdit(row.item)">
-          <v-icon name="edit"></v-icon>
-        </a>
-        <a class="btn btn-danger" href="" @click.stop.prevent="modalDeleteShowEdit(row.item)">
-          <v-icon name="trash-alt"></v-icon>
-        </a>
+        <b-row>
+          <b-col cols="6" class="mx-0 px-0">
+            <a class="btn btn-primary mr-2" href="" @click.stop.prevent="modalShowEdit(row.item)">
+              <v-icon name="edit"></v-icon>
+            </a>
+          </b-col>
+
+          <b-col cols="6" class="mx-0 px-0">
+            <a class="btn btn-danger" href="" @click.stop.prevent="modalDeleteShowEdit(row.item)">
+              <v-icon name="trash-alt"></v-icon>
+            </a>
+          </b-col>
+        </b-row>
       </template>
     </b-table>
 
@@ -331,9 +338,10 @@ export default{
       let meters = 0
       let desperdicio = 0
       let diametro = 0
-      this.rollsFilter.forEach( roll => {
+      // let listNumberRoll = []
+      this.rollsFilter.forEach( roll=> {
         kg += parseFloat(roll.kgs)
-        if (roll.meters) meters += parseFloat(roll.meters)
+        if (roll.meters ) meters += parseFloat(roll.meters)
         if (roll.desperdicio) desperdicio += parseFloat(roll.desperdicio)
         if(roll.diametro) diametro += parseFloat(roll.diametro)
       })
