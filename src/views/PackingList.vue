@@ -2,10 +2,23 @@
 
 <b-container fluid>
   <h2>PACKING LIST</h2>
+  <b-row class="text-center">
+    <b-col cols="12">
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="rows"
+        :per-page="perPage"
+        aria-controls="my-table"
+        align="center"
+        >
+      </b-pagination>
+    </b-col>
+  </b-row>
   <b-table
     :items="order"
     :fields="fields"
-    :filter="filter"
+    :per-page="perPage"
+    :current-page="currentPage"
     head-variant="dark"
     responsive
     >
@@ -30,8 +43,8 @@
         :fields="fieldsRolls"
         striped
         >
-        <template slot="kg" slot-scope="row">
-          {{(row.item.kg).toFixed(2)}}
+        <template slot="kgs" slot-scope="row">
+          {{(row.item.kgs).toFixed(2)}}
         </template>
       </b-table>
     </template>
@@ -51,6 +64,9 @@ export default{
     disableButtonDelete(){
       if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com') return false
       else return true
+    },
+    rows() {
+      return this.order.length
     }
   },
   data(){
@@ -68,18 +84,19 @@ export default{
       comment: '',
       ourOrder: '',
       yourOrder: '',
-      filter: '',
       fields: ['provided', 'date', 'shipped', 'shipment', 'carrier', 'vehicle',
                'booking', 'comment', 'ourOrder', 'yourOrder', 'almacen', 'download', 'rolls', 'delete'],
       fieldsRolls: [
         {key: 'idNumber', label: 'Numero de rollo'},
-        'almacen',
         {key: 'meters', label: 'Metros lineales'},
         'gramaje',
         {key: 'width', label: 'Ancho'},
         {key: 'typePaper', label: 'Tipo de papel'},
-        {key: 'kg', label: 'Kilogramos'},
-        {key: 'comments', label: 'Comentario'}],
+        {key: 'kgs', label: 'Kilogramos'},
+        {key: 'comments', label: 'Comentario'}
+      ],
+      perPage: 20,
+      currentPage: 1,
     }
   },
   methods: {
@@ -110,7 +127,7 @@ export default{
               'meters': p.meters,
               'gramaje': p.gramaje,
               'typePaper': p.typePaper,
-              'kg': p.kg,
+              'kgs': p.kgs,
               'weight': p.weight,
               'width': `${p.width}\"`,
               'comments': p.comments

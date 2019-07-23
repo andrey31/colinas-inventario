@@ -264,7 +264,7 @@ export default{
                     {
                         'idNumber': a[0],
                         'weight': a[1],
-                        'kg': a[2] * 1000,
+                        'kgs': a[2] * 1000,
                         'meters': Number((a[3] / 3.2808).toFixed(2)),
                         'width': a[4],
                         'gramaje': a[5].split('#')[0],
