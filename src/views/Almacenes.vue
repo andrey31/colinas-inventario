@@ -80,42 +80,73 @@
       :fields="fieldsRolls"
       head-variant="dark"
       >
-      <template slot="kg" slot-scope="row">
-        {{(row.item.kg).toFixed(2)}}
+      <template slot="kgs" slot-scope="row">
+        {{(row.item.kgs).toFixed(2)}}
+      </template>
+
+      <template slot="acciones" slot-scope="row">
+        <b-row>
+          <b-col cols="6" class="mx-0 px-0">
+            <a class="btn btn-primary mr-2" href="" @click.stop.prevent="edit(row.item)">
+              <v-icon name="edit"></v-icon>
+            </a>
+          </b-col>
+          <b-col cols="6" class="mx-0 px-0">
+            <a class="btn btn-danger" href="" @click.stop.prevent="deleteRoll(row.item.idNumber, row.item.almacen)">
+              <v-icon name="trash-alt"></v-icon>
+            </a>
+          </b-col>
+        </b-row>
       </template>
     </b-table>
-
   </b-tabs>
+  <modal-almacenes :modalRow="modalRow"></modal-almacenes>
+  <modal-delete-almacen :idNumber="idNumberDelete" :almacen="almacenDelete"></modal-delete-almacen>
 </b-container>
 </template>
 
 <script>
 import firebase from 'firebase/app'
+import ModalAlmacenes from '@/components/ModalAlmacenes.vue'
+import ModalDeleteAlmacen from '@/components/ModalDeleteAlmacen.vue'
+
+import { mapMutations } from 'vuex'
+
 export default{
   name: 'almacenes',
+  components: {
+    ModalAlmacenes,
+    ModalDeleteAlmacen
+  },
   mounted(){
     this.db.ref('/sislocar')
-      .once('value').then(snapshot => {
+      .on('value', snapshot => {
+        this.sislocarRolls = []
         this.loadRolls(snapshot.val(), 'sislocar')
       })
 
     this.db.ref('/telisa')
-      .once('value').then(snapshot => {
+      .on('value', snapshot => {
+        this.telisaRolls = []
         this.loadRolls(snapshot.val(), 'telisa')
       })
 
     this.db.ref('/otro')
-      .once('value').then(snapshot => {
+      .on('value', snapshot => {
+        this.otherRolls = []
         this.loadRolls(snapshot.val(), 'otro')
       })
   },
   computed: {
+    allRolls: function(){
+      return this.sislocarRolls.concat(this.telisaRolls, this.otherRolls)
+    },
     getTotalKgsMeters: function(){
       let kgsM = {}
       let kg = 0
       let meters = 0
       this.allRolls.forEach( roll => {
-        kg += parseFloat(roll.kg)
+        kg += parseFloat(roll.kgs)
         if (roll.meters) meters += parseFloat(roll.meters)
       })
       kgsM.kg = kg.toFixed(2)
@@ -170,7 +201,9 @@ export default{
     return {
       db: firebase.database(),
       currentUser: firebase.auth().currentUser,
-      allRolls: [],
+      telisaRolls: [],
+      sislocarRolls: [],
+      otherRolls: [],
       fieldsRolls: [
         {key: 'idNumber', label: 'Numero de rollo'},
         'almacen',
@@ -178,22 +211,40 @@ export default{
         'gramaje',
         {key: 'width', label: 'Ancho'},
         {key: 'typePaper', label: 'Tipo de papel'},
-        {key: 'kg', label: 'Kilogramos'},
-        {key: 'comments', label: 'Comentario'}
+        {key: 'kgs', label: 'Kilogramos'},
+        {key: 'comments', label: 'Comentario'},
+        'acciones'
       ],
       filterAlmacen: '',
       filterGramaje: '',
       filterType: '',
       filterWidth: '',
       filterNumberRoll: '',
+      modalRow: {},
+      idNumberDelete: '',
+      almacenDelete: ''
     }
   },
   methods: {
-    pushAllRoll: function(idNumber, almacen, meters, gramaje, width, typePaper, kg, comments){
-      this.allRolls.push( {
-        idNumber, almacen, meters, gramaje, width, typePaper, kg, comments
+    ...mapMutations(['setModalShowAlmacen', 'setModalDeleteAlmacen']),
+    pushAllRoll: function(idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments){
+      // this.allRolls.push( {
+      //   idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments
 
-      })
+      // })
+      if (almacen === 'telisa') {
+        this.telisaRolls.push({
+          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments
+        })
+      }else if (almacen === 'sislocar') {
+        this.sislocarRolls.push({
+          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments
+        })
+      }else if (almacen === 'otro') {
+        this.otherRolls.push ({
+          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments
+        })
+      }
     },
     // Recibe rollos por almacen y nombre del almacen
     loadRolls: function(almacenRolls, almacen) {
@@ -206,10 +257,29 @@ export default{
           almacenRolls[key].gramaje,
           almacenRolls[key].width,
           almacenRolls[key].typePaper,
-          almacenRolls[key].kg,
+          almacenRolls[key].kgs,
           almacenRolls[key].comments
         )
       }
+    },
+    edit: function(row){
+      this.modalRow = {
+        idNumber: row.idNumber,
+        almacen: row.almacen,
+        meters: row.meters,
+        gramaje: row.gramaje,
+        width: row.width,
+        typePaper: row.typePaper,
+        kgs: row.kgs,
+        comments: row.comments
+      }
+      this.setModalShowAlmacen(true)
+
+    },
+    deleteRoll: function(idNumber, almacen){
+      this.idNumberDelete = idNumber
+      this.almacenDelete = almacen
+      this.setModalDeleteAlmacen(true)
     }
   }
 
