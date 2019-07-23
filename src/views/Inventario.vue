@@ -104,11 +104,11 @@ export default{
         },
         {
           key: 'kgs',
-          label: 'Kilogramos'
+          label: 'Kgs'
         },
         {
           key: 'meters',
-          label: 'Metros lineales'
+          label: 'Metros'
         },
         {
           key: 'gramaje',
@@ -127,6 +127,14 @@ export default{
         {
           key: 'comments',
           label: 'Comentario'
+        },
+        {
+          key: 'fecha',
+          label: 'Fecha'
+        },
+        {
+          key: 'hora',
+          label: 'Hora'
         },
         this.disableActions ? null : 'acciones'
       ]

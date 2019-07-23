@@ -85,8 +85,8 @@
       :fields="fieldsRolls"
       head-variant="dark"
       >
-      <template slot="kg" slot-scope="row">
-        {{(row.item.kg).toFixed(2)}}
+      <template slot="kgs" slot-scope="row">
+        {{(row.item.kgs).toFixed(2)}}
       </template>
     </b-table>
 
@@ -120,7 +120,7 @@ export default{
       let kg = 0
       let meters = 0
       this.allRolls.forEach( roll => {
-        kg += parseFloat(roll.kg)
+        kg += parseFloat(roll.kgs)
         if (roll.meters) meters += parseFloat(roll.meters)
       })
       kgsM.kg = kg.toFixed(2)
@@ -183,7 +183,7 @@ export default{
         'gramaje',
         {key: 'width', label: 'Ancho'},
         {key: 'typePaper', label: 'Tipo de papel'},
-        {key: 'kg', label: 'Kilogramos'},
+        {key: 'kgs', label: 'Kilogramos'},
         {key: 'comments', label: 'Comentario'}
       ],
       filterAlmacen: '',
@@ -194,9 +194,9 @@ export default{
     }
   },
   methods: {
-    pushAllRoll: function(idNumber, almacen, meters, gramaje, width, typePaper, kg, comments){
+    pushAllRoll: function(idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments){
       this.allRolls.push( {
-        idNumber, almacen, meters, gramaje, width, typePaper, kg, comments
+        idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments
 
       })
     },
@@ -211,7 +211,7 @@ export default{
           almacenRolls[key].gramaje,
           almacenRolls[key].width,
           almacenRolls[key].typePaper,
-          almacenRolls[key].kg,
+          almacenRolls[key].kgs,
           almacenRolls[key].comments
         )
       }
