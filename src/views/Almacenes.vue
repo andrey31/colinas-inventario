@@ -18,7 +18,12 @@
       <b-col cols="4">
         <b-input-group>
           <b-input-group-text slot="prepend">Tipo papel</b-input-group-text>
-          <b-form-input v-model="filterType"></b-form-input>
+          <b-form-select v-model="filterType">
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="LINER">LINER</option>
+            <option value="LINER R">LINER R</option>
+            <option value="WHITE TOP">WHITE TOP</option>
+          </b-form-select>
         </b-input-group>
       </b-col>
     </b-row>
@@ -213,7 +218,7 @@ export default{
         {key: 'typePaper', label: 'Tipo de papel'},
         {key: 'kgs', label: 'Kilogramos'},
         {key: 'comments', label: 'Comentario'},
-        'acciones'
+        'acciones',
       ],
       filterAlmacen: '',
       filterGramaje: '',
@@ -226,12 +231,10 @@ export default{
     }
   },
   methods: {
-    ...mapMutations(['setModalShowAlmacen', 'setModalDeleteAlmacen']),
-    pushAllRoll: function(idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments){
-      // this.allRolls.push( {
-      //   idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments
 
-      // })
+    ...mapMutations(['setModalShowAlmacen', 'setModalDeleteAlmacen']),
+pushAllRoll: function(idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments){
+
       if (almacen === 'telisa') {
         this.telisaRolls.push({
           idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments
