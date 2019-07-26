@@ -19,6 +19,7 @@
         <b-input-group>
           <b-input-group-text slot="prepend">Tipo papel</b-input-group-text>
           <b-form-select v-model="filterType">
+            <option value="">TODOS</option>
             <option value="MEDIUM">MEDIUM</option>
             <option value="LINER">LINER</option>
             <option value="LINER R">LINER R</option>
@@ -33,6 +34,22 @@
           <b-input-group-text slot="prepend">Ancho</b-input-group-text>
           <b-form-input v-model="filterWidth"></b-form-input>
         </b-input-group>
+      </b-col>
+      <b-col cols="4">
+        <b-input-group>
+          <b-input-group-text slot="prepend" >Fecha Inicio</b-input-group-text>
+          <b-form-input v-model="dateFilterBegin" type="date"></b-form-input>
+        </b-input-group>
+      </b-col>
+      <b-col>
+        <b-input-group>
+          <b-input-group-text slot="prepend" >Fecha Final</b-input-group-text>
+          <b-form-input v-model="dateFilterFinish" type="date"></b-form-input>
+        </b-input-group>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col cols="4">
         <b-input-group class="pt-2">
           <b-input-group-text slot="prepend">Numero papel</b-input-group-text>
           <b-form-input v-model="filterNumberRoll"></b-form-input>
@@ -100,7 +117,9 @@
       <template slot="kgs" slot-scope="row">
         {{(row.item.kgs).toFixed(2)}}
       </template>
-
+      <template slot="fecha" slot-scope="row">
+        {{row.item.fecha.toISOString().slice(0, 10)}}
+      </template>
       <template slot="acciones" slot-scope="row">
         <b-row>
           <b-col cols="6" class="mx-0 px-0">
@@ -183,7 +202,9 @@ export default{
           el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
           el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
           el.width.toString().indexOf(this.filterWidth) > -1 &&
-          el.idNumber.toString().toLowerCase().indexOf(this.filterNumberRoll.toLowerCase()) > -1
+          el.idNumber.toString().toLowerCase().indexOf(this.filterNumberRoll.toLowerCase()) > -1 &&
+          el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00') &&
+          el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
       })
       return filter
     },
@@ -233,6 +254,7 @@ export default{
         {key: 'typePaper', label: 'Tipo de papel'},
         {key: 'kgs', label: 'Kilogramos'},
         {key: 'comments', label: 'Comentario'},
+        {key: 'fecha', label: 'Fecha'},
         'acciones',
       ],
       filterAlmacen: '',
@@ -244,32 +266,45 @@ export default{
       idNumberDelete: '',
       almacenDelete: '',
       perPage: 100,
-      currentPage: 1
+      currentPage: 1,
+      dateFilterBegin: new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10).toString(),
+      dateFilterFinish: new Date().toISOString().slice(0, 10).toString(),
     }
   },
   methods: {
 
     ...mapMutations(['setModalShowAlmacen', 'setModalDeleteAlmacen']),
-pushAllRoll: function(idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments){
+    pushAllRoll: function(idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha){
 
       if (almacen === 'telisa') {
         this.telisaRolls.push({
-          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments
+          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha
         })
       }else if (almacen === 'sislocar') {
         this.sislocarRolls.push({
-          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments
+          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha
         })
       }else if (almacen === 'otro') {
         this.otherRolls.push ({
-          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments
+          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha
         })
       }
     },
     // Recibe rollos por almacen y nombre del almacen
     loadRolls: function(almacenRolls, almacen) {
 
+
+
       for (let key in almacenRolls) {
+
+        let fe = almacenRolls[key].fecha
+
+        let fechaArray = fe.split('-')
+        let day = fechaArray[0]
+        let month = fechaArray[1] - 1
+        let year = fechaArray[2]
+        let fecha = new Date(year, month, day)
+
         this.pushAllRoll(
           almacenRolls[key].idNumber,
           almacen,
@@ -278,7 +313,8 @@ pushAllRoll: function(idNumber, almacen, meters, gramaje, width, typePaper, kgs,
           almacenRolls[key].width,
           almacenRolls[key].typePaper,
           almacenRolls[key].kgs,
-          almacenRolls[key].comments
+          almacenRolls[key].comments,
+          fecha
         )
       }
     },
