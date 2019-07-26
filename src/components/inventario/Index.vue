@@ -143,12 +143,24 @@
     </b-row>
 
   </template>
+
+  <b-row class="pt-4">
+    <b-col cols="12">
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="getRolls.length"
+        :per-page="perPage"
+        align="center">
+      </b-pagination>
+    </b-col>
+  </b-row>
+
   <b-row class="mb-2">
-
-
     <b-table
       :fields="fields"
       :items="getRolls"
+      :per-page="perPage"
+      :current-page="currentPage"
       head-variant="dark"
       responsive
       >
@@ -449,7 +461,9 @@ export default{
       currentUser: firebase.auth().currentUser,
       isUndefinedComment: false,
       modalChangeAddHistorial: false,
-      selectedMoveHistory: 'false'
+      selectedMoveHistory: 'false',
+      perPage: 100,
+      currentPage: 1
     }
   },
   methods: {

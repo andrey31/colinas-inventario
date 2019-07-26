@@ -79,10 +79,22 @@
       </b-col>
     </b-row>
   </template>
+  <b-row class="pt-4">
+    <b-col cols="12">
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="rows"
+        :per-page="perPage"
+        align="center">
+      </b-pagination>
+    </b-col>
+  </b-row>
   <b-tabs class="bg-light">
     <b-table
       :items="rollsFilter"
       :fields="fieldsRolls"
+      :per-page="perPage"
+      :current-page="currentPage"
       head-variant="dark"
       >
       <template slot="kgs" slot-scope="row">
@@ -199,6 +211,9 @@ export default{
       })
       total.rollsByGramaje = gramajes
       return total
+    },
+    rows() {
+        return this.rollsFilter.length
     }
   },
 
@@ -227,7 +242,9 @@ export default{
       filterNumberRoll: '',
       modalRow: {},
       idNumberDelete: '',
-      almacenDelete: ''
+      almacenDelete: '',
+      perPage: 100,
+      currentPage: 1
     }
   },
   methods: {
