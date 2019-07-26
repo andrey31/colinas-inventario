@@ -2,7 +2,7 @@
 <div id="app">
   <div id="nav" v-if="this.$route.path != '/login'">
     <router-link to="/home">Inicio</router-link> |
-    <router-link to="/packing-list">Packing List</router-link> |
+    <router-link to="/packing-list">Lista de paquetes</router-link> |
     <router-link to="/almacenes">Almacenes</router-link> |
     <router-link to="/inventario">Inventario</router-link> |
     <router-link to="/registro-cambios">Registro de cambios</router-link> |
