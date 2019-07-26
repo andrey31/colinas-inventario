@@ -2,7 +2,7 @@
 
 <b-container fluid>
   <template>
-    <b-row class="mb-2">
+    <b-row class="">
       <!-- <b-col cols="4"> -->
       <!--   <b-input-group> -->
       <!--     <b-input-group-text slot="prepend">Almacen</b-input-group-text> -->
@@ -64,17 +64,6 @@
         </b-input-group>
       </b-col>
 
-      <b-col cols="4" v-if="actualTab === 0 || actualTab === 1">
-        <b-input-group>
-          <b-input-group-text slot="prepend">En Uso</b-input-group-text>
-          <b-form-select v-model="filterEnUso">
-            <option value="">TODOS</option>
-            <option value="si">SI</option>
-            <option value="no">NO</option>
-          </b-form-select>
-        </b-input-group>
-      </b-col>
-
       <b-col cols="4" v-if="showFilterDate">
         <b-input-group>
           <b-input-group-text slot="prepend" >Fecha Inicio</b-input-group-text>
@@ -87,10 +76,21 @@
         <!--   <b-form-input type="time" :disabled="disabledBodega"></b-form-input> -->
         <!-- </b-input-group> -->
       </b-col>
-      <b-col>
-        <b-input-group v-if="showFilterDate">
+      <b-col cols="4" v-if="showFilterDate">
+        <b-input-group>
           <b-input-group-text slot="prepend" >Fecha Final</b-input-group-text>
           <b-form-input v-model="dateFilterFinish" type="date"></b-form-input>
+        </b-input-group>
+      </b-col>
+
+      <b-col cols="4" v-if="actualTab === 0 || actualTab === 1">
+        <b-input-group>
+          <b-input-group-text slot="prepend">En Uso</b-input-group-text>
+          <b-form-select v-model="filterEnUso">
+            <option value="">TODOS</option>
+            <option value="si">SI</option>
+            <option value="no">NO</option>
+          </b-form-select>
         </b-input-group>
       </b-col>
     </b-row>
