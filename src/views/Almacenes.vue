@@ -85,10 +85,10 @@
             </b-row>
             <b-row class="pt-4">
               <b-col v-if="getTotalKgsMeters.kg > 0">
-                Total de kilos <b>{{getTotalKgsMeters.kg}}</b>
+                Total de kilos <b>{{(getTotalKgsMeters.kg).toLocaleString('en-us')}}</b>
               </b-col>
               <b-col v-if="getTotalKgsMeters.meters > 0">
-                Total de metros <b>{{getTotalKgsMeters.meters}}</b>
+                Total de metros <b>{{(getTotalKgsMeters.meters).toLocaleString('en-us')}}</b>
               </b-col>
             </b-row>
           </b-card-text>
@@ -114,8 +114,11 @@
       :current-page="currentPage"
       head-variant="dark"
       >
+      <template slot="meters" slot-scope="row">
+        <b>{{(row.item.meters).toLocaleString('en-us')}}</b>
+      </template>
       <template slot="kgs" slot-scope="row">
-        {{(row.item.kgs).toFixed(2)}}
+        <b>{{(row.item.kgs).toLocaleString('en-us')}}</b>
       </template>
       <template slot="fecha" slot-scope="row">
         {{row.item.fecha.toISOString().slice(0, 10)}}
@@ -181,12 +184,13 @@ export default{
       let kgsM = {}
       let kg = 0
       let meters = 0
-      this.allRolls.forEach( roll => {
+      this.rollsFilter.forEach( roll => {
         kg += parseFloat(roll.kgs)
         if (roll.meters) meters += parseFloat(roll.meters)
       })
-      kgsM.kg = kg.toFixed(2)
-      kgsM.meters = meters.toFixed(2)
+
+      kgsM.kg = kg
+      kgsM.meters = meters
 
       return kgsM
     },
@@ -234,7 +238,7 @@ export default{
       return total
     },
     rows() {
-        return this.rollsFilter.length
+      return this.rollsFilter.length
     }
   },
 
@@ -297,25 +301,27 @@ export default{
 
       for (let key in almacenRolls) {
 
-        let fe = almacenRolls[key].fecha
+        if (almacenRolls[key].fecha){
+          let fe = almacenRolls[key].fecha
 
-        let fechaArray = fe.split('-')
-        let day = fechaArray[0]
-        let month = fechaArray[1] - 1
-        let year = fechaArray[2]
-        let fecha = new Date(year, month, day)
+          let fechaArray = fe.split('-')
+          let day = fechaArray[0]
+          let month = fechaArray[1] - 1
+          let year = fechaArray[2]
+          let fecha = new Date(year, month, day)
 
-        this.pushAllRoll(
-          almacenRolls[key].idNumber,
-          almacen,
-          almacenRolls[key].meters,
-          almacenRolls[key].gramaje,
-          almacenRolls[key].width,
-          almacenRolls[key].typePaper,
-          almacenRolls[key].kgs,
-          almacenRolls[key].comments,
-          fecha
-        )
+          this.pushAllRoll(
+            almacenRolls[key].idNumber,
+            almacen,
+            almacenRolls[key].meters,
+            almacenRolls[key].gramaje,
+            almacenRolls[key].width,
+            almacenRolls[key].typePaper,
+            almacenRolls[key].kgs,
+            almacenRolls[key].comments,
+            fecha
+          )
+        }
       }
     },
     edit: function(row){
