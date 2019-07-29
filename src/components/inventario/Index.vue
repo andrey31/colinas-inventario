@@ -584,10 +584,13 @@ export default{
         })
 
       }else if(this.actualTab === 1) {
-
+        let causaDesperdicio = null
+        if (typeof this.modalRow !== 'undefined'){
+          this.causaDesperdicio = this.modalRow.causaDesperdicio
+        }
         let obj = {
           bodega: this.modalRow.bodega,
-          causaDesperdicio: this.modalRow.causaDesperdicio,
+          causaDesperdicio,
           diametro: this.modalRow.diametro,
           enUso: this.modalRow.enUso,
           fecha: this.modalRow.fecha,
