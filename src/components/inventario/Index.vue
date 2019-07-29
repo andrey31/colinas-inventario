@@ -117,16 +117,16 @@
             </b-row>
             <b-row class="pt-4">
               <b-col v-if="getTotalKgsMeters.kg > 0">
-                Total de kilos <b>{{getTotalKgsMeters.kg}}</b>
+                Total de kilos <b>{{(getTotalKgsMeters.kg).toLocaleString('en-us')}}</b>
               </b-col>
               <b-col v-if="getTotalKgsMeters.meters > 0">
-                Total de metros <b>{{getTotalKgsMeters.meters}}</b>
+                Total de metros <b>{{(getTotalKgsMeters.meters).toLocaleString('en-us')}}</b>
               </b-col>
               <b-col v-if="getTotalKgsMeters.desperdicio > 0">
-                Total de desperdicio <b>{{getTotalKgsMeters.desperdicio}}</b>
+                Total de desperdicio <b>{{(getTotalKgsMeters.desperdicio).toLocaleString('en-us')}}</b>
               </b-col>
               <b-col v-if="getTotalKgsMeters.diametro > 0">
-                Total de diametro <b>{{getTotalKgsMeters.diametro}}</b>
+                Total de diametro <b>{{(getTotalKgsMeters.diametro).toLocaleString('en-us')}}</b>
               </b-col>
             </b-row>
           </b-card-text>
@@ -169,6 +169,12 @@
       <!--   <label v-if="row.item.enUso">Sí</label> -->
       <!--   <label v-else>No</label> -->
       <!-- </template> -->
+      <template v-if="row.item.kgs" slot="kgs" slot-scope="row">
+        <b>{{(row.item.kgs).toLocaleString('en-us')}}</b>
+      </template>
+      <template v-if="row.item.meters" slot="meters" slot-scope="row">
+        <b>{{(row.item.meters).toLocaleString('en-us')}}</b>
+      </template>
       <template v-if="row.item.fecha" slot="fecha" slot-scope="row">
         {{row.item.fecha.toISOString().slice(0, 10)}}
       </template>
@@ -224,11 +230,21 @@
           </b-form-input>
         </b-form-group>
 
-        <b-form-group class="col-4" id="idKg" label="Kilogramos" label-for="input-kg">
+        <b-form-group class="col-4" id="idKg" label="Kgs" label-for="input-kg">
           <b-form-input
             id="input-kg"
             type="text"
             v-model="modalRow.kgs"
+            required>
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group class="col-4" id="idKg" label="Kgs Consumidos" label-for="input-kg"
+                      v-if="actualTab === 1">
+          <b-form-input
+            id="input-kgC"
+            type="text"
+            v-model="modalRow.kgsConsumidos"
             required>
           </b-form-input>
         </b-form-group>
@@ -367,10 +383,10 @@ export default{
         if (roll.desperdicio) desperdicio += parseFloat(roll.desperdicio)
         if(roll.diametro) diametro += parseFloat(roll.diametro)
       })
-      kgsM.kg = kg.toFixed(2)
-      kgsM.meters = meters.toFixed(2)
-      kgsM.desperdicio = desperdicio.toFixed(2)
-      kgsM.diametro = diametro.toFixed(2)
+      kgsM.kg = kg
+      kgsM.meters = meters
+      kgsM.desperdicio = desperdicio
+      kgsM.diametro = diametro
       return kgsM
     },
     getRolls(){
@@ -478,7 +494,7 @@ export default{
 
       this.modalRow = Object.assign({}, row)
       let w = (this.modalRow.width).substr(0,2) //Remover comillas de pulgadas
-      // if (this.modalRow.fecha) this.modalRow.fecha = (this.formatDate(this.modalRow.fecha))
+
       if (this.modalRow.fecha) {
         let fecha = this.formatDate(this.modalRow.fecha).split('-')
         console.log(fecha)
@@ -579,6 +595,7 @@ export default{
           hora: this.modalRow.hora,
           idNumber: this.modalRow.idNumber,
           kgs: this.modalRow.kgs,
+          kgsConsumidos: this.modalRow.kgsConsumidos,
           typePaper: this.modalRow.typePaper,
           desperdicio: this.modalRow.desperdicio,
           width: this.modalRow.width

@@ -61,7 +61,7 @@ export default{
   },
   computed: {
     disableActions(){
-      if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com' ||  
+      if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com' ||
       this.currentUser.email === 'guillermo.hernandez@corrugadosaltavista.com' ||
       this.currentUser.email === 'jose.rodriguez@corrugadosaltavista.com' ||
       this.currentUser.email === 'jose.mora@corrugadosaltavista.com') return false
@@ -270,6 +270,7 @@ export default{
           'bodega': data[key].bodega,
           'enUso': data[key].enUso,
           'kgs': data[key].kgs,
+          'kgsConsumidos': typeof data[key].kgsConsumidos !== 'undefined' ? data[key].kgsConsumidos : null,
           'meters': typeof data[key].meters !== 'undefined' ? data[key].meters : null,
           'width': `${data[key].width}"`,
           'gramaje': data[key].gramaje,
