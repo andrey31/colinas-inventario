@@ -584,13 +584,10 @@ export default{
         })
 
       }else if(this.actualTab === 1) {
-        let causaDesperdicio = null
-        if (typeof this.modalRow !== 'undefined'){
-          this.causaDesperdicio = this.modalRow.causaDesperdicio
-        }
+
         let obj = {
           bodega: this.modalRow.bodega,
-          causaDesperdicio,
+          causaDesperdicio: (typeof this.causaDesperdicio !== 'undefined') ? this.causaDesperdicio : '',
           diametro: this.modalRow.diametro,
           enUso: this.modalRow.enUso,
           fecha: this.modalRow.fecha,
@@ -612,7 +609,6 @@ export default{
 
       }else if(this.actualTab === 2){
         let obj = {
-          causaDesperdicio: this.modalRow.causaDesperdicio,
           comments: this.modalRow.comments,
           desperdicio: this.modalRow.desperdicio,
           fecha: this.modalRow.fecha,
