@@ -277,7 +277,15 @@
             required>
           </b-form-input>
         </b-form-group>
-
+        <b-form-group class="col-4" id="inUso" label="En uso" label-for="input-inUse"
+                      v-if="actualTab === 0 || actualTab === 1">
+          <b-form-select
+            v-model="modalRow.enUso"
+            >
+            <option value="si">Si</option>
+            <option value="no">No</option>
+          </b-form-select>
+        </b-form-group>
         <b-form-group class="col-4" id="idTypePaper" label="Tipo de papel" label-for="input-typePaper">
           <b-form-input
             id="input-typePaper"
@@ -580,7 +588,7 @@ export default{
           typePaper: this.modalRow.typePaper,
           width: this.modalRow.width
         }
-        this.db.ref('Inventario').child(key).set(obj).then( (data) => {
+        this.db.ref('Inventario').child(key).update(obj).then( (data) => {
           this.modalShow = false
           console.log('agregado')
         }).catch( error => {
@@ -604,7 +612,7 @@ export default{
           desperdicio: this.modalRow.desperdicio,
           width: this.modalRow.width
         }
-        this.db.ref('InventarioSobrantes').child(key).set(obj).then( (data) => {
+        this.db.ref('InventarioSobrantes').child(key).update(obj).then( (data) => {
           this.modalShow = false
         }).catch( error => {
           console.log(error)
@@ -624,7 +632,7 @@ export default{
           width: this.modalRow.width
         }
 
-        this.db.ref('HistorialInventario').child(key).set(obj).then( data => {
+        this.db.ref('HistorialInventario').child(key).update(obj).then( data => {
           this.modalShow = false
         }).catch( error => {
           console.log(error)

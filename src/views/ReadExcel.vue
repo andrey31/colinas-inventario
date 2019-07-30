@@ -87,226 +87,232 @@
 <script>
 import firebase from 'firebase/app'
 export default{
-    name: 'ReadExcel',
-    computed: {
+  name: 'ReadExcel',
+  computed: {
+  },
+  data(){
+    return{
+      file: null,
+      arrayxls: null,
+      arrayData: [],
+      rollsExistsInDb: [],
+      rollsNotExistsInDb: [],
+      provided: '',
+      date: '',
+      shipped: '',
+      shipment: '',
+      carrier: '',
+      vehicle: '',
+      booking: '',
+      comment: '',
+      ourOrder: '',
+      yourOrder: '',
+      db: firebase.database(),
+      spinner: false,
+      textSpinner: 'Subiendo excel...',
+      disabledUpload: true,
+      showAlert: false,
+      showAlertError: false,
+      textAlertError: '',
+      showModal: false,
+      almacen: 'sislocar'
+    }
+  },
+  methods: {
+    clear: function(){
+      this.arrayxls = null,
+      this.arrayData = [],
+      this.provided = '',
+      this.date = '',
+      this.shipped = '',
+      this.shipment = '',
+      this.carrier = '',
+      this.vehicle = '',
+      this.booking = '',
+      this.comment = '',
+      this.ourOrder = '',
+      this.yourOrder = '',
+
+      this.showAlert = false,
+      this.showAlertError = false,
+      this.textAlertError = '',
+
+      this.disabledUpload = true,
+      this.rollsExistsInDb = [],
+      this.rollsNotExistsInDb = []
     },
-    data(){
-        return{
-            file: null,
-            arrayxls: null,
-            arrayData: [],
-            rollsExistsInDb: [],
-            rollsNotExistsInDb: [],
-            provided: '',
-            date: '',
-            shipped: '',
-            shipment: '',
-            carrier: '',
-            vehicle: '',
-            booking: '',
-            comment: '',
-            ourOrder: '',
-            yourOrder: '',
-            db: firebase.database(),
-            spinner: false,
-            textSpinner: 'Subiendo excel...',
-            disabledUpload: true,
-            showAlert: false,
-            showAlertError: false,
-            textAlertError: '',
-            showModal: false,
-            almacen: 'sislocar'
-        }
+    uploadFile: function(){
+      this.showModal = false
+      this.spinner = true
+      let storageRef = firebase.storage().ref();
+
+      let file = this.file
+
+      let metadata = {
+        contentType: 'application/vnd.ms-excel'
+      }
+
+      let date = Math.floor(Date.now());
+      let keyOrder = this.db.ref('order').push().key;
+      let uploadTask = storageRef.child('packing-list/'+keyOrder+'.xlsx').put(file, metadata)
+
+      // Listen for state changes, errors, and completion of the upload.
+      uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+                    snapshot => {
+                      // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                      this.textSpinner = 'Subiendo '+progress + '%'
+                      console.log('Upload is ' + progress + '% done');
+                      switch (snapshot.state) {
+                      case firebase.storage.TaskState.PAUSED: // or 'paused'
+                        console.log('Upload is paused');
+                        break;
+                      case firebase.storage.TaskState.RUNNING: // or 'running'
+                        console.log('Upload is running');
+                        break;
+                      }
+                    }, error => {
+
+                      // A full list of error codes is available at
+                      // https://firebase.google.com/docs/storage/web/handle-errors
+                      switch (error.code) {
+                      case 'storage/unauthorized':
+                        // User doesn't have permission to access the object
+                        this.textSpinner = 'Error, no authorizado'
+                        break;
+
+                      case 'storage/canceled':
+                        this.textSpinner = 'Error, subida cancelada'
+                        // User canceled the upload
+                        break;
+
+                      case 'storage/unknown':
+                        this.textSpinner = 'Error, intentelo nuevamente'
+                        // Unknown error occurred, inspect error.serverResponse
+                        break;
+                      }
+                    }, () =>{
+                      // Upload completed successfully, now we can get the download URL
+                      uploadTask.snapshot.ref.getDownloadURL().then( (downloadURL) => {
+                        console.log('File available at', downloadURL);
+                        // this.upload()
+                        this.upload(downloadURL, keyOrder)
+                      });
+                    });
+
     },
-    methods: {
-        clear: function(){
-            this.arrayxls = null,
-            this.arrayData = [],
-            this.provided = '',
-            this.date = '',
-            this.shipped = '',
-            this.shipment = '',
-            this.carrier = '',
-            this.vehicle = '',
-            this.booking = '',
-            this.comment = '',
-            this.ourOrder = '',
-            this.yourOrder = '',
 
-            this.showAlert = false,
-            this.showAlertError = false,
-            this.textAlertError = '',
+    upload: function(downloadURL, keyOrder){
+      // Subir datos a firebase
+      this.textSpinner = 'Subiendo datos ...'
+      let arrayKeys = []
+      this.rollsNotExistsInDb.forEach( packing => {
+        // console.log(packing.idNumber)
+        // let key = this.db.ref('packing-list').push().key;
+        this.db.ref(this.almacen).child(packing.idNumber).set(packing)
+          .then((data) => {
+            this.spinner = false
+            console.log('Agregado packing-list')
+            this.disabledUpload = true
+            this.showAlert = true
+          })
+          .catch(error => {
+            this.textSpinner = 'Ocurrió un error al subir los datos'
+          })
+        arrayKeys.push(packing.idNumber)
 
-            this.disabledUpload = true,
-            this.rollsExistsInDb = [],
-            this.rollsNotExistsInDb = []
-        },
-        uploadFile: function(){
-            this.showModal = false
-            this.spinner = true
-            let storageRef = firebase.storage().ref();
+        arrayKeys.length === this.rollsNotExistsInDb.length ? this.uploadOrder(arrayKeys, downloadURL, keyOrder) : null
+      })
+      // this.uploadFile()
+    },
+    uploadOrder: function(uids, downloadURL, keyOrder){
+      this.db.ref('order').child(keyOrder).set({
+        'provided': this.provided,
+        'date': this.date,
+        'shipped': this.shipped,
+        'shipment': this.shipment,
+        'carrier': this.carrier,
+        'vehicle': this.vehicle,
+        'booking': this.booking,
+        'comment': this.comment,
+        'ourOrder': this.ourOrder,
+        'yourOrder': this.yourOrder,
+        'packing-list': uids,
+        'downloadXLS': downloadURL,
+        'almacen': this.almacen
+      })
+    },
+    load: function(){
+      if(this.file != null){
+        this.transformXLS()
+        this.showAlert = false
+      }
 
-            let file = this.file
+    },
+    getListRolls: function(){
 
-            let metadata = {
-                contentType: 'application/vnd.ms-excel'
-            }
+      this.arrayData = []
+      console.log(this.arrayxls.length)
+      let idNumbers = []
+      // menos 3 los campos no necesarios datos como total y el uno del arreglo
+      let d = new Date()
+      let month = '' + (d.getMonth() + 1)
+      let day = '' + d.getDate()
+      let year = d.getFullYear()
 
-            let date = Math.floor(Date.now());
-            let keyOrder = this.db.ref('order').push().key;
-            let uploadTask = storageRef.child('packing-list/'+keyOrder+'.xlsx').put(file, metadata)
+      for(let i = 8; i<= (this.arrayxls.length - 3); ++i){
+        let a = Object.values(this.arrayxls[i])
 
-            // Listen for state changes, errors, and completion of the upload.
-            uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
-                          snapshot => {
-                              // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-                              var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                              this.textSpinner = 'Subiendo '+progress + '%'
-                              console.log('Upload is ' + progress + '% done');
-                              switch (snapshot.state) {
-                              case firebase.storage.TaskState.PAUSED: // or 'paused'
-                                  console.log('Upload is paused');
-                                  break;
-                              case firebase.storage.TaskState.RUNNING: // or 'running'
-                                  console.log('Upload is running');
-                                  break;
-                              }
-                          }, error => {
+        idNumbers.push(a[0])
 
-                              // A full list of error codes is available at
-                              // https://firebase.google.com/docs/storage/web/handle-errors
-                              switch (error.code) {
-                              case 'storage/unauthorized':
-                                  // User doesn't have permission to access the object
-                                  this.textSpinner = 'Error, no authorizado'
-                                  break;
+        this.arrayData.push(
+          {
+            'idNumber': a[0],
+            'weight': a[1],
+            'kgs': a[2] * 1000,
+            'fecha': day + '-' + month + '-' + year,
+            'meters': Number((a[3] / 3.2808).toFixed(2)),
+            'width': a[4],
+            'gramaje': a[5].split('#')[0],
+            'typePaper': a[5].split('#')[1].split(' ')[1],
+            'comments': a[6] === null ? a[6] : ''
+          }
+        )
+      }
+      this.existsPackingList(idNumbers)
 
-                              case 'storage/canceled':
-                                  this.textSpinner = 'Error, subida cancelada'
-                                  // User canceled the upload
-                                  break;
+    },
+    hasDuplicates: function(idNumbers){
 
-                              case 'storage/unknown':
-                                  this.textSpinner = 'Error, intentelo nuevamente'
-                                  // Unknown error occurred, inspect error.serverResponse
-                                  break;
-                              }
-                          }, () =>{
-                              // Upload completed successfully, now we can get the download URL
-                              uploadTask.snapshot.ref.getDownloadURL().then( (downloadURL) => {
-                                  console.log('File available at', downloadURL);
-                                  // this.upload()
-                                  this.upload(downloadURL, keyOrder)
-                              });
-                          });
+      return (new Set(idNumbers)).size !== idNumbers.length;
 
-        },
+    },
+    existsPackingList: function(idNumbers){
 
-        upload: function(downloadURL, keyOrder){
-            // Subir datos a firebase
-            this.textSpinner = 'Subiendo datos ...'
-            let arrayKeys = []
-            this.rollsNotExistsInDb.forEach( packing => {
-                // console.log(packing.idNumber)
-                // let key = this.db.ref('packing-list').push().key;
-                this.db.ref(this.almacen).child(packing.idNumber).set(packing)
-                    .then((data) => {
-                        this.spinner = false
-                        console.log('Agregado packing-list')
-                        this.disabledUpload = true
-                        this.showAlert = true
-                    })
-                    .catch(error => {
-                        this.textSpinner = 'Ocurrió un error al subir los datos'
-                    })
-                arrayKeys.push(packing.idNumber)
+      if(this.hasDuplicates(idNumbers)){
+        this.disabledUpload = true
+        this.showAlertError = true
+        this.textAlertError = 'Este packing list cuenta con un id del rollo duplicado'
+        console.log('esta duplicado')
+      }else{
+        let exist = false
+        this.textAlertError = 'Estos rollos ya se encuentran en la base de datos'
 
-                arrayKeys.length === this.rollsNotExistsInDb.length ? this.uploadOrder(arrayKeys, downloadURL, keyOrder) : null
-            })
-            // this.uploadFile()
-        },
-        uploadOrder: function(uids, downloadURL, keyOrder){
-            this.db.ref('order').child(keyOrder).set({
-                'provided': this.provided,
-                'date': this.date,
-                'shipped': this.shipped,
-                'shipment': this.shipment,
-                'carrier': this.carrier,
-                'vehicle': this.vehicle,
-                'booking': this.booking,
-                'comment': this.comment,
-                'ourOrder': this.ourOrder,
-                'yourOrder': this.yourOrder,
-                'packing-list': uids,
-                'downloadXLS': downloadURL,
-                'almacen': this.almacen
-            })
-        },
-        load: function(){
-            if(this.file != null){
-                this.transformXLS()
-                this.showAlert = false
-            }
+        let pivot = []
+        let almacenes = ['sislocar', 'telisa', 'otro']
 
-        },
-        getListRolls: function(){
+        for (let almacen in almacenes){
+          this.arrayData.forEach( data => {
 
-            this.arrayData = []
-            console.log(this.arrayxls.length)
-            let idNumbers = []
-            // menos 3 los campos no necesarios datos como total y el uno del arreglo
-            for(let i = 8; i<= (this.arrayxls.length - 3); ++i){
-                let a = Object.values(this.arrayxls[i])
+            this.db.ref(almacenes[almacen]).child(data.idNumber).once('value')
+              .then(snapshot => {
+                if(snapshot.val()) {
+                  data._rowVariant = 'danger'
+                  this.rollsExistsInDb.push(data)
+                }
+                pivot.push(data)
 
-                idNumbers.push(a[0])
-
-                this.arrayData.push(
-                    {
-                        'idNumber': a[0],
-                        'weight': a[1],
-                        'kgs': a[2] * 1000,
-                        'meters': Number((a[3] / 3.2808).toFixed(2)),
-                        'width': a[4],
-                        'gramaje': a[5].split('#')[0],
-                        'typePaper': a[5].split('#')[1].split(' ')[1],
-                        'comments': a[6] === null ? a[6] : ''
-                    }
-                )
-            }
-            this.existsPackingList(idNumbers)
-
-        },
-        hasDuplicates: function(idNumbers){
-
-            return (new Set(idNumbers)).size !== idNumbers.length;
-
-        },
-        existsPackingList: function(idNumbers){
-
-            if(this.hasDuplicates(idNumbers)){
-                this.disabledUpload = true
-                this.showAlertError = true
-                this.textAlertError = 'Este packing list cuenta con un id del rollo duplicado'
-                console.log('esta duplicado')
-            }else{
-                let exist = false
-                this.textAlertError = 'Estos rollos ya se encuentran en la base de datos'
-
-                let pivot = []
-                let almacenes = ['sislocar', 'telisa', 'otro']
-
-                for (let almacen in almacenes){
-                    this.arrayData.forEach( data => {
-
-                        this.db.ref(almacenes[almacen]).child(data.idNumber).once('value')
-                            .then(snapshot => {
-                                if(snapshot.val()) {
-                                    data._rowVariant = 'danger'
-                                    this.rollsExistsInDb.push(data)
-                                }
-                                pivot.push(data)
-
-                                if(pivot.length/3 === this.arrayData.length){
+                if(pivot.length/3 === this.arrayData.length){
 
                                     if(this.rollsExistsInDb.length === this.arrayData.length){
                                         this.showAlertError = true
