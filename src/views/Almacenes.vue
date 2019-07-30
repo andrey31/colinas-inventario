@@ -177,6 +177,30 @@ export default{
       })
   },
   computed: {
+    disableActions: function(){
+      if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com' ||
+          this.currentUser.email === 'guillermo.hernandez@corrugadosaltavista.com' ||
+          this.currentUser.email === 'jose.rodriguez@corrugadosaltavista.com' ||
+          this.currentUser.email === 'jose.mora@corrugadosaltavista.com') {
+        return false
+      }
+      else return true
+    },
+    fieldsRolls: function() {
+      return [
+        {key: 'idNumber', label: 'Numero de rollo'},
+        'almacen',
+        {key: 'meters', label: 'Metros lineales'},
+        'gramaje',
+        {key: 'width', label: 'Ancho'},
+        {key: 'typePaper', label: 'Tipo de papel'},
+        {key: 'kgs', label: 'Kilogramos'},
+        {key: 'comments', label: 'Comentario'},
+        {key: 'fecha', label: 'Fecha'},
+        this.disableActions ? null : 'acciones'
+      ]
+
+    },
     allRolls: function(){
       return this.sislocarRolls.concat(this.telisaRolls, this.otherRolls)
     },
@@ -249,18 +273,6 @@ export default{
       telisaRolls: [],
       sislocarRolls: [],
       otherRolls: [],
-      fieldsRolls: [
-        {key: 'idNumber', label: 'Numero de rollo'},
-        'almacen',
-        {key: 'meters', label: 'Metros lineales'},
-        'gramaje',
-        {key: 'width', label: 'Ancho'},
-        {key: 'typePaper', label: 'Tipo de papel'},
-        {key: 'kgs', label: 'Kilogramos'},
-        {key: 'comments', label: 'Comentario'},
-        {key: 'fecha', label: 'Fecha'},
-        'acciones',
-      ],
       filterAlmacen: '',
       filterGramaje: '',
       filterType: '',
