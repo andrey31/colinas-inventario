@@ -87,6 +87,9 @@
               <b-col v-if="getTotalKgsMeters.kg > 0">
                 Total de kilos <b>{{(getTotalKgsMeters.kg).toLocaleString('en-us')}}</b>
               </b-col>
+              <b-col v-if="getTotalKgsMeters.tons > 0">
+                Total de toneladas <b>{{(getTotalKgsMeters.tons).toLocaleString('en-us')}}</b>
+              </b-col>
               <b-col v-if="getTotalKgsMeters.meters > 0">
                 Total de metros <b>{{(getTotalKgsMeters.meters).toLocaleString('en-us')}}</b>
               </b-col>
@@ -215,6 +218,7 @@ export default{
 
       kgsM.kg = kg
       kgsM.meters = meters
+      kgsM.tons = kg / 1000
 
       return kgsM
     },
