@@ -274,7 +274,7 @@ export default{
             'meters': Number((a[3] / 3.2808).toFixed(2)),
             'width': a[4],
             'gramaje': a[5].split('#')[0],
-            'typePaper': a[5].split('#')[1].split(' ')[1],
+            'typePaper': a[5].split('#')[1],
             'comments': a[6] === null ? a[6] : ''
           }
         )
