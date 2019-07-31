@@ -599,7 +599,7 @@ export default{
 
         let obj = {
           bodega: this.modalRow.bodega,
-          causaDesperdicio: (typeof this.causaDesperdicio !== 'undefined') ? this.causaDesperdicio : '',
+          causaDesperdicio: (typeof this.causaDesperdicio !== 'undefined') ? this.causaDesperdicio : null,
           diametro: this.modalRow.diametro,
           enUso: this.modalRow.enUso,
           fecha: this.modalRow.fecha,
