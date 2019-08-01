@@ -5,7 +5,17 @@
     <b-col cols="6">
       <b-input-group>
         <b-input-group-text slot="prepend">Usuario</b-input-group-text>
-        <b-form-input v-model="filters.usuario"></b-form-input>
+        <b-form-select v-model="filters.usuario">
+          <option value="omar.duran">Omar</option>
+          <option value="guillermo.hernandez">Guillermo</option>
+          <option value="Jose Rodriguez">Jose Rodriguez</option>
+          <option value="Contabilidad">Contabilidad</option>
+          <option value="Jose Mora">Jose Mora</option>
+          <option value="Montacarguista 1">Montacargas 1</option>
+          <option value="Montacarguista 2">Montacargas 2</option>
+          <option value="Operador 1">Operador 1</option>
+          <option value="Operador 2">Operador 2</option>
+        </b-form-select>
       </b-input-group>
     </b-col>
 

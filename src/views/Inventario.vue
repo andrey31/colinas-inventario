@@ -64,7 +64,7 @@ export default{
       if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com' ||
       this.currentUser.email === 'guillermo.hernandez@corrugadosaltavista.com' ||
       this.currentUser.email === 'jose.rodriguez@corrugadosaltavista.com' ||
-      this.currentUser.email === 'jose.mora@corrugadosaltavista.com') return false
+      this.currentUser.email === 'admin@corrugadosaltavista.com') return false
       else return true
     },
   },

@@ -6,7 +6,10 @@
       <b-col cols="4">
         <b-input-group>
           <b-input-group-text slot="prepend">Almacen</b-input-group-text>
-          <b-form-input v-model="filterAlmacen"></b-form-input>
+          <b-form-select v-model="filterAlmacen">
+            <option value="telisa">Telisa</option>
+            <option value="sislocar">sislocar</option>
+          </b-form-select>
         </b-input-group>
       </b-col>
       <b-col cols="4">
@@ -182,9 +185,9 @@ export default{
   computed: {
     disableActions: function(){
       if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com' ||
+          this.currentUser.email === 'admin@corrugadosaltavista.com' ||
           this.currentUser.email === 'guillermo.hernandez@corrugadosaltavista.com' ||
-          this.currentUser.email === 'jose.rodriguez@corrugadosaltavista.com' ||
-          this.currentUser.email === 'jose.mora@corrugadosaltavista.com') {
+          this.currentUser.email === 'jose.rodriguez@corrugadosaltavista.com') {
         return false
       }
       else return true

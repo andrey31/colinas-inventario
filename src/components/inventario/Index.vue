@@ -138,8 +138,8 @@
       <b-col cols="4">
         <download-excel
           class="btn btn-primary mt-4"
-          :data="getRolls"
-          name="datos.xls" v-if="getRolls.length != 0">
+          :data="dataXLS"
+          name="datos.xls" v-if="dataXLS.length != 0">
           Exportar datos a excel
         </download-excel>
       </b-col>
@@ -289,7 +289,6 @@
         </b-form-group>
         <b-form-group class="col-4" id="idTypePaper" label="Tipo de papel" label-for="input-typePaper">
           <b-form-select v-model="modalRow.typePaper">
-            <option value="">TODOS</option>
             <option value="MEDIUM">MEDIUM</option>
             <option value="LINER">LINER</option>
             <option value="LINER R">LINER R</option>
@@ -383,6 +382,47 @@ export default{
   components: {
   },
   computed: {
+    dataXLS(){
+      let data = this.getRolls.slice()
+      let fin = []
+      for( let key in data){
+        let obj = {
+          'Numero rollo': (data[key].idNumber).toString(),
+        }
+        if (typeof data[key].bodega !== 'undefined'){
+          obj.bodega = data[key].bodega
+        }
+        obj.kgs = data[key].kgs
+
+        if(typeof data[key].bodega !== 'undefined'){
+          obj.kgsConsumidos = data[key].kgsConsumidos
+        }
+
+        if(typeof data[key].meters !== 'undefined'){
+          obj.metros = data[key].meters
+        }
+
+        obj.gramaje = data[key].gramaje
+        obj.width = data[key].width
+        obj.tipoPapel = data[key].typePaper
+
+        if(typeof data[key].comments !== 'undefined'){
+          obj.comentario = data[key].comments
+        }
+        if (typeof data[key].fecha !== 'undefined'){
+          obj.fecha = this.formatDate(data[key].fecha)
+        }
+        if (typeof data[key].hora !== 'undefined'){
+          obj.hora = data[key].hora
+        }
+        if (typeof data[key].desperdicio !== 'undefined'){
+          obj.desperdicio = data[key].desperdicio
+        }
+        fin.push(obj)
+      }
+      return fin
+
+    },
     getTotalKgsMeters(){
       let kgsM = {}
       let kg = 0

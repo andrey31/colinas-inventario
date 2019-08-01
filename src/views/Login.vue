@@ -33,6 +33,7 @@
             <option value="montacargas2@corrugadosaltavista.com">montacargas2@corrugadosaltavista.com</option>
             <option value="operador1@corrugadosaltavista.com">operador1@corrugadosaltavista.com</option>
             <option value="operador2@corrugadosaltavista.com">operador2@corrugadosaltavista.com</option>
+            <option value="admin@corrugadosaltavista.com">admin@corrugadosaltavista.com</option>
             <!-- <option value="a">Option A</option> -->
             <!-- <option value="b" disabled>Option B (disabled)</option> -->
           </b-form-select>
