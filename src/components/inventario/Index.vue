@@ -246,7 +246,8 @@
                       v-if="actualTab === 1">
           <b-form-input
             id="input-kgC"
-            type="text"
+            type="number"
+            min="0" step="0.001"
             v-model="modalRow.kgsConsumidos"
             required>
           </b-form-input>
@@ -287,12 +288,13 @@
           </b-form-select>
         </b-form-group>
         <b-form-group class="col-4" id="idTypePaper" label="Tipo de papel" label-for="input-typePaper">
-          <b-form-input
-            id="input-typePaper"
-            type="text"
-            v-model="modalRow.typePaper"
-            required>
-          </b-form-input>
+          <b-form-select v-model="modalRow.typePaper">
+            <option value="">TODOS</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="LINER">LINER</option>
+            <option value="LINER R">LINER R</option>
+            <option value="WHITE TOP">WHITE TOP</option>
+          </b-form-select>
         </b-form-group>
         <b-form-group class="col-4" id="idSheet" label="Hojas desperdiciadas" label-for="input-sheet"
                       v-if="actualTab === 1 || actualTab === 2">
@@ -606,11 +608,11 @@ export default{
           gramaje: this.modalRow.gramaje,
           hora: this.modalRow.hora,
           idNumber: this.modalRow.idNumber,
-          kgs: this.modalRow.kgs,
-          kgsConsumidos: this.modalRow.kgsConsumidos,
+          kgs: Number(this.modalRow.kgs),
+          kgsConsumidos: Number(this.modalRow.kgsConsumidos),
           typePaper: this.modalRow.typePaper,
           desperdicio: this.modalRow.desperdicio,
-          width: this.modalRow.width
+          width: Number(this.modalRow.width)
         }
         this.db.ref('InventarioSobrantes').child(key).update(obj).then( (data) => {
           this.modalShow = false
