@@ -580,7 +580,7 @@ export default{
 
       if (this.actualTab === 0){
         let obj = {
-          bodega: this.modalRow.bodega,
+          bodega: this.modalRow.bodega.toString(),
           comments: this.modalRow.comments,
           enUso: this.modalRow.enUso,
           gramaje: this.modalRow.gramaje,
