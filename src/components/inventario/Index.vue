@@ -586,9 +586,9 @@ export default{
           gramaje: this.modalRow.gramaje,
           idNumber: this.modalRow.idNumber,
           kgs: this.modalRow.kgs,
-          meters: this.modalRow.meters,
+          meters: Number(this.modalRow.meters),
           typePaper: this.modalRow.typePaper,
-          width: this.modalRow.width
+          width: Number(this.modalRow.width)
         }
         this.db.ref('Inventario').child(key).update(obj).then( (data) => {
           this.modalShow = false
@@ -629,9 +629,9 @@ export default{
           gramaje: this.modalRow.gramaje,
           idNumber: this.modalRow.idNumber,
           kgs: this.modalRow.kgs,
-          meters: this.modalRow.meters,
+          meters: Number(this.modalRow.meters),
           typePaper: this.modalRow.typePaper,
-          width: this.modalRow.width
+          width: Number(this.modalRow.width)
         }
 
         this.db.ref('HistorialInventario').child(key).update(obj).then( data => {
