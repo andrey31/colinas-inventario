@@ -625,7 +625,7 @@ export default{
           enUso: this.modalRow.enUso,
           gramaje: this.modalRow.gramaje,
           idNumber: this.modalRow.idNumber,
-          kgs: this.modalRow.kgs,
+          kgs: Number(this.modalRow.kgs),
           meters: Number(this.modalRow.meters),
           typePaper: this.modalRow.typePaper,
           width: Number(this.modalRow.width)
@@ -668,7 +668,7 @@ export default{
           fecha: this.modalRow.fecha,
           gramaje: this.modalRow.gramaje,
           idNumber: this.modalRow.idNumber,
-          kgs: this.modalRow.kgs,
+          kgs: Number(this.modalRow.kgs),
           meters: Number(this.modalRow.meters),
           typePaper: this.modalRow.typePaper,
           width: Number(this.modalRow.width)
