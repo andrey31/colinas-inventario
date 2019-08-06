@@ -152,7 +152,6 @@ export default{
         contentType: 'application/vnd.ms-excel'
       }
 
-      let date = Math.floor(Date.now());
       let keyOrder = this.db.ref('order').push().key;
       let uploadTask = storageRef.child('packing-list/'+keyOrder+'.xlsx').put(file, metadata)
 
@@ -268,8 +267,8 @@ export default{
         this.arrayData.push(
           {
             'idNumber': a[0],
-            'weight': a[1],
-            'kgs': a[2] * 1000,
+            'weight': a[1].toFixed(2),
+            'kgs': (a[2] * 1000).toFixed(2),
             'fecha': day + '-' + month + '-' + year,
             'meters': Number((a[3] / 3.2808).toFixed(2)),
             'width': a[4],
@@ -357,7 +356,8 @@ export default{
         transformDate: function(date){
             //Tranformar fecha excel la devuelve en entero
             let d = new Date(Math.round((date - 25569)*86400*1000));
-            let format = (d.getDate()+1) + '/' + (d.getMonth()+1) + '/' + (d.getFullYear())
+            let f = new Date()
+            let format = (d.getDate()) + '/' + (d.getMonth()+1) + '/' + (d.getFullYear())
             return format
         },
         transformXLS: function(){
