@@ -132,6 +132,7 @@ export default{
           key: 'fecha',
           label: 'Fecha'
         },
+        'fechaTraslado',
         {
           key: 'hora',
           label: 'Hora'
@@ -263,6 +264,12 @@ export default{
           let year = fechaArray[2]
           fechaFormat = new Date(year, month, day)
         }
+        let fechaTraslado = typeof data[key].fechaTraslado !== 'undefined' ? data[key].fechaTraslado : null
+
+        let fechaTrasladoFormat = null
+        if(fechaTraslado){
+          fechaTrasladoFormat = fechaTraslado.split('-').reverse().join('-');
+        }
 
         items.push({
           'key': key,
@@ -280,7 +287,8 @@ export default{
           'causaDesperdicio': data[key].causaDesperdicio,
           'diametro': data[key].diametro,
           'fecha': fechaFormat,
-          'hora': data[key].hora
+          'hora': data[key].hora,
+          'fechaTraslado': fechaTrasladoFormat
         })
       }
     },

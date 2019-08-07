@@ -181,6 +181,10 @@
       <template v-if="row.item.fecha" slot="fecha" slot-scope="row">
         {{row.item.fecha.toISOString().slice(0, 10)}}
       </template>
+      <template slot="fechaTraslado" slot-scope="row">
+        <label for="" v-if="row.item.fechaTraslado">{{row.item.fechaTraslado}}</label>
+        <label for="" v-else>No definida</label>
+      </template>
       <template slot="typePaper" slot-scope="row">
         <label for="" :class="[(row.item.typePaper).includes('LINER R') ? 'color-red' : '']" class="px-2">
           {{row.item.typePaper}}
