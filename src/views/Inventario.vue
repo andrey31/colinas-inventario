@@ -130,13 +130,13 @@ export default{
         },
         {
           key: 'fecha',
-          label: 'Fecha'
+          label: 'Fecha Ingreso'
         },
-        'fechaTraslado',
         {
           key: 'hora',
           label: 'Hora'
         },
+        'fechaTraslado',
         this.disableActions ? null : 'acciones'
       ]
       this.db.ref('/Inventario')
