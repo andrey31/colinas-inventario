@@ -126,7 +126,7 @@ export default{
         },
         {
           key: 'comments',
-          label: 'Comentario'
+          label: 'Coment'
         },
         {
           key: 'fecha',
@@ -134,7 +134,7 @@ export default{
         },
         {
           key: 'hora',
-          label: 'Hora'
+          label: 'Hora Ingreso'
         },
         'fechaTraslado',
         this.disableActions ? null : 'acciones'
