@@ -63,26 +63,6 @@
           <b-form-input v-model="filterNumberRoll"></b-form-input>
         </b-input-group>
       </b-col>
-
-      <b-col cols="4" v-if="showFilterDate">
-        <b-input-group>
-          <b-input-group-text slot="prepend" >Fecha Inicio</b-input-group-text>
-          <b-form-input v-model="dateFilterBegin" type="date"></b-form-input>
-        </b-input-group>
-
-
-        <!-- <b-input-group> -->
-        <!--   <b-input-group-text slot="prepend" >Hora</b-input-group-text> -->
-        <!--   <b-form-input type="time" :disabled="disabledBodega"></b-form-input> -->
-        <!-- </b-input-group> -->
-      </b-col>
-      <b-col cols="4" v-if="showFilterDate">
-        <b-input-group>
-          <b-input-group-text slot="prepend" >Fecha Final</b-input-group-text>
-          <b-form-input v-model="dateFilterFinish" type="date"></b-form-input>
-        </b-input-group>
-      </b-col>
-
       <b-col cols="4" v-if="actualTab === 0 || actualTab === 1">
         <b-input-group>
           <b-input-group-text slot="prepend">En Uso</b-input-group-text>
@@ -93,7 +73,41 @@
           </b-form-select>
         </b-input-group>
       </b-col>
+
+      <b-col cols="6" v-if="showFilterDate">
+        <b-input-group>
+          <b-input-group-text slot="prepend" >Fecha Inicio</b-input-group-text>
+          <b-form-input v-model="dateFilterBegin" type="date"></b-form-input>
+        </b-input-group>
+      </b-col>
+        <!-- <b-input-group> -->
+        <!--   <b-input-group-text slot="prepend" >Hora</b-input-group-text> -->
+        <!--   <b-form-input type="time" :disabled="disabledBodega"></b-form-input> -->
+        <!-- </b-input-group> -->
+
+      <b-col cols="6" v-if="showFilterDate">
+        <b-input-group>
+          <b-input-group-text slot="prepend" >Fecha Final</b-input-group-text>
+          <b-form-input v-model="dateFilterFinish" type="date"></b-form-input>
+        </b-input-group>
+      </b-col>
+
+      <b-col cols="6" v-if="actualTab === 0">
+        <b-input-group>
+          <b-input-group-text slot="prepend" >Fecha Inicio traslado</b-input-group-text>
+          <b-form-input  v-model="dateFilterBeginT" type="date"></b-form-input>
+        </b-input-group>
+      </b-col>
+
+      <b-col cols="6" v-if="actualTab === 0">
+        <b-input-group>
+          <b-input-group-text slot="prepend" >Fecha Final traslado</b-input-group-text>
+          <b-form-input v-model="dateFilterFinishT" type="date"></b-form-input>
+        </b-input-group>
+      </b-col>
     </b-row>
+
+
     <b-row class="">
       <b-col cols="8" class="my-2">
         <b-card bg-variant="light" text-variant="dark" title="Rollos información">
@@ -182,7 +196,7 @@
         {{row.item.fecha.toISOString().slice(0, 10)}}
       </template>
       <template slot="fechaTraslado" slot-scope="row">
-        <label for="" v-if="row.item.fechaTraslado">{{row.item.fechaTraslado}}</label>
+        <label for="" v-if="row.item.fechaTraslado">{{row.item.fechaTraslado.toISOString().slice(0, 10)}}</label>
         <label for="" v-else>No definida</label>
       </template>
       <template slot="typePaper" slot-scope="row">
@@ -464,10 +478,15 @@ export default{
         if (typeof el.enUso !== 'undefined') {
           r = r && el.enUso.toLowerCase().indexOf(this.filterEnUso) > -1
         }
-
+        console.log(el.fecha)
         if(el.fecha !== null){
           r = r && el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00')
             && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
+        }
+
+        if(this.actualTab === 0 && el.fechaTraslado){
+          r = r && el.fechaTraslado >= new Date(this.dateFilterBeginT + 'T00:00:00-06:00')
+            && el.fechaTraslado <= new Date(this.dateFilterFinishT + 'T00:00:00-06:00')
         }
 
         if(typeof bodega === 'undefined') {
@@ -525,6 +544,8 @@ export default{
       rollsFilter: [],
       dateFilterBegin: new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10).toString(),
       dateFilterFinish: new Date().toISOString().slice(0, 10).toString(),
+      dateFilterBeginT: new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10).toString(),
+      dateFilterFinishT: new Date().toISOString().slice(0, 10).toString(),
       disabledBodega: false,
       showFilterDate: false,
       modalShow: false,
@@ -669,7 +690,7 @@ export default{
         let obj = {
           comments: this.modalRow.comments,
           desperdicio: this.modalRow.desperdicio,
-          fecha: this.modalRow.fecha,
+          Fecha: this.modalRow.fecha,
           gramaje: this.modalRow.gramaje,
           idNumber: this.modalRow.idNumber,
           kgs: Number(this.modalRow.kgs),

@@ -268,7 +268,12 @@ export default{
 
         let fechaTrasladoFormat = null
         if(fechaTraslado){
-          fechaTrasladoFormat = fechaTraslado.split('-').reverse().join('-');
+          let fechaArray = fechaTraslado.split('-')
+          let day = fechaArray[0]
+          let month = fechaArray[1] - 1
+          let year = fechaArray[2]
+
+          fechaTrasladoFormat = new Date(year, month, day);
         }
 
         items.push({
