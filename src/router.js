@@ -8,6 +8,7 @@ import ReadExcel from './views/ReadExcel.vue'
 import Inventario from './views/Inventario.vue'
 import RegistroCambios from './views/RegistroCambios.vue'
 import Almacenes from './views/Almacenes.vue'
+import Traslados from './views/Traslados.vue'
 
 Vue.use(Router)
 
@@ -58,6 +59,14 @@ const router = new Router({
       path: '/inventario',
       name: 'inventario',
       component: Inventario,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/traslados',
+      name: 'traslados',
+      component: Traslados,
       meta: {
         requiresAuth: true
       }

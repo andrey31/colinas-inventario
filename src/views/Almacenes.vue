@@ -8,7 +8,7 @@
           <b-input-group-text slot="prepend">Almacen</b-input-group-text>
           <b-form-select v-model="filterAlmacen">
             <option value="telisa">Telisa</option>
-            <option value="sislocar">sislocar</option>
+            <option value="sislocar">Sislocar</option>
           </b-form-select>
         </b-input-group>
       </b-col>
