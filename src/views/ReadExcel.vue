@@ -205,10 +205,12 @@ export default{
       // Subir datos a firebase
       this.textSpinner = 'Subiendo datos ...'
       let arrayKeys = []
+
       this.rollsNotExistsInDb.forEach( packing => {
         // console.log(packing.idNumber)
         // let key = this.db.ref('packing-list').push().key;
-        this.db.ref(this.almacen).child(packing.idNumber).set(packing)
+        let almacenCustom = this.almacen + 'EnTransito'
+        this.db.ref(almacenCustom).child(packing.idNumber).set(packing)
           .then((data) => {
             this.spinner = false
             console.log('Agregado packing-list')
@@ -219,9 +221,8 @@ export default{
             this.textSpinner = 'Ocurrió un error al subir los datos'
           })
         arrayKeys.push(packing.idNumber)
-
-        arrayKeys.length === this.rollsNotExistsInDb.length ? this.uploadOrder(arrayKeys, downloadURL, keyOrder) : null
       })
+      arrayKeys.length === this.rollsNotExistsInDb.length ? this.uploadOrder(arrayKeys, downloadURL, keyOrder) : null
       // this.uploadFile()
     },
     uploadOrder: function(uids, downloadURL, keyOrder){
@@ -287,7 +288,7 @@ export default{
 
     },
     existsPackingList: function(idNumbers){
-
+      this.rollsNotExistsInDb = []
       if(this.hasDuplicates(idNumbers)){
         this.disabledUpload = true
         this.showAlertError = true
