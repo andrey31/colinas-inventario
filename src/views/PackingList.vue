@@ -394,7 +394,8 @@ export default{
     showModalDUASet: function(roll){
       this.showModalDUA = {
         show: true,
-        roll
+        roll,
+        dua: ''
       }
     },
     sendDUA: function(){
@@ -406,6 +407,7 @@ export default{
         }
       ).then((data) => {
         console.log('agregado'),
+        this.showModalDUA.roll.dua = this.showModalDUA.dua
         this.showModalDUA.show = false
       })
     },
