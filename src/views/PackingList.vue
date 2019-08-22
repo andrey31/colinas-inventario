@@ -47,26 +47,56 @@
         </template>
 
         <template slot="row-details" slot-scope="row">
+          <hr/><hr/>
           <b-row class="my-4">
-            <b-col cols="3" offset="3"><b-button variant="primary">Rollos en almacen</b-button></b-col>
-            <b-col cols="3">
-              <!-- <b-form-checkbox v-model="rollsCheck" :value="row.item">Seleccionar todos</b-form-checkbox> -->
-              <b-form-checkbox v-model="rollsCheck" :value="row.item">Seleccionar todos</b-form-checkbox>
+            <b-col cols="4" offset="4">
+              <b-button variant="primary"
+                        :disabled="(countSelectRolls < row.item.packingList.length)"
+                        @click="showModalSendRolls = true">
+                Registrar rollos
+              </b-button>
+              <!-- <b-button variant="primary" :disabled="rollsCheck.length <= 0" @click="sendRollsToAlmacen"> -->
+              <!--   Rollos en almacen -->
+              <!-- </b-button> -->
             </b-col>
+            <!-- <b-col cols="3"> -->
+            <!--   <\!-- <b-form-checkbox v-model="rollsCheck" :value="row.item">Seleccionar todos</b-form-checkbox> -\-> -->
+            <!--   <b-form-checkbox v-model="rollsCheckAll" @change="selectAll(row.item.packingList)"> -->
+            <!--     Seleccionar todos -->
+            <!--   </b-form-checkbox> -->
+            <!-- </b-col> -->
           </b-row>
           <b-table
             :items="row.item.packingList"
             :fields="fieldsRolls"
+            head-variant="dark"
             striped
             >
             <template slot="kgs" slot-scope="row">
               {{Number(row.item.kgs).toFixed(2)}}
             </template>
-
-            <template slot="seleccionar" slot-scope="row">
-              <b-form-checkbox v-model="rollsCheck" :value="row.item.idNumber"></b-form-checkbox>
+            <template slot="enTransito" slot-scope="row">
+              <label v-if="row.item.enTransito">Sí</label>
+              <label v-else>No</label>
+            </template>
+            <template slot="enAlmacen" slot-scope="row">
+              <b-form-checkbox v-if="row.item.enTransito" v-model="rollsCheck" :value="row.item"
+                               :disabled="rollsNotCheck.includes(row.item)">
+              </b-form-checkbox>
+              <label for="" v-else>Ya registrado</label>
+            </template>
+            <template slot="noLlego" slot-scope="row">
+              <b-form-checkbox v-if="row.item.enTransito" v-model="rollsNotCheck" :value="row.item"
+                               :disabled="rollsCheck.includes(row.item)" :state="rollsCheck.includes(row.item)">
+              </b-form-checkbox>
+              <label for="" v-else>Ya registrado</label>
+            </template>
+            <template slot="DUA" slot-scope="row">
+              <b-button v-if="!row.item.dua" @click="showModalDUASet(row.item)">Agregar</b-button>
+              <label v-else>{{row.item.dua}}</label>
             </template>
           </b-table>
+          <hr/><hr/>
         </template>
       </b-table>
     </b-tab>
@@ -75,6 +105,52 @@
       </b-table>
     </b-tab>
   </b-tabs>
+  <b-modal title="DUA" v-model="showModalDUA.show" header-bg-variant="primary">
+    {{showModalDUA}}
+    <b-form-input  placeholder="Ingrese DUA" v-model="showModalDUA.dua"></b-form-input>
+    <div slot="modal-footer" class="">
+      <b-button variant="danger" class="mr-2" @click="showModalDUA.show = false">Cancelar</b-button>
+      <b-button variant="primary" @click="sendDUA()">Agregar</b-button>
+    </div>
+  </b-modal>
+  <b-modal title="Rollos marcados" v-model="containsSelectedRolls" header-bg-variant="warning" hide-footer>
+    <h4>Tiene rollos seleccionados por favor desmarcar o enviar antes de continuar con otro packinglist</h4>
+  </b-modal>
+  <b-modal v-model="showModalSendRolls"
+           header-bg-variant="primary"
+           no-close-on-backdrop
+           size="lg"
+           >
+    <template slot="modal-title">
+      Registrar
+    </template>
+    <div class="text-center">
+      Se registrarán los siguientes rollos en el almacen:
+      <ul>
+        <li v-for="roll in rollsCheck">{{roll.idNumber}}</li>
+      </ul>
+    </div>
+    <div class="text-center">
+      Por favor, ingrese un comentario de porque el rollo no llegó:
+      <ul>
+
+
+        <li v-for="roll in rollsNotCheck">
+          <b-row class="pt-2">
+          <b-col cols="2" class="pt-1" offset="1">{{roll.idNumber}}</b-col>
+          <b-col cols="8">
+            <b-form-input v-model="roll.comentarioNoLlego" placeholder="Ingrese comentario"></b-form-input>
+          </b-col>
+          </b-row>
+        </li>
+
+      </ul>
+    </div>
+    <div slot="modal-footer" class="">
+      <b-button variant="danger" class="mr-2" @click="showModalSendRolls = false">Cancelar</b-button>
+      <b-button variant="primary" @click="sendRollsToAlmacen">Enviar</b-button>
+    </div>
+  </b-modal>
 </b-container>
 </template>
 
@@ -87,6 +163,9 @@ export default{
       .on('value', snapshot => this.loadData(snapshot.val()))
   },
   computed: {
+    countSelectRolls(){
+      return this.rollsCheck.length + this.rollsNotCheck.length
+    },
     disableButtonDelete(){
       let email1 = this.currentUser.email === 'omar.duran@corrugadosaltavista.com'
       let email2 = this.currentUser.email === 'admin@corrougosaltavista.com'
@@ -123,15 +202,26 @@ export default{
         {key: 'width', label: 'Ancho'},
         {key: 'typePaper', label: 'Tipo de papel'},
         {key: 'kgs', label: 'Kilogramos'},
+        'enTransito',
+        'enAlmacen',
+        {key: 'noLlego', label: 'No llegó'},
         {key: 'comments', label: 'Comentario'},
-        {key: 'seleccionar', label: 'Seleccionar'}
+        'DUA'
       ],
       perPage: 20,
       currentPage: 1,
       rollosEnTransito: [],
       rollsCheck: [],
-      search: ''
-
+      rollsNotCheck: [],
+      search: '',
+      rollsCheckAll: false,
+      showModalSendRolls: false,
+      containsSelectedRolls: false,
+      showModalDUA: {
+        show: false,
+        roll: '',
+        dua: ''
+      }
     }
   },
   methods: {
@@ -152,20 +242,27 @@ export default{
     loadPackingList: function(data, almacen){
       let arr = []
       data.forEach( element => {
-        this.db.ref(almacen).child(element).once('value')
+        this.db.ref(almacen+'EnTransito').child(element).once('value')
           .then(snapshot => {
             let p = snapshot.val()
             if(p) {
+              let rowv = p.enTransito === true ? 'primary' : 'danger'
               arr.push({
                 'key': element,
                 'idNumber': p.idNumber,
+                'fecha': p.fecha,
                 'meters': p.meters,
                 'gramaje': p.gramaje,
                 'typePaper': p.typePaper,
                 'kgs': p.kgs,
                 'weight': p.weight,
                 'width': `${p.width}\"`,
-                'comments': p.comments
+                'comments': p.comments,
+                'enTransito': p.enTransito,
+                'almacen': almacen,
+                '_rowVariant': rowv,
+                'comentarioNoLlego': p.comentarioNoLlego,
+                'dua': p.dua
               })
             }
 
@@ -227,10 +324,92 @@ export default{
       })
 
     },
+    // selectAll: function(packingList){
+    //   this.rollsCheck = []
+    //   if(!this.rollsCheckAll){
+    //     packingList.forEach( roll => {
+    //       roll.enTransito ? this.rollsCheck.push(roll) : null
+    //     })
+    //   }
+    // },
     showRolls: function(row){
-      row.toggleDetails()
+
+      if (this.rollsCheck.length > 0) {
+        this.containsSelectedRolls = true
+        console.log('Tiene seleccionados')
+      }else{
+        row.toggleDetails()
+      }
+      // this.rollsCheck = []
+
+    },
+    sendRollsToAlmacen: function(){
+      this.rollsNotCheck.forEach( roll => {
+        this.db.ref((roll.almacen)+'EnTransito').child(roll.idNumber).update(
+          {
+            comentarioNoLlego: roll.comentarioNoLlego,
+            enTransito: false
+          }
+        ).then( (data) => {
+          roll.enTransito = false
+          roll._rowVariant = 'danger'
+        })
+      })
+
+      this.rollsCheck.forEach( (roll, index, arr) => {
+
+        let r = {
+          comments: roll.comments,
+          fecha: roll.fecha,
+          gramaje: roll.gramaje,
+          idNumber: roll.idNumber,
+          kgs: roll.kgs,
+          meters: roll.meters,
+          typePaper: roll.typePaper,
+          width: roll.width
+        }
+        this.db.ref(roll.almacen).child(r.idNumber).set(r).then((data) => {
+          let rollId = r.idNumber
+          this.db.ref((roll.almacen)+'EnTransito').child(rollId).update(
+            {
+              enTransito: false
+            }
+          ).then( (data) => {
+            roll.enTransito = false
+            roll._rowVariant = 'danger'
+
+            console.log('en transito actualizado')
+            if (index === arr.length - 1 ) this.showModalSendRolls = false
+          }).catch( error => {
+            console.log('error transito no actualizado ' +error)
+          })
+          console.log('agregdo '+r.idNumber)
+        }).catch( error => {
+          console.log('error')
+        })
+      })
       this.rollsCheck = []
-    }
+      this.rollsNotCheck = []
+    },
+    showModalDUASet: function(roll){
+      this.showModalDUA = {
+        show: true,
+        roll
+      }
+    },
+    sendDUA: function(){
+      let almacen = (this.showModalDUA.roll.almacen)+'EnTransito'
+      let idNumber = this.showModalDUA.roll.idNumber
+      this.db.ref(almacen).child(idNumber).update(
+        {
+          dua: this.showModalDUA.dua
+        }
+      ).then((data) => {
+        console.log('agregado'),
+        this.showModalDUA.show = false
+      })
+    },
   }
+
 }
 </script>

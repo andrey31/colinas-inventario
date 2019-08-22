@@ -299,7 +299,7 @@ export default{
         this.textAlertError = 'Estos rollos ya se encuentran en la base de datos'
 
         let pivot = []
-        let almacenes = ['sislocar', 'telisa', 'otro']
+        let almacenes = ['sislocarEnTransito', 'telisaEnTransito', 'otroEnTransito']
 
         for (let almacen in almacenes){
           this.arrayData.forEach( data => {
@@ -314,91 +314,90 @@ export default{
 
                 if(pivot.length/3 === this.arrayData.length){
 
-                                    if(this.rollsExistsInDb.length === this.arrayData.length){
-                                        this.showAlertError = true
-                                        this.disabledUpload = true
-                                        console.log('todos los rollos existen en db')
-                                    }else{
-                                        this.arrayData.forEach( roll => {
-                                            if(this.rollsExistsInDb.indexOf(roll) === -1){
-                                                this.rollsNotExistsInDb.push({...roll})
-                                                roll._rowVariant = 'primary'
-                                            }
-                                        })
-                                        this.disabledUpload = false
-
-                                    }
-
-                                }
-
-                            })
-
+                  if(this.rollsExistsInDb.length === this.arrayData.length){
+                    this.showAlertError = true
+                    this.disabledUpload = true
+                    console.log('todos los rollos existen en db')
+                  }else{
+                    this.arrayData.forEach( roll => {
+                      if(this.rollsExistsInDb.indexOf(roll) === -1){
+                        roll.enTransito = true
+                        this.rollsNotExistsInDb.push({...roll})
+                        roll._rowVariant = 'primary'
+                      }
                     })
+                    this.disabledUpload = false
 
+                  }
 
                 }
-            }
 
+              })
 
-        },
-        othersData: function(){
-            this.provided = Object.keys(this.arrayxls[0])[1]
-            this.date = this.transformDate(Object.values(this.arrayxls[0])[1])
-            this.vehicle = Object.values(this.arrayxls[0])[3]
-            this.ourOrder = Object.values(this.arrayxls[0])[5]
-            this.shipped = this.transformDate(Object.values(this.arrayxls[1])[1])
-            this.booking = Object.values(this.arrayxls[1])[3]
-            this.yourOrder = Object.values(this.arrayxls[1])[5]
-            this.shipment = Object.values(this.arrayxls[2])[1]
-            this.comment = Object.values(this.arrayxls[2])[3]
-            this.carrier = Object.values(this.arrayxls[3])[1]
-            // this.existsPackingList()
-        },
-        transformDate: function(date){
-            //Tranformar fecha excel la devuelve en entero
-            let d = new Date(Math.round((date - 25569)*86400*1000));
-            let f = new Date()
-            let format = (d.getDate()) + '/' + (d.getMonth()+1) + '/' + (d.getFullYear())
-            return format
-        },
-        transformXLS: function(){
-            /* set up XMLHttpRequest */
-            var url = URL.createObjectURL(this.file)
-            var oReq = new XMLHttpRequest();
-            oReq.open("GET", url, true);
-            oReq.responseType = "arraybuffer";
-            oReq.onload = e => {
-                var arraybuffer = oReq.response;
+          })
 
-                /* convert data to binary string */
-                var data = new Uint8Array(arraybuffer);
-                var arr = new Array();
-                for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-                var bstr = arr.join("");
-
-                /* Call XLSX */
-                var workbook = XLSX.read(bstr, {
-                    type: "binary"
-                });
-
-                /* DO SOMETHING WITH workbook HERE */
-                var first_sheet_name = workbook.SheetNames[0];
-                /* Get worksheet */
-                var worksheet = workbook.Sheets[first_sheet_name];
-
-                this.arrayxls = XLSX.utils.sheet_to_json(worksheet, {
-                    raw: true
-                })
-                //LLama metodos cuando el excel ya ha
-                this.getListRolls()
-                this.othersData()
-
-
-            }
-            oReq.send();
 
         }
+      }
+
+
+    },
+    othersData: function(){
+      this.provided = Object.keys(this.arrayxls[0])[1]
+      this.date = this.transformDate(Object.values(this.arrayxls[0])[1])
+      this.vehicle = Object.values(this.arrayxls[0])[3]
+      this.ourOrder = Object.values(this.arrayxls[0])[5]
+      this.shipped = this.transformDate(Object.values(this.arrayxls[1])[1])
+      this.booking = Object.values(this.arrayxls[1])[3]
+      this.yourOrder = Object.values(this.arrayxls[1])[5]
+      this.shipment = Object.values(this.arrayxls[2])[1]
+      this.comment = Object.values(this.arrayxls[2])[3]
+      this.carrier = Object.values(this.arrayxls[3])[1]
+      // this.existsPackingList()
+    },
+    transformDate: function(date){
+      //Tranformar fecha excel la devuelve en entero
+      let d = new Date(Math.round((date - 25569)*86400*1000));
+      let f = new Date()
+      let format = (d.getDate()) + '/' + (d.getMonth()+1) + '/' + (d.getFullYear())
+      return format
+    },
+    transformXLS: function(){
+      /* set up XMLHttpRequest */
+      var url = URL.createObjectURL(this.file)
+      var oReq = new XMLHttpRequest();
+      oReq.open("GET", url, true);
+      oReq.responseType = "arraybuffer";
+      oReq.onload = e => {
+        var arraybuffer = oReq.response;
+
+        /* convert data to binary string */
+        var data = new Uint8Array(arraybuffer);
+        var arr = new Array();
+        for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+        var bstr = arr.join("");
+
+        /* Call XLSX */
+        var workbook = XLSX.read(bstr, {
+          type: "binary"
+        });
+
+        /* DO SOMETHING WITH workbook HERE */
+        var first_sheet_name = workbook.SheetNames[0];
+        /* Get worksheet */
+        var worksheet = workbook.Sheets[first_sheet_name];
+
+        this.arrayxls = XLSX.utils.sheet_to_json(worksheet, {
+          raw: true
+        })
+        //LLama metodos cuando el excel ya ha
+        this.getListRolls()
+        this.othersData()
+      }
+      oReq.send();
+
     }
+  }
 }
 
 </script>
