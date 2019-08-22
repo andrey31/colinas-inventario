@@ -81,19 +81,28 @@
             </template>
             <template slot="enAlmacen" slot-scope="row">
               <b-form-checkbox v-if="row.item.enTransito" v-model="rollsCheck" :value="row.item"
-                               :disabled="rollsNotCheck.includes(row.item)">
+                               :disabled="rollsNotCheck.includes(row.item)" v-b-tooltip.hover :title="row.item.idNumber">
               </b-form-checkbox>
-              <label for="" v-else>Ya registrado</label>
+              <label for="" v-if="!row.item.enTransito && !row.item.comentarioNoLlego">Ya registrado</label>
+              <label for="" v-if="!row.item.enTransito && row.item.comentarioNoLlego">--</label>
             </template>
             <template slot="noLlego" slot-scope="row">
               <b-form-checkbox v-if="row.item.enTransito" v-model="rollsNotCheck" :value="row.item"
-                               :disabled="rollsCheck.includes(row.item)" :state="rollsCheck.includes(row.item)">
+                               :disabled="rollsCheck.includes(row.item)" v-b-tooltip.hover :title="row.item.idNumber">
               </b-form-checkbox>
-              <label for="" v-else>Ya registrado</label>
+              <label for="" v-if="!row.item.enTransito && row.item.comentarioNoLlego">{{row.item.comentarioNoLlego}}</label>
+              <label for="" v-if="!row.item.enTransito && !row.item.comentarioNoLlego">--</label>
             </template>
-            <template slot="DUA" slot-scope="row">
-              <b-button v-if="!row.item.dua" @click="showModalDUASet(row.item)">Agregar</b-button>
-              <label v-else>{{row.item.dua}}</label>
+            <template slot="DUA" slot-scope="row" >
+              <b-button v-if="!row.item.dua" @click="showModalDUASet(row.item)"
+                        v-b-tooltip.hover :title="row.item.idNumber">
+                Agregar
+              </b-button>
+              <label v-else @click="showModalDUASet(row.item)">{{row.item.dua}}</label>
+              <!-- <h5 v-else><b-badge  pill>{{row.item.dua}}</b-badge></h5> -->
+              <!-- <b-button v-else @click="showModalDUASet(row.item)">{{row.item.dua}}</b-button> -->
+
+
             </template>
           </b-table>
           <hr/><hr/>
@@ -105,8 +114,10 @@
       </b-table>
     </b-tab>
   </b-tabs>
-  <b-modal title="DUA" v-model="showModalDUA.show" header-bg-variant="primary">
-    {{showModalDUA}}
+  <b-modal v-model="showModalDUA.show" header-bg-variant="primary">
+    <template slot="modal-title">
+      DUA para el rollo: <b>{{showModalDUA.roll.idNumber}}</b>
+    </template>
     <b-form-input  placeholder="Ingrese DUA" v-model="showModalDUA.dua"></b-form-input>
     <div slot="modal-footer" class="">
       <b-button variant="danger" class="mr-2" @click="showModalDUA.show = false">Cancelar</b-button>
@@ -228,7 +239,7 @@ export default{
     deleteOrder: function(key, rolls, ourOrder, almacen){
       this.db.ref('/order').child(key).remove()
       rolls.forEach( rol => {
-        this.db.ref(almacen).child(rol.key).remove()
+        this.db.ref(almacen+'EnTransito').child(rol.key).remove()
       })
 
       let xls = firebase.storage().ref().child('packing-list/'+key+'.xlsx')
