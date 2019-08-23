@@ -105,7 +105,7 @@
   </template>
   <b-row class="pt-4">
     <b-col cols="4">
-      <b-button>Ingresar rollo manual</b-button>
+      <b-button @click="newRoll">Ingresar rollo manual</b-button>
     </b-col>
     <b-col cols="4">
       <b-pagination
@@ -144,7 +144,7 @@
       <template slot="acciones" slot-scope="row">
         <b-row>
           <b-col cols="6" class="mx-0 px-0">
-            <a class="btn btn-primary mr-2" href="" @click.stop.prevent="edit(row.item)">
+            <a class="btn btn-primary mr-2" href="" @click.stop.prevent="editRoll(row.item)">
               <v-icon name="edit"></v-icon>
             </a>
           </b-col>
@@ -375,7 +375,7 @@ export default{
         }
       }
     },
-    edit: function(row){
+    newRoll: function(row){
       this.modalRow = {
         idNumber: row.idNumber,
         almacen: row.almacen,
@@ -384,7 +384,23 @@ export default{
         width: row.width,
         typePaper: row.typePaper,
         kgs: row.kgs,
-        comments: row.comments
+        comments: row.comments,
+        editar: false
+      }
+      this.setModalShowAlmacen(true)
+
+    },
+    editRoll: function(row){
+      this.modalRow = {
+        idNumber: row.idNumber,
+        almacen: row.almacen,
+        meters: row.meters,
+        gramaje: row.gramaje,
+        width: row.width,
+        typePaper: row.typePaper,
+        kgs: row.kgs,
+        comments: row.comments,
+        editar: true
       }
       this.setModalShowAlmacen(true)
 

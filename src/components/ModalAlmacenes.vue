@@ -90,6 +90,7 @@ export default{
         saveAlmacen: function(){
             let almacen = this.modalRow.almacen
             let key = this.modalRow.idNumber
+            let editar = this.modalRow.editar
             let obj = {
                 comments: this.modalRow.comments,
                 gramaje: this.modalRow.gramaje,
@@ -99,11 +100,26 @@ export default{
                 typePaper: this.modalRow.typePaper,
                 width: Number(this.modalRow.width)
             }
-            this.db.ref(almacen).child(key).update(obj).then( data => {
-                this.setModalShowAlmacen(false)
-            }).catch( error => {
-                console.log(error)
-            })
+            if (editar){
+                this.db.ref(almacen).child(key).update(obj).then( data => {
+                    this.setModalShowAlmacen(false)
+                }).catch( error => {
+                    console.log(error)
+                })
+            }else {
+                let d = new Date()
+                let month = '' + (d.getMonth() + 1)
+                let day = '' + d.getDate()
+                let year = d.getFullYear()
+                obj.fecha = day + '-' + month + '-' + year
+
+                this.db.ref(almacen).child(obj.idNumber).set(obj).then( data => {
+                    this.setModalShowAlmacen(false)
+                }).catch( error=> {
+                    console.log(error)
+                })
+            }
+
         }
 
     }
