@@ -269,7 +269,7 @@ export default{
           {
             'idNumber': a[0],
             'weight': a[1].toFixed(2),
-            'kgs': (a[2] * 1000).toFixed(2),
+            'kgs': Number((a[2] * 1000).toFixed(2)),
             'fecha': day + '-' + month + '-' + year,
             'meters': Number((a[3] / 3.2808).toFixed(2)),
             'width': a[4],
@@ -322,6 +322,7 @@ export default{
                     this.arrayData.forEach( roll => {
                       if(this.rollsExistsInDb.indexOf(roll) === -1){
                         roll.enTransito = true
+                        roll.dua = ''
                         this.rollsNotExistsInDb.push({...roll})
                         roll._rowVariant = 'primary'
                       }

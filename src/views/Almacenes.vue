@@ -54,7 +54,7 @@
     <b-row>
       <b-col cols="4">
         <b-input-group class="pt-2">
-          <b-input-group-text slot="prepend">Numero papel</b-input-group-text>
+          <b-input-group-text slot="prepend">Numero rollo</b-input-group-text>
           <b-form-input v-model="filterNumberRoll"></b-form-input>
         </b-input-group>
         <download-excel
@@ -103,7 +103,10 @@
     </b-row>
   </template>
   <b-row class="pt-4">
-    <b-col cols="12">
+    <b-col cols="6" md="4" offset="2">
+      <b-button>Ingresar rollo manual</b-button>
+    </b-col>
+    <b-col cols="6" md="4">
       <b-pagination
         v-model="currentPage"
         :total-rows="rows"
@@ -129,6 +132,14 @@
       <template slot="fecha" slot-scope="row">
         {{row.item.fecha.toISOString().slice(0, 10)}}
       </template>
+      <template slot="dua" slot-scope="row">
+        <b-row>
+          <b-col cols="6">
+            <b-button v-if="!row.item.dua" @click="addDua(row.item)"><v-icon name="file"></v-icon></b-button>
+            <label v-else @click="addDua(row.item)">{{row.item.dua}}</label>
+          </b-col>
+        </b-row>
+      </template>
       <template slot="acciones" slot-scope="row">
         <b-row>
           <b-col cols="6" class="mx-0 px-0">
@@ -147,6 +158,7 @@
   </b-tabs>
   <modal-almacenes :modalRow="modalRow"></modal-almacenes>
   <modal-delete-almacen :idNumber="idNumberDelete" :almacen="almacenDelete"></modal-delete-almacen>
+  <modal-dua-almacen></modal-dua-almacen>
 </b-container>
 </template>
 
@@ -154,6 +166,7 @@
 import firebase from 'firebase/app'
 import ModalAlmacenes from '@/components/ModalAlmacenes.vue'
 import ModalDeleteAlmacen from '@/components/ModalDeleteAlmacen.vue'
+import ModalDuaAlmacen from '@/components/ModalDuaAlmacen.vue'
 
 import { mapMutations } from 'vuex'
 
@@ -161,7 +174,8 @@ export default{
   name: 'almacenes',
   components: {
     ModalAlmacenes,
-    ModalDeleteAlmacen
+    ModalDeleteAlmacen,
+    ModalDuaAlmacen
   },
   mounted(){
     this.db.ref('/sislocar')
@@ -203,6 +217,7 @@ export default{
         {key: 'kgs', label: 'Kilogramos'},
         {key: 'comments', label: 'Comentario'},
         {key: 'fecha', label: 'Fecha'},
+        'dua',
         this.disableActions ? null : 'acciones'
       ]
 
@@ -296,20 +311,20 @@ export default{
   },
   methods: {
 
-    ...mapMutations(['setModalShowAlmacen', 'setModalDeleteAlmacen']),
-    pushAllRoll: function(idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha){
+    ...mapMutations(['setModalShowAlmacen', 'setModalDeleteAlmacen', 'setModalDuaAlmacen']),
+    pushAllRoll: function(idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha, dua){
 
       if (almacen === 'telisa') {
         this.telisaRolls.push({
-          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha
+          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha, dua
         })
       }else if (almacen === 'sislocar') {
         this.sislocarRolls.push({
-          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha
+          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha, dua
         })
       }else if (almacen === 'otro') {
         this.otherRolls.push ({
-          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha
+          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha, dua
         })
       }
     },
@@ -338,7 +353,8 @@ export default{
             almacenRolls[key].typePaper,
             almacenRolls[key].kgs,
             almacenRolls[key].comments,
-            fecha
+            fecha,
+            almacenRolls[key].dua
           )
         }
       }
@@ -361,6 +377,12 @@ export default{
       this.idNumberDelete = idNumber
       this.almacenDelete = almacen
       this.setModalDeleteAlmacen(true)
+    },
+    addDua: function(roll) {
+      this.setModalDuaAlmacen({
+        show: true,
+        roll
+      })
     }
   }
 

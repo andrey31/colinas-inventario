@@ -5,7 +5,7 @@
   <b-row class="mb-2">
     <b-col cols="4">
       <b-input-group>
-        <b-input-group-text slot="prepend">Numero papel</b-input-group-text>
+        <b-input-group-text slot="prepend">Numero Rollo</b-input-group-text>
         <b-form-input v-model="filterRoll"></b-form-input>
       </b-input-group>
     </b-col>
