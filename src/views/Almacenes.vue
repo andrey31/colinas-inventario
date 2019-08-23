@@ -103,10 +103,10 @@
     </b-row>
   </template>
   <b-row class="pt-4">
-    <b-col cols="6" md="4" offset="2">
+    <b-col cols="4">
       <b-button>Ingresar rollo manual</b-button>
     </b-col>
-    <b-col cols="6" md="4">
+    <b-col cols="4">
       <b-pagination
         v-model="currentPage"
         :total-rows="rows"

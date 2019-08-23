@@ -1,6 +1,36 @@
 <template>
   <div>
     <b-row class="my-2">
+      <b-col cols="4">
+        <b-input-group>
+          <b-input-group-text slot="prepend">Numero de rollo</b-input-group-text>
+          <b-form-input v-model="filterIdNumber"></b-form-input>
+        </b-input-group>
+      </b-col>
+      <b-col cols="4">
+        <b-input-group>
+          <b-input-group-text slot="prepend">Gramaje</b-input-group-text>
+          <b-form-input v-model="filterGramaje"></b-form-input>
+        </b-input-group>
+      </b-col>
+      <b-col cols="4">
+        <b-input-group>
+          <b-input-group-text slot="prepend">Ancho</b-input-group-text>
+          <b-form-input v-model="filterWidth"></b-form-input>
+        </b-input-group>
+      </b-col>
+    </b-row>
+    <b-row >
+      <b-col cols="12">
+      <b-pagination
+        v-model="currentPage"
+        :total-rows="rollosEnTransitoFilter.length"
+        :per-page="perPage"
+        align="center">
+      </b-pagination>
+    </b-col>
+    </b-row>
+    <b-row class="my-2">
       <b-col cols="12">
         <b-button variant="primary"
                   :disabled="(countSelectRolls <= 0)"
@@ -9,7 +39,8 @@
         </b-button>
       </b-col>
     </b-row>
-    <b-table :items="rollosEnTransitoFilter" :fields="fieldsRolls">
+    <b-table :items="rollosEnTransitoFilter" :fields="fieldsRolls" :per-page="perPage"
+      :current-page="currentPage">
       <template slot="kgs" slot-scope="row">
         {{Number(row.item.kgs).toFixed(2)}}
       </template>
@@ -72,7 +103,9 @@ export default {
         rollosEnTransitoFilter: function(){
             let filter = this.rollosEnTransito.filter( el => {
                 if (el.comentarioNoLlego) el._rowVariant = 'danger'
-                return el.enTransito === true
+                return el.enTransito === true && el.idNumber.toString().indexOf(this.filterIdNumber) > -1 &&
+                    el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
+                    el.width.toString().indexOf(this.filterWidth) > -1
             })
             return filter
         },
@@ -98,7 +131,12 @@ export default {
             ],
             rollsCheck: [],
             rollsNotCheck: [],
-            showModalSendRolls: false
+            showModalSendRolls: false,
+            filterIdNumber: '',
+            filterGramaje: '',
+            filterWidth: '',
+            perPage: 25,
+            currentPage: 1
         }
     },
     methods: {
