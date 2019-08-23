@@ -202,7 +202,8 @@ export default{
       if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com' ||
           this.currentUser.email === 'admin@corrugadosaltavista.com' ||
           this.currentUser.email === 'guillermo.hernandez@corrugadosaltavista.com' ||
-          this.currentUser.email === 'jose.rodriguez@corrugadosaltavista.com') {
+          this.currentUser.email === 'jose.rodriguez@corrugadosaltavista.com' ||
+          this.currentUser.email === 'jennifer.rodriguez@currugadosaltavista.com') {
         return false
       }
       else return true
@@ -218,7 +219,7 @@ export default{
         {key: 'kgs', label: 'Kilogramos'},
         {key: 'comments', label: 'Comentario'},
         {key: 'fecha', label: 'Fecha'},
-        'dua',
+        this.disableActions ? null : 'dua',
         this.disableActions ? null : 'acciones'
       ]
 
@@ -241,11 +242,11 @@ export default{
 
       return kgsM
     },
-    disableButtonDelete: function(){
-      if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com') return false
-      else return true
+    // disableButtonDelete: function(){
+    //   if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com') return false
+    //   else return true
 
-    },
+    // },
     rollsFilter: function(){
 
       let filter = this.allRolls.filter( el => {
