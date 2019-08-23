@@ -478,7 +478,6 @@ export default{
         if (typeof el.enUso !== 'undefined') {
           r = r && el.enUso.toLowerCase().indexOf(this.filterEnUso) > -1
         }
-        console.log(el.fecha)
         if(el.fecha !== null){
           r = r && el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00')
             && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
@@ -512,6 +511,22 @@ export default{
 
       let rollsByGramaje = {}
       this.rollsFilter.forEach( roll => {
+
+        //Borrar espacios en el tipo de papel para evitar problemas en los filtros
+        let typePaper = roll.typePaper
+        if (typePaper.includes('WHITE TOP')) {
+          roll.typePaper = 'WHITE TOP'
+        }
+        else if (typePaper.includes('LINER R')){
+          roll.typePaper = 'LINER R'
+        }else if (typePaper.includes('LINER')){
+          roll.typePaper = 'LINER'
+        }else if(typePaper.includes('MEDIUM')){
+          roll.typePaper = 'MEDIUM'
+        }
+        // let rollsCustom = roll.typePaper.split(' ').join('')
+        // roll.typePaper = rollsCustom
+        // if (roll.gramaje.includes('LINER R'))
         rollsByGramaje[roll.gramaje] = rollsByGramaje[roll.gramaje] || []
         rollsByGramaje[roll.gramaje].push(roll)
       })
@@ -575,7 +590,6 @@ export default{
 
       if (this.modalRow.fecha) {
         let fecha = this.formatDate(this.modalRow.fecha).split('-')
-        console.log(fecha)
         let formatFecha = `${fecha[2]}-${fecha[1]}-${fecha[0]}`
         this.modalRow.fecha = formatFecha
       }

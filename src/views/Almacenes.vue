@@ -265,6 +265,20 @@ export default{
 
       let rollsByGramaje = {}
       this.rollsFilter.forEach( roll => {
+
+        //Borrar espacios en el tipo de papel para evitar problemas en los filtros
+        let typePaper = roll.typePaper
+        if (typePaper.includes('WHITE TOP')) {
+          roll.typePaper = 'WHITE TOP'
+        }
+        else if (typePaper.includes('LINER R')){
+          roll.typePaper = 'LINER R'
+        }else if (typePaper.includes('LINER')){
+          roll.typePaper = 'LINER'
+        }else if(typePaper.includes('MEDIUM')){
+          roll.typePaper = 'MEDIUM'
+        }
+
         rollsByGramaje[roll.gramaje] = rollsByGramaje[roll.gramaje] || []
         rollsByGramaje[roll.gramaje].push(roll)
       })

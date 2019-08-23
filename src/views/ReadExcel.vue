@@ -323,6 +323,20 @@ export default{
                       if(this.rollsExistsInDb.indexOf(roll) === -1){
                         roll.enTransito = true
                         roll.dua = ''
+
+                        //Borrar espacios en el tipo de papel para evitar problemas en los filtros
+                        let typePaper = roll.typePaper
+                        if (typePaper.includes('WHITE TOP')) {
+                          roll.typePaper = 'WHITE TOP'
+                        }
+                        else if (typePaper.includes('LINER R')){
+                          roll.typePaper = 'LINER R'
+                        }else if (typePaper.includes('LINER')){
+                          roll.typePaper = 'LINER'
+                        }else if(typePaper.includes('MEDIUM')){
+                          roll.typePaper = 'MEDIUM'
+                        }
+
                         this.rollsNotExistsInDb.push({...roll})
                         roll._rowVariant = 'primary'
                       }
