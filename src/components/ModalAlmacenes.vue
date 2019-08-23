@@ -94,10 +94,10 @@ export default{
                 comments: this.modalRow.comments,
                 gramaje: this.modalRow.gramaje,
                 idNumber: this.modalRow.idNumber,
-                kgs: this.modalRow.kgs,
-                meters: this.modalRow.meters,
+                kgs: Number(this.modalRow.kgs),
+                meters: Number(this.modalRow.meters),
                 typePaper: this.modalRow.typePaper,
-                width: this.modalRow.width
+                width: Number(this.modalRow.width)
             }
             this.db.ref(almacen).child(key).update(obj).then( data => {
                 this.setModalShowAlmacen(false)

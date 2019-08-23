@@ -44,7 +44,7 @@
         </template>
 
         <template slot="delete" slot-scope="row">
-          <b-button @click="deleteOrder(row.item.key, row.item.packingList, row.item.ourOrder, row.item.almacen)"
+          <b-button @click="setModalDeleteOrder(row.item)"
                     variant="danger" v-if="!disableButtonDelete"><v-icon name="trash-alt"></v-icon></b-button>
 
           <b-button variant="danger" disabled v-else><v-icon name="trash-alt"></v-icon></b-button>
@@ -77,6 +77,24 @@
 
     </b-tab>
   </b-tabs>
+  <b-modal v-model="showModalDeleteOrder"
+           hide-header
+           hide-footer
+           >
+    <b-container  class="text-center">
+      <b-row>
+        <b-col>
+          <h3>¿Esta seguro de eliminar el packing-list?</h3>
+        </b-col>
+      </b-row>
+      <b-row class="pt-4">
+        <b-col>
+          <b-button block variant="danger" class="mr-2" @click="showModalDeleteOrder = false">No</b-button>
+          <b-button block variant="primary" class="mr-2" @click="deleteOrder()">Si</b-button>
+      </b-col>
+    </b-row>
+  </b-container>
+</b-modal>
 </b-container>
 </template>
 
@@ -141,10 +159,20 @@ export default{
       currentPage: 1,
       rollosEnTransito: [],
       search: '',
+      showModalDeleteOrder: false,
+      orderDelete: ''
     }
   },
   methods: {
-    deleteOrder: function(key, rolls, ourOrder, almacen){
+    setModalDeleteOrder: function(order){
+      this.showModalDeleteOrder = true
+      this.orderDelete = order
+    },
+    deleteOrder: function(){
+      let key = this.orderDelete.key
+      let rolls = this.orderDelete.packingList
+      let almacen = this.orderDelete.almacen
+
       this.db.ref('/order').child(key).remove()
       rolls.forEach( rol => {
         this.db.ref(almacen+'EnTransito').child(rol.key).remove()
@@ -152,12 +180,27 @@ export default{
 
       let xls = firebase.storage().ref().child('packing-list/'+key+'.xlsx')
       xls.delete().then( () => {
+        this.showModalDeleteOrder = false
         console.log('borrado')
       }).catch( (error) => {
         console.log(error)
       })
 
     },
+    // deleteOrder: function(key, rolls, ourOrder, almacen){
+    //   this.db.ref('/order').child(key).remove()
+    //   rolls.forEach( rol => {
+    //     this.db.ref(almacen+'EnTransito').child(rol.key).remove()
+    //   })
+
+    //   let xls = firebase.storage().ref().child('packing-list/'+key+'.xlsx')
+    //   xls.delete().then( () => {
+    //     console.log('borrado')
+    //   }).catch( (error) => {
+    //     console.log(error)
+    //   })
+
+    // },
     loadPackingList: function(data, almacen){
       let arr = []
       data.forEach( element => {
@@ -269,20 +312,7 @@ export default{
       // }
       // this.rollsCheck = []
 
-    },
-    sendDUA: function(){
-      let almacen = (this.showModalDUA.roll.almacen)+'EnTransito'
-      let idNumber = this.showModalDUA.roll.idNumber
-      this.db.ref(almacen).child(idNumber).update(
-        {
-          dua: this.showModalDUA.dua
-        }
-      ).then((data) => {
-        console.log('agregado'),
-        this.showModalDUA.roll.dua = this.showModalDUA.dua
-        this.showModalDUA.show = false
-      })
-    },
+    }
   }
 
 }
