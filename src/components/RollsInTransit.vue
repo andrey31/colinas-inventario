@@ -20,6 +20,18 @@
         </b-input-group>
       </b-col>
     </b-row>
+    <b-row class="my-2">
+      <b-col cols="4" offset="4">
+        <b-input-group>
+          <b-input-group-text slot="prepend">Almacen</b-input-group-text>
+          <b-form-select v-model="filterAlmacen">
+            <option value="">Todos</option>
+            <option value="telisa">Telisa</option>
+            <option value="sislocar">Sislocar</option>
+          </b-form-select>
+        </b-input-group>
+      </b-col>
+    </b-row>
     <b-row >
       <b-col cols="12">
       <b-pagination
@@ -39,6 +51,50 @@
         </b-button>
       </b-col>
     </b-row>
+
+    <b-row class="">
+      <b-col cols="12">
+        <b-card bg-variant="light" text-variant="dark" title="Rollos información">
+          <b-card-text>
+            <b-row>
+              <div v-for="gramaje, index in totalRolls.rollsByGramaje" :key="index">
+
+                <b-col >
+                  <b>
+                    <label :class="[(gramaje.gramaje).includes('LINER R') ? 'color-red' : '']" class="px-2">
+                      {{gramaje.gramaje}}
+                    </label> cantidad: {{gramaje.count}}
+                  </b>
+                  <br/>
+                </b-col>
+
+              </div>
+              <b-col>
+                Total de rollos: <b>{{totalRolls.length}}</b>
+              </b-col>
+            </b-row>
+            <b-row class="pt-4">
+              <b-col v-if="getTotalKgsMeters.kg > 0">
+                Total de kilos <b>{{(getTotalKgsMeters.kg).toLocaleString('en-us')}}</b>
+              </b-col>
+              <b-col v-if="getTotalKgsMeters.tons > 0">
+                Total de toneladas <b>{{(getTotalKgsMeters.tons).toLocaleString('en-us')}}</b>
+              </b-col>
+              <b-col v-if="getTotalKgsMeters.meters > 0">
+                Total de metros <b>{{(getTotalKgsMeters.meters).toLocaleString('en-us')}}</b>
+              </b-col>
+              <b-col v-if="getTotalKgsMeters.desperdicio > 0">
+                Total de desperdicio <b>{{(getTotalKgsMeters.desperdicio).toLocaleString('en-us')}}</b>
+              </b-col>
+              <b-col v-if="getTotalKgsMeters.diametro > 0">
+                Total de diametro <b>{{(getTotalKgsMeters.diametro).toLocaleString('en-us')}}</b>
+              </b-col>
+            </b-row>
+          </b-card-text>
+        </b-card>
+      </b-col>
+        </b-row>
+
     <b-table :items="rollosEnTransitoFilter" :fields="fieldsRolls" :per-page="perPage"
       :current-page="currentPage">
       <template slot="kgs" slot-scope="row">
@@ -105,13 +161,56 @@ export default {
                 if (el.comentarioNoLlego) el._rowVariant = 'danger'
                 return el.enTransito === true && el.idNumber.toString().indexOf(this.filterIdNumber) > -1 &&
                     el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
-                    el.width.toString().indexOf(this.filterWidth) > -1
+                    el.width.toString().indexOf(this.filterWidth) > -1 &&
+                    el.almacen.indexOf(this.filterAlmacen) > -1
             })
             return filter
         },
         countSelectRolls: function(){
             return this.rollsCheck.length + this.rollsNotCheck.length
         },
+        totalRolls: function() {
+            let total = {}
+            total.length = this.rollosEnTransitoFilter.length
+
+            let rollsByGramaje = {}
+            this.rollosEnTransitoFilter.forEach( roll => {
+                rollsByGramaje[roll.gramaje] = rollsByGramaje[roll.gramaje] || []
+                rollsByGramaje[roll.gramaje].push(roll)
+            })
+
+            let gramajes = []
+            let rollsByGramajeType = {}
+
+            Object.keys(rollsByGramaje).forEach( key => {
+                rollsByGramaje[key].forEach( roll => {
+                    let keyGramajeType = `${key} - ${roll.typePaper}`
+                    rollsByGramajeType[keyGramajeType] = rollsByGramajeType[keyGramajeType] || []
+                    rollsByGramajeType[keyGramajeType].push('')
+                })
+            })
+            Object.keys(rollsByGramajeType).forEach( key => {
+                gramajes.push({'gramaje': key, 'count': rollsByGramajeType[key].length})
+            })
+            total.rollsByGramaje = gramajes
+            return total
+        },
+        getTotalKgsMeters: function(){
+            let kgsM = {}
+            let kg = 0
+            let meters = 0
+            this.rollosEnTransitoFilter.forEach( roll => {
+                kg += parseFloat(roll.kgs)
+                if (roll.meters) meters += parseFloat(roll.meters)
+            })
+
+            kgsM.kg = kg
+            kgsM.meters = meters
+            kgsM.tons = kg / 1000
+
+            return kgsM
+        },
+
     },
     data(){
         return {
@@ -135,6 +234,7 @@ export default {
             filterIdNumber: '',
             filterGramaje: '',
             filterWidth: '',
+            filterAlmacen: '',
             perPage: 25,
             currentPage: 1
         }
@@ -175,13 +275,13 @@ export default {
                         roll._rowVariant = 'danger'
 
                         console.log('en transito actualizado')
-            if (index === arr.length - 1 ) this.showModalSendRolls = false
-          }).catch( error => {
-            console.log('error transito no actualizado ' +error)
-          })
-          console.log('agregdo '+r.idNumber)
-        }).catch( error => {
-          console.log('error')
+                        if (index === arr.length - 1 ) this.showModalSendRolls = false
+                    }).catch( error => {
+                        console.log('error transito no actualizado ' +error)
+                    })
+                    console.log('agregdo '+r.idNumber)
+                }).catch( error => {
+                    console.log('error')
         })
       })
       this.rollsCheck = []

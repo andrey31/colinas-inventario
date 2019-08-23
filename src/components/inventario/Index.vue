@@ -526,7 +526,6 @@ export default{
         })
       })
       Object.keys(rollsByGramajeType).forEach( key => {
-        console.log(rollsByGramajeType[key].length)
         gramajes.push({'gramaje': key, 'count': rollsByGramajeType[key].length})
       })
       total.rollsByGramaje = gramajes
