@@ -90,6 +90,16 @@
                 Total de diametro <b>{{(getTotalKgsMeters.diametro).toLocaleString('en-us')}}</b>
               </b-col>
             </b-row>
+            <b-row>
+              <b-col cols="12">
+                <download-excel
+                  class="btn btn-primary mt-4"
+                  :data="dataXLS"
+                  name="datos.xls" v-if="dataXLS.length != 0">
+                  Exportar datos a excel
+                </download-excel>
+              </b-col>
+            </b-row>
           </b-card-text>
         </b-card>
       </b-col>
@@ -156,6 +166,25 @@ import firebase from 'firebase/app'
 export default {
     props: ['rollosEnTransito'],
     computed: {
+        dataXLS: function(){
+            let data = this.rollosEnTransitoFilter.slice()
+            let arr = []
+
+            for( let key in data){
+                let obj = {
+                    'Numero de rollo': (data[key].idNumber).toString(),
+                    'Kilos': (data[key].kgs),
+                    'Metros': (data[key].meters),
+                    'Fecha': (data[key].fecha),
+                    'Ancho': (data[key].width).toString(),
+                    'Tipo papel': (data[key].typePaper),
+                    'Comentario': (data[key].comments),
+                    'Almacen': (data[key].almacen)
+                }
+                arr.push(obj)
+            }
+            return arr
+        },
         rollosEnTransitoFilter: function(){
             let filter = this.rollosEnTransito.filter( el => {
                 if (el.comentarioNoLlego) el._rowVariant = 'danger'
