@@ -29,6 +29,7 @@
             <option value="jose.rodriguez@corrugadosaltavista.com">jose.rodriguez@corrugadosaltavista.com</option>
             <option value="contabilidad@corrugadosaltavista.com">contabilidad@corrugadosaltavista.com</option>
             <option value="jose.mora@corrugadosaltavista.com">jose.mora@corrugadosaltavista.com</option>
+            <option value="jennifer@corrugadosaltavista.com">jennifer@corrugadosaltavista.com</option>
             <option value="montacargas1@corrugadosaltavista.com">montacargas1@corrugadosaltavista.com</option>
             <option value="montacargas2@corrugadosaltavista.com">montacargas2@corrugadosaltavista.com</option>
             <option value="operador1@corrugadosaltavista.com">operador1@corrugadosaltavista.com</option>

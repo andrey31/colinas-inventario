@@ -105,7 +105,7 @@
   </template>
   <b-row class="pt-4">
     <b-col cols="4">
-      <b-button @click="newRoll">Ingresar rollo manual</b-button>
+      <b-button @click="newRoll" v-if="!disableActions">Ingresar rollo manual</b-button>
     </b-col>
     <b-col cols="4">
       <b-pagination
@@ -199,11 +199,12 @@ export default{
   },
   computed: {
     disableActions: function(){
+
       if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com' ||
           this.currentUser.email === 'admin@corrugadosaltavista.com' ||
           this.currentUser.email === 'guillermo.hernandez@corrugadosaltavista.com' ||
           this.currentUser.email === 'jose.rodriguez@corrugadosaltavista.com' ||
-          this.currentUser.email === 'jennifer.rodriguez@currugadosaltavista.com') {
+          this.currentUser.email === 'jennifer@corrugadosaltavista.com') {
         return false
       }
       else return true

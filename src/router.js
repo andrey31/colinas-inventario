@@ -35,7 +35,8 @@ const router = new Router({
       component: ReadExcel,
       meta: {
         requiresAuth: true,
-        permissionAdmin: true
+        permissionAdmin: true,
+        permissionCol: true
       }
     },
     {
@@ -60,7 +61,8 @@ const router = new Router({
       name: 'inventario',
       component: Inventario,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        permissionCol: true
       }
     },
     {
@@ -68,7 +70,8 @@ const router = new Router({
       name: 'traslados',
       component: Traslados,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        permissionCol: true
       }
     },
     {
@@ -76,7 +79,8 @@ const router = new Router({
       name: 'registroCambios',
       component: RegistroCambios,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        permissionCol: true
       }
     },
     {
@@ -94,12 +98,35 @@ router.beforeEach((to, from, next) => {
   const currentUser = firebase.auth().currentUser;
   const requiresAuth = to.matched.some( record => record.meta.requiresAuth)
   const permissionAdmin = to.matched.some(record => record.meta.permissionAdmin)
-  if (requiresAuth && permissionAdmin){
+  const permissionCol = to.matched.some(record => record.meta.permissionCol)
+
+  if (requiresAuth && permissionAdmin && permissionCol){
+    if (currentUser){
+      if (checkEmail(currentUser).admin && checkEmail(currentUser).col) {
+        next()
+      }else if( checkEmail(currentUser)){
+        next( { path: 'packing-list'})
+      }else {
+        next('login')
+      }
+    }
+  }else if (requiresAuth && permissionAdmin){
     if (currentUser){
       if (checkEmail(currentUser).admin) {
         next()
       }else if( checkEmail(currentUser)){
         next( { path: 'almacenes'})
+      }else {
+        next('login')
+      }
+    }
+  }else if (requiresAuth && permissionCol){
+
+    if(currentUser){
+      if(checkEmail(currentUser).access && checkEmail(currentUser).col){
+        next()
+      }else if (checkEmail(currentUser)){
+        next( {path: 'almacenes'} )
       }else {
         next('login')
       }
@@ -131,13 +158,15 @@ function checkEmail( currentUser ){
     'montacargas1@corrugadosaltavista.com',
     'montacargas2@corrugadosaltavista.com',
     'operador1@corrugadosaltavista.com',
-    'operador2@corrugadosaltavista.com'
+    'operador2@corrugadosaltavista.com',
+    'jennifer@corrugadosaltavista.com'
   ]
 
   for(let email in emails){
-    if (emails[email] === currentUser.email && emails[email] === emails[0]) return { 'access': true, 'admin': true}
-    else if( emails[email] === currentUser.email && emails[email] === emails[1]) return { 'access': true, 'admin': true}
-    else if(emails[email] === currentUser.email) return {'access': true, 'admin': false}
+    if (emails[email] === currentUser.email && emails[email] === emails[0]) return { 'access': true, 'admin': true, 'col': true}
+    else if( emails[email] === currentUser.email && emails[email] === emails[1]) return { 'access': true, 'admin': true, 'col': true}
+    else if( emails[email] === currentUser.email && emails[email] === emails[10]) return { 'access': true, 'admin': true, 'col': false}
+    else if(emails[email] === currentUser.email) return {'access': true, 'admin': false, 'col': true}
     else if( email === (emails.length - 1) ) return {'access': false, 'admin': false}
   }
 

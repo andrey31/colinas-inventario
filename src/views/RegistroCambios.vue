@@ -76,7 +76,6 @@ export default {
     getChangesFilter: function(){
 
       let it = this.changes.filter( el => {
-        console.log(typeof el.fecha)
         return el.fecha >= new Date(this.filters.fechaInicio + 'T00:00:00-06:00') &&
           el.fecha <= new Date(this.filters.fechaFinal + 'T00:00:00-06:00') &&
           el.numRollo.toString().indexOf(this.filters.idNumber) > -1 &&

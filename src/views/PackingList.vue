@@ -118,7 +118,7 @@ export default{
     },
     disableButtonDelete(){
       let email1 = this.currentUser.email === 'omar.duran@corrugadosaltavista.com'
-      let email2 = this.currentUser.email === 'admin@corrougosaltavista.com'
+      let email2 = this.currentUser.email === 'admin@corrugadosaltavista.com'
       if ( email1 || email2 ) {
         return false
       }
