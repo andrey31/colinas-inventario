@@ -14,7 +14,7 @@
         class="mb-2"
         />
       <b-button @click="load"><v-icon name="tasks" class="secondary"></v-icon> Verificar</b-button>
-      <b-button @click="showModal = true" variant="primary" class="mx-2" :disabled="disabledUpload">
+      <b-button @click="showModalUpload" variant="primary" class="mx-2" :disabled="disabledUpload">
         <v-icon name="cloud-upload-alt" scale="1.5"></v-icon> Subir a base de datos</b-button>
     </b-col>
 
@@ -35,7 +35,7 @@
           <b-row>
             <b-col>
               <b-btn @click="showModal = false" variant="danger" block class="mr-2">Cancel</b-btn>
-              <b-btn variant="primary" block @click="uploadFile()">Aceptar</b-btn>
+              <b-btn variant="primary" block @click="uploadFile()" :disabled="almacen === ''">Aceptar</b-btn>
             </b-col>
           </b-row>
         </b-container>
@@ -115,7 +115,7 @@ export default{
       showAlertError: false,
       textAlertError: '',
       showModal: false,
-      almacen: 'sislocar'
+      almacen: ''
     }
   },
   methods: {
@@ -411,6 +411,10 @@ export default{
       }
       oReq.send();
 
+    },
+    showModalUpload: function(){
+      this.almacen = ''
+      this.showModal = true
     }
   }
 }
