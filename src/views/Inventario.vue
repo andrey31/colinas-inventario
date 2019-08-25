@@ -136,7 +136,7 @@ export default{
           key: 'hora',
           label: 'Hora Ingreso'
         },
-        'fechaTraslado',
+        // 'fechaTraslado',
         this.disableActions ? null : 'acciones'
       ]
       this.db.ref('/Inventario')
@@ -264,17 +264,17 @@ export default{
           let year = fechaArray[2]
           fechaFormat = new Date(year, month, day)
         }
-        let fechaTraslado = typeof data[key].fechaTraslado !== 'undefined' ? data[key].fechaTraslado : null
+        // let fechaTraslado = typeof data[key].fechaTraslado !== 'undefined' ? data[key].fechaTraslado : null
 
-        let fechaTrasladoFormat = null
-        if(fechaTraslado){
-          let fechaArray = fechaTraslado.split('-')
-          let day = fechaArray[0]
-          let month = fechaArray[1] - 1
-          let year = fechaArray[2]
+        // let fechaTrasladoFormat = null
+        // if(fechaTraslado){
+        //   let fechaArray = fechaTraslado.split('-')
+        //   let day = fechaArray[0]
+        //   let month = fechaArray[1] - 1
+        //   let year = fechaArray[2]
 
-          fechaTrasladoFormat = new Date(year, month, day);
-        }
+        //   fechaTrasladoFormat = new Date(year, month, day);
+        // }
 
         items.push({
           'key': key,
@@ -293,7 +293,7 @@ export default{
           'diametro': data[key].diametro,
           'fecha': fechaFormat,
           'hora': data[key].hora,
-          'fechaTraslado': fechaTrasladoFormat
+          // 'fechaTraslado': fechaTrasladoFormat
         })
       }
     },

@@ -92,19 +92,19 @@
         </b-input-group>
       </b-col>
 
-      <b-col cols="6" v-if="actualTab === 0">
-        <b-input-group>
-          <b-input-group-text slot="prepend" >Fecha Inicio traslado</b-input-group-text>
-          <b-form-input  v-model="dateFilterBeginT" type="date"></b-form-input>
-        </b-input-group>
-      </b-col>
+      <!-- <b-col cols="6" v-if="actualTab === 0"> -->
+      <!--   <b-input-group> -->
+      <!--     <b-input-group-text slot="prepend" >Fecha Inicio traslado</b-input-group-text> -->
+      <!--     <b-form-input  v-model="dateFilterBeginT" type="date"></b-form-input> -->
+      <!--   </b-input-group> -->
+      <!-- </b-col> -->
 
-      <b-col cols="6" v-if="actualTab === 0">
-        <b-input-group>
-          <b-input-group-text slot="prepend" >Fecha Final traslado</b-input-group-text>
-          <b-form-input v-model="dateFilterFinishT" type="date"></b-form-input>
-        </b-input-group>
-      </b-col>
+      <!-- <b-col cols="6" v-if="actualTab === 0"> -->
+      <!--   <b-input-group> -->
+      <!--     <b-input-group-text slot="prepend" >Fecha Final traslado</b-input-group-text> -->
+      <!--     <b-form-input v-model="dateFilterFinishT" type="date"></b-form-input> -->
+      <!--   </b-input-group> -->
+      <!-- </b-col> -->
     </b-row>
 
 
@@ -195,10 +195,10 @@
       <template v-if="row.item.fecha" slot="fecha" slot-scope="row">
         {{row.item.fecha.toISOString().slice(0, 10)}}
       </template>
-      <template slot="fechaTraslado" slot-scope="row">
-        <label for="" v-if="row.item.fechaTraslado">{{row.item.fechaTraslado.toISOString().slice(0, 10)}}</label>
-        <label for="" v-else>No definida</label>
-      </template>
+      <!-- <template slot="fechaTraslado" slot-scope="row"> -->
+      <!--   <label for="" v-if="row.item.fechaTraslado">{{row.item.fechaTraslado.toISOString().slice(0, 10)}}</label> -->
+      <!--   <label for="" v-else>No definida</label> -->
+      <!-- </template> -->
       <template slot="typePaper" slot-scope="row">
         <label for="" :class="[(row.item.typePaper).includes('LINER R') ? 'color-red' : '']" class="px-2">
           {{row.item.typePaper}}
@@ -483,10 +483,10 @@ export default{
             && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
         }
 
-        if(this.actualTab === 0 && el.fechaTraslado){
-          r = r && el.fechaTraslado >= new Date(this.dateFilterBeginT + 'T00:00:00-06:00')
-            && el.fechaTraslado <= new Date(this.dateFilterFinishT + 'T00:00:00-06:00')
-        }
+        // if(this.actualTab === 0 && el.fechaTraslado){
+        //   r = r && el.fechaTraslado >= new Date(this.dateFilterBeginT + 'T00:00:00-06:00')
+        //     && el.fechaTraslado <= new Date(this.dateFilterFinishT + 'T00:00:00-06:00')
+        // }
 
         if(typeof bodega === 'undefined') {
           return r
@@ -558,8 +558,6 @@ export default{
       rollsFilter: [],
       dateFilterBegin: new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10).toString(),
       dateFilterFinish: new Date().toISOString().slice(0, 10).toString(),
-      dateFilterBeginT: new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10).toString(),
-      dateFilterFinishT: new Date().toISOString().slice(0, 10).toString(),
       disabledBodega: false,
       showFilterDate: false,
       modalShow: false,
