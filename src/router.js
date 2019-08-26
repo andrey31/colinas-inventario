@@ -9,6 +9,7 @@ import Inventario from './views/Inventario.vue'
 import RegistroCambios from './views/RegistroCambios.vue'
 import Almacenes from './views/Almacenes.vue'
 import Traslados from './views/Traslados.vue'
+import Reportes from './views/Reportes'
 
 Vue.use(Router)
 
@@ -78,6 +79,15 @@ const router = new Router({
       path: '/registro-cambios',
       name: 'registroCambios',
       component: RegistroCambios,
+      meta: {
+        requiresAuth: true,
+        permissionCol: true
+      }
+    },
+    {
+      path: '/reportes',
+      name: 'reportes',
+      component: Reportes,
       meta: {
         requiresAuth: true,
         permissionCol: true

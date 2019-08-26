@@ -7,6 +7,7 @@
     <router-link to="/inventario">Inventario</router-link> |
     <router-link to="/traslados">Traslados</router-link> |
     <router-link to="/registro-cambios">Registro de cambios</router-link> |
+    <router-link to="/reportes">Reportes</router-link> |
     <!-- <router-link to="/about">Acerca de</router-link> -->
     <a @click.prevent="logout()" href="">Salir</a>
     </div>
