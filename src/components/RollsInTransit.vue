@@ -274,8 +274,10 @@ export default {
                 this.db.ref(roll.almacen+'EnTransito').child(roll.idNumber).update(
                     {
                         comentarioNoLlego: roll.comentarioNoLlego,
+                        enTransito: false
                     }
                 ).then( (data) => {
+                    roll.enTransito = false
                     roll._rowVariant = 'danger'
                 })
             })
