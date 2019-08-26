@@ -117,7 +117,7 @@
 
                 <b-col >
                   <b>
-                    <label :class="[(gramaje.gramaje).includes('LINER R') ? 'color-red' : '']" class="px-2">
+                    <label class="px-2">
                       {{gramaje.gramaje}}
                     </label> cantidad: {{gramaje.count}}
                   </b>
@@ -200,7 +200,7 @@
       <!--   <label for="" v-else>No definida</label> -->
       <!-- </template> -->
       <template slot="typePaper" slot-scope="row">
-        <label for="" :class="[(row.item.typePaper).includes('LINER R') ? 'color-red' : '']" class="px-2">
+        <label class="px-2">
           {{row.item.typePaper}}
         </label>
       </template>
@@ -458,7 +458,7 @@ export default{
       kgsM.meters = meters
       kgsM.desperdicio = desperdicio
       kgsM.diametro = diametro
-      kgsM.tons = kg / 1000
+      kgsM.tons = Math.round(kg / 1000)
       return kgsM
     },
     getRolls(){

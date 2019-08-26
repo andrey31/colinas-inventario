@@ -74,7 +74,7 @@
                 <b-col >
 
                   <b>
-                    <label :class="[(gramaje.gramaje).includes('LINER R') ? 'color-red' : '']" class="px-2">
+                    <label class="px-2">
                       {{gramaje.gramaje}}
                     </label> cantidad: {{gramaje.count}}
                   </b>
@@ -239,7 +239,7 @@ export default{
 
       kgsM.kg = kg
       kgsM.meters = meters
-      kgsM.tons = kg / 1000
+      kgsM.tons = Math.round(kg / 1000)
 
       return kgsM
     },
@@ -364,11 +364,11 @@ export default{
           this.pushAllRoll(
             almacenRolls[key].idNumber,
             almacen,
-            almacenRolls[key].meters,
+            Math.round(almacenRolls[key].meters),
             almacenRolls[key].gramaje,
             almacenRolls[key].width,
             almacenRolls[key].typePaper,
-            almacenRolls[key].kgs,
+            Math.round(almacenRolls[key].kgs),
             almacenRolls[key].comments,
             fecha,
             almacenRolls[key].dua
