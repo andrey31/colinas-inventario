@@ -213,11 +213,11 @@ export default{
       return [
         {key: 'idNumber', label: 'Numero de rollo'},
         'almacen',
+        {key: 'kgs', label: 'Kilogramos'},
         {key: 'meters', label: 'Metros lineales'},
         'gramaje',
         {key: 'width', label: 'Ancho'},
         {key: 'typePaper', label: 'Tipo de papel'},
-        {key: 'kgs', label: 'Kilogramos'},
         {key: 'comments', label: 'Comentario'},
         {key: 'fecha', label: 'Fecha'},
         this.disableActions ? null : 'dua',
