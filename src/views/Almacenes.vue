@@ -333,15 +333,15 @@ export default{
 
       if (almacen === 'telisa') {
         this.telisaRolls.push({
-          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha, dua
+          idNumber, almacen, kgs, meters, gramaje, width, typePaper, kgs, comments, fecha, dua
         })
       }else if (almacen === 'sislocar') {
         this.sislocarRolls.push({
-          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha, dua
+          idNumber, almacen, kgs, meters, gramaje, width, typePaper, comments, fecha, dua
         })
       }else if (almacen === 'otro') {
         this.otherRolls.push ({
-          idNumber, almacen, meters, gramaje, width, typePaper, kgs, comments, fecha, dua
+          idNumber, almacen, kgs, meters, gramaje, width, typePaper, comments, fecha, dua
         })
       }
     },
