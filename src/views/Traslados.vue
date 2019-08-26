@@ -38,7 +38,20 @@
       </b-input-group>
     </b-col>
   </b-row>
-
+  <b-row class="pt-2">
+    <b-col cols="4" offset="2">
+      <b-input-group>
+        <b-input-group-text slot="prepend">Gramaje</b-input-group-text>
+        <b-form-input v-model="filterGramaje"></b-form-input>
+      </b-input-group>
+    </b-col>
+    <b-col cols="4">
+      <b-input-group>
+        <b-input-group-text slot="prepend">Ancho</b-input-group-text>
+        <b-form-input v-model="filterWidth"></b-form-input>
+      </b-input-group>
+    </b-col>
+  </b-row>
   <b-row class="pt-4">
     <b-col cols="12">
       <b-pagination
@@ -77,6 +90,8 @@ export default {
         return el.partida.indexOf(this.filterStart) > -1 &&
           el.llegada.indexOf(this.filterEnd) > -1 &&
           el.numRollo.indexOf(this.filterRoll) > -1 &&
+          el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
+          el.width.toString().indexOf(this.filterWidth) > -1 &&
           el.fecha >= new Date(this.filterDateBegin + 'T00:00:00-06:00') &&
           el.fecha <= new Date(this.filterDateFinish + 'T00:00:00-06:00')
       })
@@ -93,7 +108,10 @@ export default {
   data: function() {
     return {
       db: firebase.database(),
-      fields: ['numRollo', 'fecha', 'hora', 'partida', 'llegada'],
+      fields: ['numRollo', 'gramaje',
+               {key: 'width', label: 'Ancho'},
+               'fecha', 'hora', 'partida', 'llegada'
+              ],
       traslados: [],
       perPage: 100,
       currentPage: 1,
@@ -102,6 +120,8 @@ export default {
       filterDateFinish: new Date().toISOString().slice(0, 10).toString(),
       filterStart: '',
       filterEnd: '',
+      filterGramaje: '',
+      filterWidth: '',
       options: [
         {value: '', text: 'Todos'},
         {value: 'Telisa', text: 'Telisa'},
@@ -121,6 +141,11 @@ export default {
         let year = fechaArray[2]
         let fecha = new Date(year, month, day)
         snap[key].fecha = fecha
+
+        let gramaje = snap[key].gramaje
+        let width = snap[key].width
+        if (typeof gramaje === 'undefined') snap[key].gramaje = 'No definido'
+        if (typeof width === 'undefined') snap[key].width = 'No definido'
         this.traslados.push(snap[key])
       }
 
