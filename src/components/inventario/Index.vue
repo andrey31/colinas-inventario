@@ -80,10 +80,10 @@
           <b-form-input v-model="dateFilterBegin" type="date"></b-form-input>
         </b-input-group>
       </b-col>
-        <!-- <b-input-group> -->
-        <!--   <b-input-group-text slot="prepend" >Hora</b-input-group-text> -->
-        <!--   <b-form-input type="time" :disabled="disabledBodega"></b-form-input> -->
-        <!-- </b-input-group> -->
+      <!-- <b-input-group> -->
+      <!--   <b-input-group-text slot="prepend" >Hora</b-input-group-text> -->
+      <!--   <b-form-input type="time" :disabled="disabledBodega"></b-form-input> -->
+      <!-- </b-input-group> -->
 
       <b-col cols="6" v-if="showFilterDate">
         <b-input-group>
@@ -150,7 +150,7 @@
         </b-card>
       </b-col>
       <b-col cols="4">
-                <b-button variant="primary" class="mt-4" v-if="dataXLS.length > 0" @click="exportXLS">
+        <b-button variant="primary" class="mt-4" v-if="dataXLS.length > 0" @click="exportXLS">
           Exportar datos a excel
         </b-button>
         <!-- <download-excel -->
@@ -191,6 +191,10 @@
       <!-- </template> -->
       <template v-if="row.item.kgs" slot="kgs" slot-scope="row">
         <b>{{(row.item.kgs).toLocaleString('en-us')}}</b>
+      </template>
+      <template slot="kgsConsumidos" slot-scope="row">
+        <b v-if="row.item.kgsConsumidos">{{(row.item.kgsConsumidos).toLocaleString('en-us')}}</b>
+        <b v-else>0</b>
       </template>
       <template v-if="row.item.meters" slot="meters" slot-scope="row">
         <b>{{(row.item.meters).toLocaleString('en-us')}}</b>
@@ -467,7 +471,7 @@ export default{
     getRolls(){
       this.rollsFilter = this.items.filter( el => {
         let bodega = el.bodega
-
+        el.kgsConsumidos = Math.round(el.kgsConsumidos)
         typeof bodega === 'undefined' ? this.disabledBodega = true : this.disabledBodega = false
 
         this.showFilterDate = el.fecha === null ? false : true
