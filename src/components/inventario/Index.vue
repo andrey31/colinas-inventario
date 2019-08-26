@@ -150,12 +150,15 @@
         </b-card>
       </b-col>
       <b-col cols="4">
-        <download-excel
-          class="btn btn-primary mt-4"
-          :data="dataXLS"
-          name="datos.xls" v-if="dataXLS.length != 0">
+                <b-button variant="primary" class="mt-4" v-if="dataXLS.length > 0" @click="exportXLS">
           Exportar datos a excel
-        </download-excel>
+        </b-button>
+        <!-- <download-excel -->
+        <!--   class="btn btn-primary mt-4" -->
+        <!--   :data="dataXLS" -->
+        <!--   name="datos.xls" v-if="dataXLS.length != 0"> -->
+        <!--   Exportar datos a excel -->
+        <!-- </download-excel> -->
       </b-col>
     </b-row>
 
@@ -413,7 +416,7 @@ export default{
         obj.kgs = data[key].kgs
 
         if(typeof data[key].bodega !== 'undefined'){
-          obj.kgsConsumidos = data[key].kgsConsumidos
+          obj['kgs Consumidos'] = data[key].kgsConsumidos
         }
 
         if(typeof data[key].meters !== 'undefined'){
@@ -422,7 +425,7 @@ export default{
 
         obj.gramaje = data[key].gramaje
         obj.width = data[key].width
-        obj.tipoPapel = data[key].typePaper
+        obj['Tipo papel'] = data[key].typePaper
 
         if(typeof data[key].comments !== 'undefined'){
           obj.comentario = data[key].comments
@@ -720,6 +723,16 @@ export default{
 
       // this.db.ref(key).set
       // console.log(this.modalRow)
+    },
+    exportXLS: function(){
+
+      let sheet = XLSX.utils.json_to_sheet(this.dataXLS)
+
+      let wb = XLSX.utils.book_new()
+
+      XLSX.utils.book_append_sheet(wb, sheet, 'datos')
+      XLSX.writeFile(wb, 'datos.xlsx')
+
     }
   }
 

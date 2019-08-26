@@ -58,12 +58,15 @@
           <b-input-group-text slot="prepend">Numero rollo</b-input-group-text>
           <b-form-input v-model="filterNumberRoll"></b-form-input>
         </b-input-group>
-        <download-excel
-          class="btn btn-primary mt-4"
-          :data="rollsFilter"
-          name="datos.xls" v-if="rollsFilter.length != 0">
+        <b-button variant="primary" class="mt-4" v-if="rollsFilter.length > 0" @click="exportXLS">
           Exportar datos a excel
-        </download-excel>
+        </b-button>
+        <!-- <download-excel -->
+        <!--   class="btn btn-primary mt-4" -->
+        <!--   :data="rollsFilter" -->
+        <!--   name="datos.xls" v-if="rollsFilter.length != 0"> -->
+        <!--   Exportar datos a excel -->
+        <!-- </download-excel> -->
       </b-col>
       <b-col cols="8">
         <b-card bg-variant="light" text-varbiant="dark" title="Rollos información">
@@ -168,7 +171,7 @@ import firebase from 'firebase/app'
 import ModalAlmacenes from '@/components/ModalAlmacenes.vue'
 import ModalDeleteAlmacen from '@/components/ModalDeleteAlmacen.vue'
 import ModalDuaAlmacen from '@/components/ModalDuaAlmacen.vue'
-
+import XLSX from 'xlsx'
 import { mapMutations } from 'vuex'
 
 export default{
@@ -416,6 +419,16 @@ export default{
         show: true,
         roll
       })
+    },
+    exportXLS: function(roll){
+
+      let sheet = XLSX.utils.json_to_sheet(this.rollsFilter)
+
+      let wb = XLSX.utils.book_new()
+
+      XLSX.utils.book_append_sheet(wb, sheet, 'datos')
+      XLSX.writeFile(wb, 'datos.xlsx')
+
     }
   }
 
