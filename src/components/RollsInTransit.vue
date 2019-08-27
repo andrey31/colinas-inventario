@@ -1,39 +1,39 @@
 <template>
-  <div>
-    <b-row class="my-2">
-      <b-col cols="4">
-        <b-input-group>
-          <b-input-group-text slot="prepend">Numero de rollo</b-input-group-text>
-          <b-form-input v-model="filterIdNumber"></b-form-input>
-        </b-input-group>
-      </b-col>
-      <b-col cols="4">
-        <b-input-group>
-          <b-input-group-text slot="prepend">Gramaje</b-input-group-text>
-          <b-form-input v-model="filterGramaje"></b-form-input>
-        </b-input-group>
-      </b-col>
-      <b-col cols="4">
-        <b-input-group>
-          <b-input-group-text slot="prepend">Ancho</b-input-group-text>
-          <b-form-input v-model="filterWidth"></b-form-input>
-        </b-input-group>
-      </b-col>
-    </b-row>
-    <b-row class="my-2">
-      <b-col cols="4" offset="4">
-        <b-input-group>
-          <b-input-group-text slot="prepend">Almacen</b-input-group-text>
-          <b-form-select v-model="filterAlmacen">
-            <option value="">Todos</option>
-            <option value="telisa">Telisa</option>
-            <option value="sislocar">Sislocar</option>
-          </b-form-select>
-        </b-input-group>
-      </b-col>
-    </b-row>
-    <b-row >
-      <b-col cols="12">
+<div>
+  <b-row class="my-2">
+    <b-col cols="4">
+      <b-input-group>
+        <b-input-group-text slot="prepend">Numero de rollo</b-input-group-text>
+        <b-form-input v-model="filterIdNumber"></b-form-input>
+      </b-input-group>
+    </b-col>
+    <b-col cols="4">
+      <b-input-group>
+        <b-input-group-text slot="prepend">Gramaje</b-input-group-text>
+        <b-form-input v-model="filterGramaje"></b-form-input>
+      </b-input-group>
+    </b-col>
+    <b-col cols="4">
+      <b-input-group>
+        <b-input-group-text slot="prepend">Ancho</b-input-group-text>
+        <b-form-input v-model="filterWidth"></b-form-input>
+      </b-input-group>
+    </b-col>
+  </b-row>
+  <b-row class="my-2">
+    <b-col cols="4" offset="4">
+      <b-input-group>
+        <b-input-group-text slot="prepend">Almacen</b-input-group-text>
+        <b-form-select v-model="filterAlmacen">
+          <option value="">Todos</option>
+          <option value="telisa">Telisa</option>
+          <option value="sislocar">Sislocar</option>
+        </b-form-select>
+      </b-input-group>
+    </b-col>
+  </b-row>
+  <b-row >
+    <b-col cols="12">
       <b-pagination
         v-model="currentPage"
         :total-rows="rollosEnTransitoFilter.length"
@@ -41,122 +41,129 @@
         align="center">
       </b-pagination>
     </b-col>
-    </b-row>
-    <b-row class="my-2">
-      <b-col cols="12">
-        <b-button variant="primary"
-                  :disabled="(countSelectRolls <= 0)"
-                  @click="showModalSendRolls = true">
-          Registrar rollos
-        </b-button>
-      </b-col>
-    </b-row>
+  </b-row>
+  <b-row class="my-2">
+    <b-col cols="12">
+      <b-button variant="primary"
+                :disabled="(countSelectRolls <= 0)"
+                @click="showModalSendRolls = true">
+        Registrar rollos
+      </b-button>
+    </b-col>
+  </b-row>
 
-    <b-row class="">
-      <b-col cols="12">
-        <b-card bg-variant="light" text-variant="dark" title="Rollos información">
-          <b-card-text>
-            <b-row>
-              <div v-for="gramaje, index in totalRolls.rollsByGramaje" :key="index">
+  <b-row class="">
+    <b-col cols="12">
+      <b-card bg-variant="light" text-variant="dark" title="Rollos información">
+        <b-card-text>
+          <b-row>
+            <div v-for="gramaje, index in totalRolls.rollsByGramaje" :key="index">
 
-                <b-col >
-                  <b>
-                    <label :class="[(gramaje.gramaje).includes('LINER R') ? 'color-red' : '']" class="px-2">
-                      {{gramaje.gramaje}}
-                    </label> cantidad: {{gramaje.count}}
-                  </b>
-                  <br/>
-                </b-col>
+              <b-col >
+                <b>
+                  <label :class="[(gramaje.gramaje).includes('LINER R') ? 'color-red' : '']" class="px-2">
+                    {{gramaje.gramaje}}
+                  </label> cantidad: {{gramaje.count}}
+                </b>
+                <br/>
+              </b-col>
 
-              </div>
-              <b-col>
-                Total de rollos: <b>{{totalRolls.length}}</b>
-              </b-col>
-            </b-row>
-            <b-row class="pt-4">
-              <b-col v-if="getTotalKgsMeters.kg > 0">
-                Total de kilos <b>{{(getTotalKgsMeters.kg).toLocaleString('en-us')}}</b>
-              </b-col>
-              <b-col v-if="getTotalKgsMeters.tons > 0">
-                Total de toneladas <b>{{(getTotalKgsMeters.tons).toLocaleString('en-us')}}</b>
-              </b-col>
-              <b-col v-if="getTotalKgsMeters.meters > 0">
-                Total de metros <b>{{(getTotalKgsMeters.meters).toLocaleString('en-us')}}</b>
-              </b-col>
-              <b-col v-if="getTotalKgsMeters.desperdicio > 0">
-                Total de desperdicio <b>{{(getTotalKgsMeters.desperdicio).toLocaleString('en-us')}}</b>
-              </b-col>
-              <b-col v-if="getTotalKgsMeters.diametro > 0">
-                Total de diametro <b>{{(getTotalKgsMeters.diametro).toLocaleString('en-us')}}</b>
-              </b-col>
-            </b-row>
-            <b-row>
-              <b-col cols="12">
-                <download-excel
-                  class="btn btn-primary mt-4"
-                  :data="dataXLS"
-                  name="datos.xls" v-if="dataXLS.length != 0">
-                  Exportar datos a excel
-                </download-excel>
-              </b-col>
-            </b-row>
-          </b-card-text>
-        </b-card>
-      </b-col>
-        </b-row>
+            </div>
+            <b-col>
+              Total de rollos: <b>{{totalRolls.length}}</b>
+            </b-col>
+          </b-row>
+          <b-row class="pt-4">
+            <b-col v-if="getTotalKgsMeters.kg > 0">
+              Total de kilos <b>{{(getTotalKgsMeters.kg).toLocaleString('en-us')}}</b>
+            </b-col>
+            <b-col v-if="getTotalKgsMeters.tons > 0">
+              Total de toneladas <b>{{(getTotalKgsMeters.tons).toLocaleString('en-us')}}</b>
+            </b-col>
+            <b-col v-if="getTotalKgsMeters.meters > 0">
+              Total de metros <b>{{(getTotalKgsMeters.meters).toLocaleString('en-us')}}</b>
+            </b-col>
+            <b-col v-if="getTotalKgsMeters.desperdicio > 0">
+              Total de desperdicio <b>{{(getTotalKgsMeters.desperdicio).toLocaleString('en-us')}}</b>
+            </b-col>
+            <b-col v-if="getTotalKgsMeters.diametro > 0">
+              Total de diametro <b>{{(getTotalKgsMeters.diametro).toLocaleString('en-us')}}</b>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col cols="12">
+              <download-excel
+                class="btn btn-primary mt-4"
+                :data="dataXLS"
+                name="datos.xls" v-if="dataXLS.length != 0">
+                Exportar datos a excel
+              </download-excel>
+            </b-col>
+          </b-row>
+        </b-card-text>
+      </b-card>
+    </b-col>
+  </b-row>
 
-    <b-table :items="rollosEnTransitoFilter" :fields="fieldsRolls" :per-page="perPage"
-      :current-page="currentPage">
-      <template slot="kgs" slot-scope="row">
-        {{Number(row.item.kgs).toFixed(2)}}
-      </template>
-      <template slot="enTransito" slot-scope="row">
-        <label v-if="row.item.enTransito">Sí</label>
-        <label v-else>No</label>
-      </template>
-      <template slot="enAlmacen" slot-scope="row">
-        <b-form-checkbox v-if="row.item.enTransito" v-model="rollsCheck" :value="row.item"
-                         :disabled="rollsNotCheck.includes(row.item)" v-b-tooltip.hover :title="row.item.idNumber">
-        </b-form-checkbox>
-      </template>
-      <template slot="noLlego" slot-scope="row">
-        <b-form-checkbox v-if="row.item.enTransito && !row.item.comentarioNoLlego" v-model="rollsNotCheck" :value="row.item"
-                         :disabled="rollsCheck.includes(row.item)" v-b-tooltip.hover :title="row.item.idNumber">
-        </b-form-checkbox>
-        <label for="" v-if="row.item.enTransito && row.item.comentarioNoLlego">{{row.item.comentarioNoLlego}}</label>
-      </template>
-    </b-table>
-    <b-modal v-model="showModalSendRolls"
-             header-bg-variant="primary"
-             no-close-on-backdrop
-             size="lg"
-             >
-      <template slot="modal-title">
-        Registrar
-      </template>
-      <div class="text-center" v-if="rollsCheck.length > 0">
-        Se registrarán los siguientes rollos en el almacen:
-        <ul>
-          <li v-for="roll in rollsCheck">{{roll.idNumber}}</li>
-        </ul>
-      </div>
-      <div class="text-center" v-if="rollsNotCheck.length > 0">
-        Por favor, ingrese un comentario de porque el rollo no llegó:
-        <ul>
-          <li v-for="roll in rollsNotCheck">
-            <b-row class="pt-2">
-              <b-col cols="2" class="pt-1" offset="1">{{roll.idNumber}}</b-col>
-              <b-col cols="8">
-                <b-form-input v-model="roll.comentarioNoLlego" placeholder="Ingrese comentario"></b-form-input>
-              </b-col>
-            </b-row>
-          </li>
+  <b-table :items="rollosEnTransitoFilter" :fields="fieldsRolls" :per-page="perPage"
+           :current-page="currentPage">
+    <template slot="kgs" slot-scope="row">
+      {{Number(row.item.kgs).toFixed(2)}}
+    </template>
+    <template slot="enTransito" slot-scope="row">
+      <label v-if="row.item.enTransito">Sí</label>
+      <label v-else>No</label>
+    </template>
+    <template slot="enAlmacen" slot-scope="row">
+      <b-form-checkbox v-if="row.item.enTransito" v-model="rollsCheck" :value="row.item"
+                       :disabled="rollsNotCheck.includes(row.item)" v-b-tooltip.hover :title="row.item.idNumber">
+      </b-form-checkbox>
+    </template>
+    <template slot="noLlego" slot-scope="row">
+      <b-form-checkbox v-if="row.item.enTransito && !row.item.comentarioNoLlego" v-model="rollsNotCheck" :value="row.item"
+                       :disabled="rollsCheck.includes(row.item)" v-b-tooltip.hover :title="row.item.idNumber">
+      </b-form-checkbox>
+      <label for="" v-if="row.item.enTransito && row.item.comentarioNoLlego">{{row.item.comentarioNoLlego}}</label>
+    </template>
+  </b-table>
+  <b-modal v-model="showModalSendRolls"
+           header-bg-variant="primary"
+           no-close-on-backdrop
+           size="lg"
+           >
+    <template slot="modal-title">
+      Registrar
+    </template>
+    <div class="text-center" v-if="rollsCheck.length > 0">
+      <b>Se registrarán los siguientes rollos en el almacen:</b>
+      <ul>
+        <li v-for="roll in rollsCheck">
+          <b-row class="pt-2">
+            <b-col>{{roll.idNumber}}</b-col>
+            <b-col><b-form-radio v-model="roll.almacen" :name="roll.idNumber" value="telisa">Telisa</b-form-radio></b-col>
+            <b-col><b-form-radio v-model="roll.almacen" :name="roll.idNumber" value="sislocar">Sislocar</b-form-radio></b-col>
+            <!-- <b-col><b-form-radio v-model="roll.almacen" :name="roll.idNumber" value="otro">Otro</b-form-radio></b-col> -->
+          </b-row>
+        </li>
+      </ul>
+    </div>
+    <div class="text-center pt-2" v-if="rollsNotCheck.length > 0">
+      <b>Por favor, ingrese un comentario de porque el rollo no llegó:</b>
+      <ul>
+        <li v-for="roll in rollsNotCheck">
+          <b-row class="pt-2">
+            <b-col cols="2" class="pt-1" offset="1">{{roll.idNumber}}</b-col>
+            <b-col cols="8">
+              <b-form-input v-model="roll.comentarioNoLlego" placeholder="Ingrese comentario"></b-form-input>
+            </b-col>
+          </b-row>
+        </li>
 
-        </ul>
-      </div>
-      <div slot="modal-footer" class="">
-        <b-button variant="danger" class="mr-2" @click="showModalSendRolls = false">Cancelar</b-button>
-        <b-button variant="primary" @click="sendRollsToAlmacen">Enviar</b-button>
+      </ul>
+    </div>
+    <div slot="modal-footer" class="">
+      <b-button variant="danger" class="mr-2" @click="showModalSendRolls = false">Cancelar</b-button>
+      <b-button variant="primary" @click="sendRollsToAlmacen">Enviar</b-button>
       </div>
     </b-modal>
   </div>
