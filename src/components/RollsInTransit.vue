@@ -171,160 +171,185 @@
 <script>
 import firebase from 'firebase/app'
 export default {
-    props: ['rollosEnTransito'],
-    computed: {
-        dataXLS: function(){
-            let data = this.rollosEnTransitoFilter.slice()
-            let arr = []
+  props: ['rollosEnTransito'],
+  computed: {
+    dataXLS: function(){
+      let data = this.rollosEnTransitoFilter.slice()
+      let arr = []
 
-            for( let key in data){
-                let obj = {
-                    'Numero de rollo': (data[key].idNumber).toString(),
-                    'Kilos': (data[key].kgs),
-                    'Metros': (data[key].meters),
-                    'Fecha': (data[key].fecha),
-                    'Ancho': (data[key].width).toString(),
-                    'Tipo papel': (data[key].typePaper),
-                    'Comentario': (data[key].comments),
-                    'Almacen': (data[key].almacen)
-                }
-                arr.push(obj)
-            }
-            return arr
-        },
-        rollosEnTransitoFilter: function(){
-            let filter = this.rollosEnTransito.filter( el => {
-                if (el.comentarioNoLlego) el._rowVariant = 'danger'
-                return el.enTransito === true && el.idNumber.toString().indexOf(this.filterIdNumber) > -1 &&
-                    el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
-                    el.width.toString().indexOf(this.filterWidth) > -1 &&
-                    el.almacen.indexOf(this.filterAlmacen) > -1
-            })
-            return filter
-        },
-        countSelectRolls: function(){
-            return this.rollsCheck.length + this.rollsNotCheck.length
-        },
-        totalRolls: function() {
-            let total = {}
-            total.length = this.rollosEnTransitoFilter.length
-
-            let rollsByGramaje = {}
-            this.rollosEnTransitoFilter.forEach( roll => {
-                rollsByGramaje[roll.gramaje] = rollsByGramaje[roll.gramaje] || []
-                rollsByGramaje[roll.gramaje].push(roll)
-            })
-
-            let gramajes = []
-            let rollsByGramajeType = {}
-
-            Object.keys(rollsByGramaje).forEach( key => {
-                rollsByGramaje[key].forEach( roll => {
-                    let keyGramajeType = `${key} - ${roll.typePaper}`
-                    rollsByGramajeType[keyGramajeType] = rollsByGramajeType[keyGramajeType] || []
-                    rollsByGramajeType[keyGramajeType].push('')
-                })
-            })
-            Object.keys(rollsByGramajeType).forEach( key => {
-                gramajes.push({'gramaje': key, 'count': rollsByGramajeType[key].length})
-            })
-            total.rollsByGramaje = gramajes
-            return total
-        },
-        getTotalKgsMeters: function(){
-            let kgsM = {}
-            let kg = 0
-            let meters = 0
-            this.rollosEnTransitoFilter.forEach( roll => {
-                kg += parseFloat(roll.kgs)
-                if (roll.meters) meters += parseFloat(roll.meters)
-            })
-
-            kgsM.kg = kg
-            kgsM.meters = meters
-            kgsM.tons = kg / 1000
-
-            return kgsM
-        },
-
-    },
-    data(){
-        return {
-            db: firebase.database(),
-            fieldsRolls: [
-                {key: 'idNumber', label: 'Numero de rollo'},
-                'fecha',
-                {key: 'meters', label: 'Metros lineales'},
-                'gramaje',
-                {key: 'width', label: 'Ancho'},
-                {key: 'typePaper', label: 'Tipo de papel'},
-                {key: 'kgs', label: 'Kilogramos'},
-                'enTransito',
-                'enAlmacen',
-                {key: 'noLlego', label: 'No llegó'},
-                {key: 'comments', label: 'Comentario'},
-            ],
-            rollsCheck: [],
-            rollsNotCheck: [],
-            showModalSendRolls: false,
-            filterIdNumber: '',
-            filterGramaje: '',
-            filterWidth: '',
-            filterAlmacen: '',
-            perPage: 25,
-            currentPage: 1
+      for( let key in data){
+        let obj = {
+          'Numero de rollo': (data[key].idNumber).toString(),
+          'Kilos': (data[key].kgs),
+          'Metros': (data[key].meters),
+          'Fecha': (data[key].fecha),
+          'Ancho': (data[key].width).toString(),
+          'Tipo papel': (data[key].typePaper),
+          'Comentario': (data[key].comments),
+          'Almacen': (data[key].almacen)
         }
+        arr.push(obj)
+      }
+      return arr
     },
-    methods: {
-        sendRollsToAlmacen: function(){
-            this.rollsNotCheck.forEach( roll => {
-                this.db.ref(roll.almacen+'EnTransito').child(roll.idNumber).update(
-                    {
-                        comentarioNoLlego: roll.comentarioNoLlego,
-                        enTransito: false
-                    }
-                ).then( (data) => {
-                    roll.enTransito = false
-                    roll._rowVariant = 'danger'
-                })
+    rollosEnTransitoFilter: function(){
+      let filter = this.rollosEnTransito.filter( el => {
+        if (el.comentarioNoLlego) el._rowVariant = 'danger'
+        return el.enTransito === true && el.idNumber.toString().indexOf(this.filterIdNumber) > -1 &&
+          el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
+          el.width.toString().indexOf(this.filterWidth) > -1 &&
+          el.almacen.indexOf(this.filterAlmacen) > -1
+      })
+      return filter
+    },
+    countSelectRolls: function(){
+      return this.rollsCheck.length + this.rollsNotCheck.length
+    },
+    totalRolls: function() {
+      let total = {}
+      total.length = this.rollosEnTransitoFilter.length
+
+      let rollsByGramaje = {}
+      this.rollosEnTransitoFilter.forEach( roll => {
+        rollsByGramaje[roll.gramaje] = rollsByGramaje[roll.gramaje] || []
+        rollsByGramaje[roll.gramaje].push(roll)
+      })
+
+      let gramajes = []
+      let rollsByGramajeType = {}
+
+      Object.keys(rollsByGramaje).forEach( key => {
+        rollsByGramaje[key].forEach( roll => {
+          let keyGramajeType = `${key} - ${roll.typePaper}`
+          rollsByGramajeType[keyGramajeType] = rollsByGramajeType[keyGramajeType] || []
+          rollsByGramajeType[keyGramajeType].push('')
+        })
+      })
+      Object.keys(rollsByGramajeType).forEach( key => {
+        gramajes.push({'gramaje': key, 'count': rollsByGramajeType[key].length})
+      })
+      total.rollsByGramaje = gramajes
+      return total
+    },
+    getTotalKgsMeters: function(){
+      let kgsM = {}
+      let kg = 0
+      let meters = 0
+      this.rollosEnTransitoFilter.forEach( roll => {
+        kg += parseFloat(roll.kgs)
+        if (roll.meters) meters += parseFloat(roll.meters)
+      })
+
+      kgsM.kg = kg
+      kgsM.meters = meters
+      kgsM.tons = kg / 1000
+
+      return kgsM
+    },
+
+  },
+  data(){
+    return {
+      db: firebase.database(),
+      fieldsRolls: [
+        {key: 'idNumber', label: 'Numero de rollo'},
+        'fecha',
+        {key: 'meters', label: 'Metros lineales'},
+        'gramaje',
+        {key: 'width', label: 'Ancho'},
+        {key: 'typePaper', label: 'Tipo de papel'},
+        {key: 'kgs', label: 'Kilogramos'},
+        'enTransito',
+        'enAlmacen',
+        {key: 'noLlego', label: 'No llegó'},
+        {key: 'comments', label: 'Comentario'},
+      ],
+      rollsCheck: [],
+      rollsNotCheck: [],
+      showModalSendRolls: false,
+      filterIdNumber: '',
+      filterGramaje: '',
+      filterWidth: '',
+      filterAlmacen: '',
+      perPage: 25,
+      currentPage: 1
+    }
+  },
+  methods: {
+    sendRollsToAlmacen: function(){
+      this.rollsNotCheck.forEach( roll => {
+        this.db.ref(roll.almacen+'EnTransito').child(roll.idNumber).update(
+          {
+            comentarioNoLlego: roll.comentarioNoLlego,
+            enTransito: false
+          }
+        ).then( (data) => {
+          roll.enTransito = false
+          roll._rowVariant = 'danger'
+        })
+      })
+
+      this.rollsCheck.forEach( (roll, index, arr) => {
+
+        let r = {
+          comments: roll.comments,
+          fecha: roll.fecha,
+          gramaje: roll.gramaje,
+          idNumber: roll.idNumber,
+          kgs: roll.kgs,
+          meters: roll.meters,
+          typePaper: roll.typePaper,
+          width: roll.width,
+          dua: ''
+        }
+        this.db.ref(roll.almacen).child(r.idNumber).set(r).then((data) => {
+          let rollId = r.idNumber
+          this.db.ref((roll.almacen)+'EnTransito').child(rollId).update(
+            {
+              enTransito: false
+            }
+          ).then( (data) => {
+            roll.enTransito = false
+            roll._rowVariant = 'danger'
+            console.log('en transito actualizado')
+
+            let d = new Date()
+            let month = '' + (d.getMonth() + 1)
+            let day = '' + d.getDate()
+            let year = d.getFullYear()
+            let hour = d.getHours()
+            let minutes = d.getMinutes()
+            let seconds = d.getSeconds()
+            let tz = hour < 12 ? ' am.' : ' pm.'
+            let traslado = {
+              fecha: day + '-' + month + '-' + year,
+              hora: hour + ':' + minutes + ':' + seconds + tz,
+              llegada: (roll.almacen).replace(/\b\w/g, l => l.toUpperCase()),
+              numRollo: rollId,
+              partida: 'En transito',
+              gramaje: r.gramaje,
+              width: r.width
+            }
+
+            let keyTraslado = this.db.ref('Traslados').push().key
+
+            this.db.ref('Traslados').child(keyTraslado).set(traslado).then(data => {
+              console.log('traslado agregado')
+            }).catch( error => {
+              console.log(error + ' en traslado')
             })
+          }).catch( error => {
+            console.log('error')
+          })
 
-            this.rollsCheck.forEach( (roll, index, arr) => {
-
-                let r = {
-                    comments: roll.comments,
-                    fecha: roll.fecha,
-                    gramaje: roll.gramaje,
-                    idNumber: roll.idNumber,
-                    kgs: roll.kgs,
-                    meters: roll.meters,
-                    typePaper: roll.typePaper,
-                    width: roll.width,
-                    dua: ''
-                }
-                this.db.ref(roll.almacen).child(r.idNumber).set(r).then((data) => {
-                    let rollId = r.idNumber
-                    this.db.ref((roll.almacen)+'EnTransito').child(rollId).update(
-                        {
-                            enTransito: false
-                        }
-                    ).then( (data) => {
-                        roll.enTransito = false
-                        roll._rowVariant = 'danger'
-
-                        console.log('en transito actualizado')
-                        if (index === arr.length - 1 ) this.showModalSendRolls = false
-                    }).catch( error => {
-                        console.log('error transito no actualizado ' +error)
-                    })
-                    console.log('agregdo '+r.idNumber)
-                }).catch( error => {
-                    console.log('error')
+          if (index === arr.length - 1 ) this.showModalSendRolls = false
+        }).catch( error => {
+          console.log('error transito no actualizado ' +error)
         })
       })
       this.rollsCheck = []
       this.rollsNotCheck = []
     },
-    }
+  }
 }
 </script>

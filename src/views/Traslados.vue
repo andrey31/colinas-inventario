@@ -124,6 +124,7 @@ export default {
       filterWidth: '',
       options: [
         {value: '', text: 'Todos'},
+        {value: 'En transito', text: 'En transito'},
         {value: 'Telisa', text: 'Telisa'},
         {value: 'Sislocar', text: 'Sislocar'},
         {value: 'Planta', text: 'Planta'},
