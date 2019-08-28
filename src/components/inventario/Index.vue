@@ -628,7 +628,14 @@ export default{
         this.db.ref('Inventario').child(this.keyRoll).remove()
       }
       else if(this.selectedMoveHistory === 'false') {
+
         this.db.ref('Inventario').child(this.keyRoll).remove()
+
+        this.db.ref('/Pre-historial_Inventario').orderByChild('idNumber')
+          .equalTo(this.modalRow.idNumber).once('value').then( snap => {
+            let key = Object.keys(snap.val())[0]
+            this.db.ref('/Pre-historial_Inventario').child(key).remove()
+          })
       }
       this.modalDeleteShow = false
 
@@ -674,8 +681,16 @@ export default{
           width: Number(this.modalRow.width)
         }
         this.db.ref('Inventario').child(key).update(obj).then( (data) => {
-          this.modalShow = false
-          console.log('agregado')
+          // this.modalShow = false
+
+          this.db.ref('/Pre-historial_Inventario').orderByChild('idNumber')
+            .equalTo(this.modalRow.idNumber).once('value').then( snap => {
+              let key = Object.keys(snap.val())[0]
+              this.db.ref('/Pre-historial_Inventario').update(obj).then( data => {
+                this.modalShow = false
+              })
+            })
+
         }).catch( error => {
           console.log(error)
         })
