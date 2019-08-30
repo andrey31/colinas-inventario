@@ -193,14 +193,39 @@ export default {
       return arr
     },
     rollosEnTransitoFilter: function(){
-      let filter = this.rollosEnTransito.filter( el => {
-        if (el.comentarioNoLlego) el._rowVariant = 'danger'
-        return el.enTransito === true && el.idNumber.toString().indexOf(this.filterIdNumber) > -1 &&
-          el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
-          el.width.toString().indexOf(this.filterWidth) > -1 &&
-          el.almacen.indexOf(this.filterAlmacen) > -1
-      })
-      return filter
+      let idNumberArray = this.filterIdNumber.split(' ')
+      let filterGlobal = []
+
+      if (idNumberArray.length > 1) {
+
+        for (let i in idNumberArray){
+
+          let filter = this.rollosEnTransito.filter( el => {
+
+            return el.enTransito === true && (el.idNumber.toString()).toLowerCase() === idNumberArray[i].toLowerCase() &&
+              el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
+              el.width.toString().indexOf(this.filterWidth) > -1 &&
+              el.almacen.indexOf(this.filterAlmacen) > -1
+          })
+
+          filter.forEach( f => {
+            filterGlobal.push(f)
+          })
+        }
+
+
+      }else{
+
+        filterGlobal = this.rollosEnTransito.filter( el => {
+
+          return el.enTransito === true && el.idNumber.toString().indexOf(this.filterIdNumber) > -1 &&
+            el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
+            el.width.toString().indexOf(this.filterWidth) > -1 &&
+            el.almacen.indexOf(this.filterAlmacen) > -1
+        })
+      }
+
+      return filterGlobal
     },
     countSelectRolls: function(){
       return this.rollsCheck.length + this.rollsNotCheck.length
