@@ -50,4 +50,7 @@ export default{
 .color-red {
     background-color: #ee0017cc;
 }
+.table-red-custom{
+    background-color: #f12222;
+}
 </style>

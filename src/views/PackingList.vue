@@ -56,7 +56,6 @@
             :items="row.item.packingList"
             :fields="fieldsRolls"
             head-variant="dark"
-            striped
             >
             <template slot="kgs" slot-scope="row">
               {{Number(row.item.kgs).toFixed(2)}}
@@ -64,7 +63,7 @@
             <template slot="enTransito" slot-scope="row">
 
               <label v-if="row.item.enTransito && !row.item.comentarioNoLlego">Sí</label>
-              <label v-if="row.item.enTransito && row.item.comentarioNoLlego">{{row.item.comentarioNoLlego}}</label>
+              <label v-if="!row.item.enTransito && row.item.comentarioNoLlego">{{row.item.comentarioNoLlego}}</label>
               <label v-if="!row.item.enTransito && !row.item.comentarioNoLlego">Registrado en almacen</label>
             </template>
           </b-table>
@@ -208,7 +207,13 @@ export default{
           .then(snapshot => {
             let p = snapshot.val()
             if(p) {
-              let rowv = p.enTransito === true ? 'danger' : 'primary'
+              let rowv = 'danger'
+              if (!p.enTransito && (typeof p.comentarioNoLlego === 'undefined')){
+                rowv = 'primary'
+              }else if(!p.enTransito && (typeof p.comentarioNoLlego !== 'undefined')){
+                rowv = 'red-custom'
+              }
+              // let rowv = p.enTransito === true ? 'danger' : 'primary'
               arr.push({
                 'key': element,
                 'idNumber': p.idNumber,
