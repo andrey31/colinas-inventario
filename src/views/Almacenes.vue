@@ -404,6 +404,7 @@ export default{
         typePaper: row.typePaper,
         kgs: row.kgs,
         comments: row.comments,
+        fecha: row.fecha,
         editar: true
       }
       this.setModalShowAlmacen(true)

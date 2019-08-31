@@ -91,6 +91,7 @@ export default{
             let almacen = this.modalRow.almacen
             let key = this.modalRow.idNumber
             let editar = this.modalRow.editar
+
             let obj = {
                 comments: this.modalRow.comments,
                 gramaje: this.modalRow.gramaje,
@@ -101,11 +102,28 @@ export default{
                 width: Number(this.modalRow.width)
             }
             if (editar){
-                this.db.ref(almacen).child(key).update(obj).then( data => {
-                    this.setModalShowAlmacen(false)
+                let fecha = this.modalRow.fecha
+
+                let month = ''+ (fecha.getMonth() + 1)
+                let day = '' + fecha.getDate()
+                let year = fecha.getFullYear()
+
+                obj.fecha = day + '-' + month + '-' + year
+                this.db.ref('sislocar').child(key).set(null).then( data => {
+                    this.db.ref('telisa').child(key).set(null).then( data => {
+                        this.db.ref(almacen).child(obj.idNumber).set(obj).then( data => {
+                            this.setModalShowAlmacen(false)
+                        }).catch( error => {
+                            console.log(error)
+                        })
+                    }).catch( error => {
+                        console.log('error al borrar de telisa')
+                    })
                 }).catch( error => {
-                    console.log(error)
+                    console.log('error al borrar de sislocar')
                 })
+
+
             }else {
                 let d = new Date()
                 let month = '' + (d.getMonth() + 1)
