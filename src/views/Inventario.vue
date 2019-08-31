@@ -24,7 +24,7 @@
       </IndexInventario>
     </b-tab>
 
-    <b-tab title="Historial"
+    <b-tab title="Consumos"
            @click="loadHistorial"
            >
       <IndexInventario

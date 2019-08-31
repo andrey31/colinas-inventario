@@ -183,6 +183,7 @@ export default {
           'Kilos': (data[key].kgs),
           'Metros': (data[key].meters),
           'Fecha': (data[key].fecha),
+          'Gramaje': (data[key].gramaje).toString(),
           'Ancho': (data[key].width).toString(),
           'Tipo papel': (data[key].typePaper),
           'Comentario': (data[key].comments),
@@ -277,13 +278,13 @@ export default {
     return {
       db: firebase.database(),
       fieldsRolls: [
+        {key: 'typePaper', label: 'Tipo de papel'},
         {key: 'idNumber', label: 'Numero de rollo'},
         'fecha',
-        {key: 'meters', label: 'Metros lineales'},
         'gramaje',
         {key: 'width', label: 'Ancho'},
-        {key: 'typePaper', label: 'Tipo de papel'},
         {key: 'kgs', label: 'Kilogramos'},
+        {key: 'meters', label: 'Metros lineales'},
         'enTransito',
         'enAlmacen',
         {key: 'noLlego', label: 'No llegó'},
