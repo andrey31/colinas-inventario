@@ -278,13 +278,13 @@ export default {
     return {
       db: firebase.database(),
       fieldsRolls: [
+        {key: 'typePaper', label: 'Tipo de papel'},
         {key: 'idNumber', label: 'Numero de rollo'},
         'fecha',
-        {key: 'meters', label: 'Metros lineales'},
         'gramaje',
         {key: 'width', label: 'Ancho'},
-        {key: 'typePaper', label: 'Tipo de papel'},
         {key: 'kgs', label: 'Kilogramos'},
+        {key: 'meters', label: 'Metros lineales'},
         'enTransito',
         'enAlmacen',
         {key: 'noLlego', label: 'No llegó'},
