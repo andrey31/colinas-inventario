@@ -183,6 +183,7 @@ export default {
           'Kilos': (data[key].kgs),
           'Metros': (data[key].meters),
           'Fecha': (data[key].fecha),
+          'Gramaje': (data[key].gramaje).toString(),
           'Ancho': (data[key].width).toString(),
           'Tipo papel': (data[key].typePaper),
           'Comentario': (data[key].comments),
