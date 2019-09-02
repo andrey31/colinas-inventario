@@ -10,6 +10,8 @@
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.26",
     "firebase": "^5.8.5",
+    "jspdf": "^1.5.3",
+    "jspdf-autotable": "^3.2.4",
     "vue": "^2.6.6",
     "vue-awesome": "^3.4.0",
     "vue-json-excel": "^0.2.98",
