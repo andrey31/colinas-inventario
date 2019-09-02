@@ -65,7 +65,7 @@
 
     <div slot="modal-footer" class="">
       <b-button variant="danger" class="mr-2" @click="setModalShowAlmacen(false)">Cancelar</b-button>
-      <b-button variant="primary" @click="saveAlmacen">Guardar</b-button>
+      <b-button variant="primary" @click="saveAlmacen" :disabled="disableSave">Guardar</b-button>
     </div>
   </b-modal>
 </template>
@@ -78,7 +78,16 @@ export default{
     name: 'modal-almacenes',
     props: ['modalRow'],
     computed: {
-        ...mapState(['modalShowAlmacen'])
+        ...mapState(['modalShowAlmacen']),
+        disableSave: function(){
+            let disable = false
+            for (let key in this.modalRow){
+                if (this.modalRow[key] === '' || typeof this.modalRow[key] === 'undefined') {
+                    disable = true
+                }
+            }
+            return disable
+        }
     },
     data(){
         return {
