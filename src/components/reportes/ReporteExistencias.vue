@@ -19,17 +19,23 @@
       <!--     <b-form-input type="date"></b-form-input> -->
       <!--   </b-form-group> -->
       <!-- </b-col> -->
+      <b-col cols="12" class="text-muted" v-if="textExport !== ''">
+        Información: {{textExport}}
+      </b-col>
       <b-col cols="12" class="pt-4">
         <h4><b>Exportar</b></h4>
       </b-col>
       <b-col class="pt-2" cols="12">
 
-        <b-button variant="success" size="lg" class="mr-2 p-2" @click="exportReport" :disabled="ubicationSelected.length === 0">
+        <b-button variant="success" size="lg" class="mr-2 p-2"
+                  @click="exportReport('xls')" :disabled="ubicationSelected.length === 0 || disableButtonXLS">
           <b-spinner label="Spinning" v-if="exportExcel"></b-spinner>
-          {{textExportExcel}}
+          EXCEL
           <v-icon class="ml-2" name="file-excel" scale="2"></v-icon>
         </b-button>
-        <b-button variant="danger" size="lg" :disabled="ubicationSelected.length === 0">
+        <b-button variant="danger" size="lg"
+                  :disabled="ubicationSelected.length === 0 || disableButtonPDF" @click="exportReport('pdf')">
+          <b-spinner label="Spinning" v-if="exportPDF"></b-spinner>
           PDF
           <v-icon class="ml-2"name="file-pdf" scale="2"></v-icon>
         </b-button>
@@ -41,6 +47,9 @@
 <script>
 import firebase from 'firebase/app'
 import XLSX from 'xlsx'
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+
 export default {
     name: 'reporte-existencias',
     data () {
@@ -54,9 +63,13 @@ export default {
                 { text: 'Bodega 1', value: 'bodega1' },
                 { text: 'Bodega Planta', value: 'planta' }
             ],
-            textExportExcel: 'EXCEL',
+            textExport: '',
             exportExcel: false,
-            allSelect: false
+            exportPDF: false,
+            allSelect: false,
+            xlsOrPdf: 'xls',
+            disableButtonXLS: false,
+            disableButtonPDF: false
         }
     },
     methods: {
@@ -68,7 +81,6 @@ export default {
             }else {
                 this.ubicationSelected = []
             }
-            console.log(select)
         },
         groupByTypePaper: function (totalRolls) {
             let filter = {}
@@ -175,7 +187,7 @@ export default {
         },
         sendXLS: function (allRolls) {
             let totalRolls = this.totalRolls(allRolls)
-            this.textExportExcel = 'Aplicando formato excel...'
+            this.textExport = 'Aplicando formato excel...'
             let groupByTypePaper = this.groupByTypePaper(totalRolls)
             let cpWt = (groupByTypePaper.wt).slice()
             let cpMedium = (groupByTypePaper.medium).slice()
@@ -318,16 +330,108 @@ export default {
                     exportFormat.push(el)
                 })
             }
-            let wswt = XLSX.utils.json_to_sheet(exportFormat)
 
+
+            if(this.xlsOrPdf === 'xls'){
+                this.exportToExcel(exportFormat)
+            }else {
+                this.exportToPdf(exportFormat)
+            }
+
+
+        },
+        exportToPdf: function(exportFormat){
+            let fecha = new Date()
+            let head = [
+                [
+                    'Tipo papel',
+                    'Gramaje-Ancho',
+                    'Cantidad de rollos',
+                    'Peso total (Kgs)',
+                    'Metros total',
+                    'Ubicación'
+                ]
+            ]
+            let body = []
+            exportFormat.forEach( e => {
+                let data = []
+                data.push(e['Tipo papel'])
+                data.push(e['Gramaje-Ancho'])
+                data.push(e['Cantidad de rollos'])
+                data.push(e['Peso total (Kgs)'])
+                data.push(e['Metros total'])
+                data.push(e['Ubicacion'])
+                body.push(data)
+
+            })
+            let doc = new jsPDF()
+                var totalPagesExp = "{total_pages_count_string}";
+
+            let nameReport = `Reporte existencias al ${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}`
+            // Or JavaScript:
+            doc.autoTable({
+                head,
+                body,
+                columnStyles:  {
+                    0: {halign: 'center'},
+                    1: {halign: 'center'},
+                    2: {halign: 'center'},
+                    3: {halign: 'center'},
+                    4: {halign: 'center'},
+                    5: {halign: 'center'}
+                },
+                didDrawPage: function (data) {
+                    // Header
+                    doc.setFontSize(20);
+                    doc.setTextColor(40);
+                    doc.setFontStyle('normal');
+
+                    doc.text(nameReport, data.settings.margin.left, 22)
+
+                    // Footer
+
+                    let hour = fecha.getHours() < 10 ? `0${fecha.getHours()}` : fecha.getHours()
+                    let minutes = fecha.getMinutes() < 10 ? `0${fecha.getMinutes()}` : fecha.getMinutes()
+                    let seconds = fecha.getHours() < 10 ? `0${fecha.getSeconds()}` : fecha.getSeconds()
+
+                    var str =  `Página ${doc.internal.getNumberOfPages()}`
+
+                    if (typeof doc.putTotalPages === 'function') {
+                        str = `${str} de ${totalPagesExp} `
+                    }
+                    doc.setFontSize(8);
+
+                    var pageSize = doc.internal.pageSize
+                    var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
+                    doc.text(str, data.settings.margin.left, pageHeight - 10)
+                    let str2 = `Generado a las ${hour}:${minutes}:${seconds}`
+                    doc.text(str2, data.settings.margin.left, pageHeight - 6)
+                },
+
+                margin: {top: 30}
+            })
+
+            if (typeof doc.putTotalPages === 'function') {
+                doc.putTotalPages(totalPagesExp);
+            }
+
+            let nameSave = `Reporte_al_${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}.pdf`
+            this.exportPDF = false
+            this.disableButtonPDF = false
+            this.textExport = ''
+            doc.save(nameSave);
+
+        },
+        exportToExcel: function(exportFormat){
+            let fecha = new Date()
+            let wswt = XLSX.utils.json_to_sheet(exportFormat)
             let wb = XLSX.utils.book_new()
-            this.textExportExcel = 'EXCEL'
+            this.textExport = ''
+            this.disableButtonXLS = false
             this.exportExcel = false
             XLSX.utils.book_append_sheet(wb, wswt, 'resumen')
             let nameXLS = `reporteDel:${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}.xlsx`
             XLSX.writeFile(wb, nameXLS)
-
-
         },
         filterBodega: function (arr, bodega){
             let filt = []
@@ -354,8 +458,16 @@ export default {
             }
             return filt
         },
-        exportReport: function(){
-            this.exportExcel = true
+        exportReport: function(xlsOrPdf){
+            if(xlsOrPdf === 'xls'){
+                this.exportExcel = true
+                this.disableButtonXLS = true
+                this.xlsOrPdf = 'xls'
+            }else {
+                this.exportPDF = true
+                this.disableButtonPDF = true
+                this.xlsOrPdf = 'pdf'
+            }
             let allRolls = []
             let ubicacionesTotal = this.ubicationSelected.length
             this.ubicationSelected.forEach ( u => {
@@ -364,8 +476,9 @@ export default {
             this.ubicationSelected.forEach( u => {
 
                 if (u === 'enTransito'){
-                    this.textExportExcel = 'Cargando rollos en transito...'
+                    this.textExport = 'cargando rollos de transito ...'
                     this.db.ref('/sislocarEnTransito').once('value').then( sisEnTransito => {
+                        this.textExport = 'Rollos sislocar en transito cargados ...'
                         let enSis = sisEnTransito.val()
                         for(let i in enSis) {
                             if(enSis[i].enTransito) {
@@ -380,7 +493,7 @@ export default {
 
                     this.db.ref('/telisaEnTransito').once('value').then( telEnTransito => {
                         let enTel = telEnTransito.val()
-
+                        this.textExport = 'Rollos telisa en transito cargados ...'
                         for (let i in enTel) {
 
                             if (enTel[i].enTransito) {
@@ -396,10 +509,10 @@ export default {
 
 
                 if (u === 'telisa') {
-                    this.textExportExcel = 'Cargando rollos telisa...'
+                    this.textExport = 'Cargando rollos de telisa ...'
                     this.db.ref('/telisa').once('value').then ( data => {
                         let telisa = data.val()
-
+                        this.textExport = 'Rollos telisa cargados ...'
                         for (let i in telisa) {
                             telisa[i].ubicacion = 'Telisa'
                             allRolls.push(telisa[i])
@@ -409,10 +522,10 @@ export default {
                     })
                 }
                 if (u === 'sislocar') {
-                    this.textExportExcel = 'Cargando rollos sislocar...'
+                    this.textExport = 'Cargando rollos de sislocar ...'
                     this.db.ref('/sislocar').once('value').then ( data => {
                         let sislocar = data.val()
-
+                        this.textExport = 'Rollos sislocar cargados ...'
                         for (let i in sislocar) {
                             sislocar[i].ubicacion = 'Sislocar'
                             allRolls.push(sislocar[i])
@@ -422,12 +535,12 @@ export default {
                     })
                 }
                 if (u === 'bodega1' || u === 'planta') {
-                    this.textExportExcel = 'Cargando rollos en inventario ...'
+                    this.textExport = 'cargando rollos de inventario ...'
                     let inventario = []
                     this.db.ref('/Inventario').once('value').then ( data => {
                         inventario = data.val()
-                        console.log(inventario)
                         if ( u === 'bodega1'){
+                            this.textExport = 'Rollos bodega 1 cargados ...'
                             for (let i in inventario) {
                                 inventario[i].ubicacion = 'Bodega 1'
                                 allRolls.push(inventario[i])
@@ -436,6 +549,7 @@ export default {
                             if (ubicacionesTotal === 0) this.sendXLS(allRolls)
                         }
                         if ( u === 'planta'){
+                            this.textExport = 'Rollos bodega planta cargados ...'
                             for (let i in inventario) {
                                 inventario[i].ubicacion = 'Planta'
                                 allRolls.push(inventario[i])
@@ -443,27 +557,9 @@ export default {
                             ubicacionesTotal --
                             if (ubicacionesTotal === 0) this.sendXLS(allRolls)
                         }
-
-
-
                     })
-
-
                 }
-
             })
-            // this.db.ref('/Inventario').once('value').then( snap => {
-            //     let snapVal = snap.val()
-            //     for (let key in snapVal) {
-            //         allRolls.push({
-            //             'id': snapVal[key].idNumber
-            //         })
-            //     }
-            //     console.log(allRolls)
-            // })
-            // this.ubicationSelected.forEach( u => {
-            //     console.log()
-            // })
         }
     }
 }
