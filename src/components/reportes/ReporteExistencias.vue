@@ -87,6 +87,7 @@ export default {
     methods: {
         changeSelectAll: function(select){
             if (select) {
+                this.ubicationSelected = []
                 this.ubications.forEach( u => {
                     this.ubicationSelected.push(u.value)
                 })
@@ -224,11 +225,33 @@ export default {
                 let cpWt4 = this.filterBodega(cpWt, 4)
                 let cpWt5 = this.filterBodega(cpWt, 5)
 
+                let cpWTAll = cpWt1.concat(cpWt2, cpWt3, cpWt4, cpWt5)
+                let wtRollosTotal = 0
+                let wtPesoTotal = 0
+                let wtMetrosTotal = 0
+                cpWTAll.forEach( wt => {
+                    wtRollosTotal += wt['Cantidad de rollos']
+                    let p = wt['Peso total (Kgs)'].split(',').join('')
+                    wtPesoTotal += Number(p)
+
+                    let m = wt['Metros total'].split(',').join('')
+                    wtMetrosTotal += Number(m)
+                })
                 cpWt1.forEach( el => { exportFormat.push(el) })
                 cpWt2.forEach( el => { exportFormat.push(el) })
                 cpWt3.forEach( el => { exportFormat.push(el) })
                 cpWt4.forEach( el => { exportFormat.push(el) })
                 cpWt5.forEach( el => { exportFormat.push(el) })
+
+                exportFormat.push(
+                    {
+                        'Fecha de reporte': '', 'Tipo papel': '',
+                        'Gramaje-Ancho': '**Total**', 'Cantidad de rollos': wtRollosTotal,
+                        'Peso total (Kgs)': (wtPesoTotal).toLocaleString('en-us'),
+                        'Metros total': (wtMetrosTotal).toLocaleString('en-us'),
+                        'Ubicacion': ''
+                    }
+                )
                 exportFormat.push(
                     {
                         'Fecha de reporte': '', 'Tipo papel': '',
@@ -237,6 +260,7 @@ export default {
                         'Ubicacion': ''
                     }
                 )
+
                 // exportFormat.push({})
             }
             if (cpMedium.length > 0) {
@@ -245,11 +269,34 @@ export default {
                 let cpMedium3 = this.filterBodega(cpMedium, 3)
                 let cpMedium4 = this.filterBodega(cpMedium, 4)
                 let cpMedium5 = this.filterBodega(cpMedium, 5)
+
+                let cpMediumAll = cpMedium1.concat(cpMedium2, cpMedium3, cpMedium4, cpMedium5)
+                let rollosTotal = 0
+                let pesoTotal = 0
+                let metrosTotal = 0
+                cpMediumAll.forEach( m => {
+                    rollosTotal += m['Cantidad de rollos']
+                    let p = m['Peso total (Kgs)'].split(',').join('')
+                    pesoTotal += Number(p)
+
+                    let meters = m['Metros total'].split(',').join('')
+                    metrosTotal += Number(meters)
+                })
                 cpMedium1.forEach( el => { exportFormat.push(el) })
                 cpMedium2.forEach( el => { exportFormat.push(el) })
                 cpMedium3.forEach( el => { exportFormat.push(el) })
                 cpMedium4.forEach( el => { exportFormat.push(el) })
                 cpMedium5.forEach( el => { exportFormat.push(el) })
+
+                exportFormat.push(
+                    {
+                        'Fecha de reporte': '', 'Tipo papel': '',
+                        'Gramaje-Ancho': '**Total**', 'Cantidad de rollos': rollosTotal,
+                        'Peso total (Kgs)': pesoTotal.toLocaleString('en-us'),
+                        'Metros total': metrosTotal.toLocaleString('en-us'),
+                        'Ubicacion': ''
+                    }
+                )
                 exportFormat.push(
                     {
                         'Fecha de reporte': '', 'Tipo papel': '',
@@ -267,12 +314,37 @@ export default {
                 let cpLiner4 = this.filterBodega(cpLiner, 4)
                 let cpLiner5 = this.filterBodega(cpLiner, 5)
 
+                let cpLinerAll = cpLiner1.concat(cpLiner1, cpLiner2, cpLiner2, cpLiner3, cpLiner4, cpLiner5)
+                let rollosTotal = 0
+                let pesoTotal = 0
+                let metrosTotal = 0
+
+                cpLinerAll.forEach( m => {
+                    rollosTotal += m['Cantidad de rollos']
+                    let p = m['Peso total (Kgs)'].split(',').join('')
+                    pesoTotal += Number(p)
+
+                    let meters = m['Metros total'].split(',').join('')
+                    metrosTotal += Number(meters)
+                })
+
                 cpLiner1.forEach( el => { exportFormat.push(el) })
                 cpLiner2.forEach( el => { exportFormat.push(el) })
 
                 cpLiner3.forEach( el => { exportFormat.push(el) })
                 cpLiner4.forEach( el => { exportFormat.push(el) })
                 cpLiner5.forEach( el => { exportFormat.push(el) })
+
+                exportFormat.push({
+                    'Fecha de reporte': '',
+                    'Tipo papel': '',
+                    'Gramaje-Ancho': '',
+                    'Cantidad de rollos': rollosTotal,
+                    'Peso total (Kgs)': pesoTotal.toLocaleString('en-us'),
+                    'Metros total': metrosTotal.toLocaleString('en-us'),
+                    'Ubicacion': ''
+                })
+
                 exportFormat.push({
                     'Fecha de reporte': '',
                     'Tipo papel': '',
@@ -285,19 +357,19 @@ export default {
                 // exportFormat.push({})
             }
 
-            if (cpLinerR.length > 0){
-                let cpLinerR1 = this.filterBodega(cpLinerR, 1)
-                let cpLinerR2 = this.filterBodega(cpLinerR, 2)
-                let cpLinerR3 = this.filterBodega(cpLinerR, 3)
-                let cpLinerR4 = this.filterBodega(cpLinerR, 4)
-                let cpLinerR5 = this.filterBodega(cpLinerR, 5)
+            // if (cpLinerR.length > 0){
+            //     let cpLinerR1 = this.filterBodega(cpLinerR, 1)
+            //     let cpLinerR2 = this.filterBodega(cpLinerR, 2)
+            //     let cpLinerR3 = this.filterBodega(cpLinerR, 3)
+            //     let cpLinerR4 = this.filterBodega(cpLinerR, 4)
+            //     let cpLinerR5 = this.filterBodega(cpLinerR, 5)
 
-                cpLinerR1.forEach( el => { exportFormat.push(el) })
-                cpLinerR2.forEach( el => { exportFormat.push(el) })
-                cpLinerR3.forEach( el => { exportFormat.push(el) })
-                cpLinerR4.forEach( el => { exportFormat.push(el) })
-                cpLinerR5.forEach( el => { exportFormat.push(el) })
-            }
+            //     cpLinerR1.forEach( el => { exportFormat.push(el) })
+            //     cpLinerR2.forEach( el => { exportFormat.push(el) })
+            //     cpLinerR3.forEach( el => { exportFormat.push(el) })
+            //     cpLinerR4.forEach( el => { exportFormat.push(el) })
+            //     cpLinerR5.forEach( el => { exportFormat.push(el) })
+            // }
             return exportFormat
 
         },
@@ -434,6 +506,8 @@ export default {
                 ]
             ]
             let body = []
+
+            exportFormat.shift()
             exportFormat.forEach( e => {
                 let data = []
                 data.push(e['Tipo papel'])
@@ -448,16 +522,27 @@ export default {
             let doc = new jsPDF()
             var totalPagesExp = "{total_pages_count_string}";
 
-            let colinas = "COLINAS DE ALTA VISTA S.A"
+            let colinas = "COLINAS ALTAVISTA S.A"
             let typeReport = this.groupByUbication ? 'agrupado por ubicacion' : 'agrupado por tipo papel'
-            let nameReport = `${colinas}\nReporte existencias al ${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}`
+
+            let day = fecha.getDate() < 9 ? '0' + fecha.getDate() : fecha.getDate()
+            let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMoth()+1)
+
+            let fechaFormat = `${day}/${month}/${fecha.getFullYear()}`
+
+            let nameReport = `${colinas}\n REPORTE EXISTENCIAS\nAL: ${fechaFormat}`
+
             // Or JavaScript:
             doc.autoTable({
                 head,
                 body,
+                styles: {overflow: 'ellipsize', cellWidth: 'wrap'},
+                headStyles: {
+                    fillColor: [204, 152, 62],
+                },
                 columnStyles:  {
                     0: {halign: 'center'}, 1: {halign: 'center'}, 2: {halign: 'center'},
-                    3: {halign: 'center'}, 4: {halign: 'center'}, 5: {halign: 'center'}
+                    3: {halign: 'center', cellWidth: 'auto'}, 4: {halign: 'center'}, 5: {halign: 'center'}
                 },
                 didParseCell: function(data) {
                     if (data.cell.text[0] === '' && data.row.index !== 0) {
@@ -467,14 +552,19 @@ export default {
                     }
 
 
-                 },
+                },
                 didDrawPage: function (data) {
                     // Header
-                    doc.setFontSize(20);
+                    doc.setFontSize(16);
                     doc.setTextColor(40);
                     doc.setFontStyle('normal');
 
-                    doc.text(nameReport, data.settings.margin.left, 22)
+                    let pw = (((doc.internal.pageSize).getWidth()))/2
+
+                    // if (doc.internal.getNumberOfPages() === 1) {
+                    //     doc.text(nameReport, pw, 22, { align: 'center', width: 100})
+                    // }
+                    doc.text(nameReport, pw, 22, { align: 'center', width: 100})
 
                     // Footer
 
@@ -496,14 +586,14 @@ export default {
                     doc.text(str2, data.settings.margin.left, pageHeight - 6)
                 },
 
-                margin: {top: 35}
+                margin: {top: 40}
             })
 
             if (typeof doc.putTotalPages === 'function') {
                 doc.putTotalPages(totalPagesExp);
             }
 
-            let nameSave = `Reporte_al_${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}.pdf`
+            let nameSave = `Reporte_al_${fecha.getDate()}/${fecha.getMonth()+1}/${fecha.getFullYear()}.pdf`
             this.exportPDF = false
             this.disableButtonPDF = false
             this.textExport = ''
