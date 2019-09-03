@@ -11,6 +11,13 @@
           </b-form-checkbox-group>
         </b-form-group>
       </b-col>
+      <b-col cols="12" class="pt-2">
+        <b-form-group label="">
+          <h6 slot="label"><b>Agrupar por:</b></h6>
+          <b-form-radio-group v-model="groupByUbication" :options="groupByOptions" name="radios-stacked">
+          </b-form-radio-group>
+        </b-form-group>
+      </b-col>
 
       <!-- <b-col cols="12" md="5" class="p-3 border border-muted"> -->
       <!--   <b-form-group> -->
@@ -69,7 +76,12 @@ export default {
             allSelect: false,
             xlsOrPdf: 'xls',
             disableButtonXLS: false,
-            disableButtonPDF: false
+            disableButtonPDF: false,
+            groupByUbication: true,
+            groupByOptions: [
+                { text: 'Ubicacion', value: true},
+                { text: 'Tipo papel', value: false},
+            ]
         }
     },
     methods: {
@@ -185,26 +197,25 @@ export default {
 
             return total
         },
-        sendXLS: function (allRolls) {
+        formatByTypePaper: function(allRolls){
             let totalRolls = this.totalRolls(allRolls)
-            this.textExport = 'Aplicando formato excel...'
             let groupByTypePaper = this.groupByTypePaper(totalRolls)
+
             let cpWt = (groupByTypePaper.wt).slice()
             let cpMedium = (groupByTypePaper.medium).slice()
             let cpLiner = (groupByTypePaper.liner).slice()
             let cpLinerR = (groupByTypePaper.linerR).slice()
             let exportFormat = []
-            // exportFormat.unshift({'Fecha de ': '222-2-2'})
+
             let fecha = new Date()
-            exportFormat.unshift({
-                'Fecha de reporte': fecha,
-                'Tipo papel': '',
-                'Gramaje-Ancho': '',
-                'Cantidad de rollos': '',
-                'Peso total (Kgs)': '',
-                'Metros total': '',
-                'Ubicacion': ''
-            })
+            exportFormat.unshift(
+                {
+                    'Fecha de reporte': fecha, 'Tipo papel': '',
+                    'Gramaje-Ancho': '', 'Cantidad de rollos': '',
+                    'Peso total (Kgs)': '', 'Metros total': '',
+                    'Ubicacion': ''
+                }
+            )
             if (cpWt.length > 0) {
 
                 let cpWt1 = this.filterBodega(cpWt, 1)
@@ -213,31 +224,19 @@ export default {
                 let cpWt4 = this.filterBodega(cpWt, 4)
                 let cpWt5 = this.filterBodega(cpWt, 5)
 
-                cpWt1.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpWt2.forEach( el => {
-                    exportFormat.push(el)
-                })
-
-                cpWt3.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpWt4.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpWt5.forEach( el => {
-                    exportFormat.push(el)
-                })
-                exportFormat.push({
-                    'Fecha de reporte': '',
-                    'Tipo papel': '',
-                    'Gramaje-Ancho': '',
-                    'Cantidad de rollos': '',
-                    'Peso total (Kgs)': '',
-                    'Metros total': '',
-                    'Ubicacion': ''
-                })
+                cpWt1.forEach( el => { exportFormat.push(el) })
+                cpWt2.forEach( el => { exportFormat.push(el) })
+                cpWt3.forEach( el => { exportFormat.push(el) })
+                cpWt4.forEach( el => { exportFormat.push(el) })
+                cpWt5.forEach( el => { exportFormat.push(el) })
+                exportFormat.push(
+                    {
+                        'Fecha de reporte': '', 'Tipo papel': '',
+                        'Gramaje-Ancho': '', 'Cantidad de rollos': '',
+                        'Peso total (Kgs)': '', 'Metros total': '',
+                        'Ubicacion': ''
+                    }
+                )
                 // exportFormat.push({})
             }
             if (cpMedium.length > 0) {
@@ -246,30 +245,19 @@ export default {
                 let cpMedium3 = this.filterBodega(cpMedium, 3)
                 let cpMedium4 = this.filterBodega(cpMedium, 4)
                 let cpMedium5 = this.filterBodega(cpMedium, 5)
-                cpMedium1.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpMedium2.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpMedium3.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpMedium4.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpMedium5.forEach( el => {
-                    exportFormat.push(el)
-                })
-                exportFormat.push({
-                    'Fecha de reporte': '',
-                    'Tipo papel': '',
-                    'Gramaje-Ancho': '',
-                    'Cantidad de rollos': '',
-                    'Peso total (Kgs)': '',
-                    'Metros total': '',
-                    'Ubicacion': ''
-                })
+                cpMedium1.forEach( el => { exportFormat.push(el) })
+                cpMedium2.forEach( el => { exportFormat.push(el) })
+                cpMedium3.forEach( el => { exportFormat.push(el) })
+                cpMedium4.forEach( el => { exportFormat.push(el) })
+                cpMedium5.forEach( el => { exportFormat.push(el) })
+                exportFormat.push(
+                    {
+                        'Fecha de reporte': '', 'Tipo papel': '',
+                        'Gramaje-Ancho': '', 'Cantidad de rollos': '',
+                        'Peso total (Kgs)': '', 'Metros total': '',
+                        'Ubicacion': ''
+                    }
+                )
                 // exportFormat.push({})
             }
             if (cpLiner.length > 0) {
@@ -279,22 +267,12 @@ export default {
                 let cpLiner4 = this.filterBodega(cpLiner, 4)
                 let cpLiner5 = this.filterBodega(cpLiner, 5)
 
-                cpLiner1.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpLiner2.forEach( el => {
-                    exportFormat.push(el)
-                })
+                cpLiner1.forEach( el => { exportFormat.push(el) })
+                cpLiner2.forEach( el => { exportFormat.push(el) })
 
-                cpLiner3.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpLiner4.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpLiner5.forEach( el => {
-                    exportFormat.push(el)
-                })
+                cpLiner3.forEach( el => { exportFormat.push(el) })
+                cpLiner4.forEach( el => { exportFormat.push(el) })
+                cpLiner5.forEach( el => { exportFormat.push(el) })
                 exportFormat.push({
                     'Fecha de reporte': '',
                     'Tipo papel': '',
@@ -314,42 +292,145 @@ export default {
                 let cpLinerR4 = this.filterBodega(cpLinerR, 4)
                 let cpLinerR5 = this.filterBodega(cpLinerR, 5)
 
-                cpLinerR1.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpLinerR2.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpLinerR3.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpLinerR4.forEach( el => {
-                    exportFormat.push(el)
-                })
-                cpLinerR5.forEach( el => {
-                    exportFormat.push(el)
-                })
+                cpLinerR1.forEach( el => { exportFormat.push(el) })
+                cpLinerR2.forEach( el => { exportFormat.push(el) })
+                cpLinerR3.forEach( el => { exportFormat.push(el) })
+                cpLinerR4.forEach( el => { exportFormat.push(el) })
+                cpLinerR5.forEach( el => { exportFormat.push(el) })
             }
+            return exportFormat
 
+        },
+        formatByUbication: function(allRolls){
+            let totalRolls = this.totalRolls(allRolls)
+            let groupByTypePaper = this.groupByTypePaper(totalRolls)
 
-            if(this.xlsOrPdf === 'xls'){
-                this.exportToExcel(exportFormat)
-            }else {
-                this.exportToPdf(exportFormat)
-            }
+            let cpWt = (groupByTypePaper.wt).slice()
+            let cpMedium = (groupByTypePaper.medium).slice()
+            let cpLiner = (groupByTypePaper.liner).slice()
+            let cpLinerR = (groupByTypePaper.linerR).slice()
+            let exportFormat = []
 
+            let fecha = new Date()
+            exportFormat.unshift(
+                {
+                    'Fecha de reporte': fecha, 'Tipo papel': '',
+                    'Gramaje-Ancho': '', 'Cantidad de rollos': '',
+                    'Peso total (Kgs)': '', 'Metros total': '',
+                    'Ubicacion': ''
+                }
+            )
+            this.ubicationSelected.forEach(u => {
 
+                if (u === 'enTransito') {
+                    let cpWt1 = this.filterBodega(cpWt, 1)
+                    let cpMedium1 = this.filterBodega(cpMedium, 1)
+                    let cpLiner1 = this.filterBodega(cpLiner, 1)
+                    let cpLinerR1 = this.filterBodega(cpLinerR, 1)
+
+                    cpWt1.forEach( el => { exportFormat.push(el) })
+                    cpMedium1.forEach( el => { exportFormat.push(el) })
+                    cpLiner1.forEach( el => { exportFormat.push(el) })
+                    cpLinerR1.forEach( el => { exportFormat.push(el) })
+
+                    exportFormat.push(
+                        {
+                            'Fecha de reporte': '', 'Tipo papel': '',
+                            'Gramaje-Ancho': '', 'Cantidad de rollos': '',
+                            'Peso total (Kgs)': '', 'Metros total': '',
+                            'Ubicacion': ''
+                        }
+                    )
+                }
+                if (u === 'telisa') {
+                    let cpWt2 = this.filterBodega(cpWt, 2)
+                    let cpMedium2 = this.filterBodega(cpMedium, 2)
+                    let cpLiner2 = this.filterBodega(cpLiner, 2)
+                    let cpLinerR2 = this.filterBodega(cpLinerR, 2)
+
+                    cpWt2.forEach( el => { exportFormat.push(el) })
+                    cpMedium2.forEach( el => { exportFormat.push(el) })
+                    cpLiner2.forEach( el => { exportFormat.push(el) })
+                    cpLinerR2.forEach( el => { exportFormat.push(el) })
+
+                    exportFormat.push(
+                        {
+                            'Fecha de reporte': '', 'Tipo papel': '',
+                            'Gramaje-Ancho': '', 'Cantidad de rollos': '',
+                            'Peso total (Kgs)': '', 'Metros total': '',
+                            'Ubicacion': ''
+                        }
+                    )
+                }
+                if ( u === 'sislocar'){
+                    let cpWt3 = this.filterBodega(cpWt, 3)
+                    let cpMedium3 = this.filterBodega(cpMedium, 3)
+                    let cpLiner3 = this.filterBodega(cpLiner, 3)
+                    let cpLinerR3 = this.filterBodega(cpLinerR, 3)
+
+                    cpWt3.forEach( el => { exportFormat.push(el) })
+                    cpMedium3.forEach( el => { exportFormat.push(el) })
+                    cpLiner3.forEach( el => { exportFormat.push(el) })
+                    cpLinerR3.forEach( el => { exportFormat.push(el) })
+
+                    exportFormat.push({
+                        'Fecha de reporte': '',
+                        'Tipo papel': '',
+                        'Gramaje-Ancho': '',
+                        'Cantidad de rollos': '',
+                        'Peso total (Kgs)': '',
+                        'Metros total': '',
+                        'Ubicacion': ''
+                    })
+                }
+                if (u === 'bodega1'){
+                    let cpWt4 = this.filterBodega(cpWt, 4)
+                    let cpMedium4 = this.filterBodega(cpMedium, 4)
+                    let cpLiner4 = this.filterBodega(cpLiner, 4)
+                    let cpLinerR4 = this.filterBodega(cpLinerR, 4)
+                    cpWt4.forEach( el => { exportFormat.push(el) })
+                    cpMedium4.forEach( el => { exportFormat.push(el) })
+                    cpLiner4.forEach( el => { exportFormat.push(el) })
+                    cpLinerR4.forEach( el => { exportFormat.push(el) })
+
+                    exportFormat.push(
+                        {
+                            'Fecha de reporte': '', 'Tipo papel': '',
+                            'Gramaje-Ancho': '', 'Cantidad de rollos': '',
+                            'Peso total (Kgs)': '', 'Metros total': '',
+                            'Ubicacion': ''
+                        }
+                    )
+                }
+                if ( u === 'planta') {
+
+                    let cpWt5 = this.filterBodega(cpWt, 5)
+                    let cpMedium5 = this.filterBodega(cpMedium, 5)
+                    let cpLiner5 = this.filterBodega(cpLiner, 5)
+                    let cpLinerR5 = this.filterBodega(cpLinerR, 5)
+
+                    cpWt5.forEach( el => { exportFormat.push(el) })
+                    cpMedium5.forEach( el => { exportFormat.push(el) })
+                    cpLiner5.forEach( el => { exportFormat.push(el) })
+                    cpLinerR5.forEach( el => { exportFormat.push(el) })
+                }
+
+            })
+
+            return exportFormat
+        },
+        sendXLS: function (allRolls) {
+            let exportFormat = this.groupByUbication ? this.formatByUbication(allRolls) : this.formatByTypePaper(allRolls)
+
+            if(this.xlsOrPdf === 'xls') this.exportToExcel(exportFormat)
+            else this.exportToPdf(exportFormat)
         },
         exportToPdf: function(exportFormat){
             let fecha = new Date()
             let head = [
                 [
-                    'Tipo papel',
-                    'Gramaje-Ancho',
-                    'Cantidad de rollos',
-                    'Peso total (Kgs)',
-                    'Metros total',
-                    'Ubicación'
+                    'Tipo papel', 'Gramaje-Ancho', 'Cantidad de rollos',
+                    'Peso total (Kgs)', 'Metros total', 'Ubicación'
                 ]
             ]
             let body = []
@@ -365,21 +446,28 @@ export default {
 
             })
             let doc = new jsPDF()
-                var totalPagesExp = "{total_pages_count_string}";
+            var totalPagesExp = "{total_pages_count_string}";
 
-            let nameReport = `Reporte existencias al ${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}`
+            let colinas = "COLINAS DE ALTA VISTA S.A"
+            let typeReport = this.groupByUbication ? 'agrupado por ubicacion' : 'agrupado por tipo papel'
+            let nameReport = `${colinas}\nReporte existencias al ${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}`
             // Or JavaScript:
             doc.autoTable({
                 head,
                 body,
                 columnStyles:  {
-                    0: {halign: 'center'},
-                    1: {halign: 'center'},
-                    2: {halign: 'center'},
-                    3: {halign: 'center'},
-                    4: {halign: 'center'},
-                    5: {halign: 'center'}
+                    0: {halign: 'center'}, 1: {halign: 'center'}, 2: {halign: 'center'},
+                    3: {halign: 'center'}, 4: {halign: 'center'}, 5: {halign: 'center'}
                 },
+                didParseCell: function(data) {
+                    if (data.cell.text[0] === '' && data.row.index !== 0) {
+                        data.cell.text = '--'
+                        // 228, 233, 240
+                        data.cell.styles.fillColor = [228, 233, 240];
+                    }
+
+
+                 },
                 didDrawPage: function (data) {
                     // Header
                     doc.setFontSize(20);
@@ -404,11 +492,11 @@ export default {
                     var pageSize = doc.internal.pageSize
                     var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
                     doc.text(str, data.settings.margin.left, pageHeight - 10)
-                    let str2 = `Generado a las ${hour}:${minutes}:${seconds}`
+                    let str2 = `Generado a las ${hour}:${minutes}:${seconds} ${typeReport}`
                     doc.text(str2, data.settings.margin.left, pageHeight - 6)
                 },
 
-                margin: {top: 30}
+                margin: {top: 35}
             })
 
             if (typeof doc.putTotalPages === 'function') {
