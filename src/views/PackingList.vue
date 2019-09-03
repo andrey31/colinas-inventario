@@ -58,7 +58,10 @@
             head-variant="dark"
             >
             <template slot="kgs" slot-scope="row">
-              {{Number(row.item.kgs).toFixed(2)}}
+              {{(Math.round(row.item.kgs)).toLocaleString('en-us')}}
+            </template>
+            <template slot="meters" slot-scope="row">
+              {{(Math.round(row.item.meters)).toLocaleString('en-us')}}
             </template>
             <template slot="enTransito" slot-scope="row">
 
