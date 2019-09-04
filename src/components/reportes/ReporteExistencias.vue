@@ -451,10 +451,25 @@ export default {
                         return 0
                     })
 
+                    let enTransitoTotalK = 0
+                    let enTransitoTotalM = 0
+                    let enTransitoCantidad = 0
                     enTransitoAll.forEach( el => {
+
                         exportFormat.push(el)
+                        enTransitoTotalK += Number(el['Peso total (Kgs)'])
+                        enTransitoTotalM += Number(el['Metros total'])
+                        enTransitoCantidad += Number(el['Cantidad de rollos'])
                     })
 
+                    exportFormat.push(
+                        {
+                            'Fecha de reporte': '', 'Tipo papel': '',
+                            'Gramaje-Ancho': '**Total**', 'Cantidad de rollos': enTransitoCantidad,
+                            'Peso total (Kgs)': enTransitoTotalK, 'Metros total': enTransitoTotalM,
+                            'Ubicacion': ''
+                        }
+                    )
                     exportFormat.push(
                         {
                             'Fecha de reporte': '', 'Tipo papel': '',
@@ -474,17 +489,34 @@ export default {
                     enTelisaAll.sort( (a, b) => {
 
                         let aCustom = a['Tipo papel'] + a['Gramaje-Ancho']
-                        let bCustom = b['Tipo papel'] + b['G']
+                        let bCustom = b['Tipo papel'] + b['Gramaje-Ancho']
                         if (aCustom < bCustom) return -1
 
                         if(aCustom > bCustom) return 1
 
                         return 0
                     })
+
+                    let enTelisaTotalK = 0
+                    let enTelisaTotalM = 0
+                    let enTelisaCantidad = 0
+
                     enTelisaAll.forEach( el => {
                         exportFormat.push(el)
+                        enTelisaTotalK += Number(el['Peso total (Kgs)'])
+                        enTelisaTotalM += Number(el['Metros total'])
+                        enTelisaCantidad += Number(el['Cantidad de rollos'])
                     })
 
+
+                    exportFormat.push(
+                        {
+                            'Fecha de reporte': '', 'Tipo papel': '',
+                            'Gramaje-Ancho': '**Total**', 'Cantidad de rollos': enTelisaCantidad,
+                            'Peso total (Kgs)': enTelisaTotalK, 'Metros total': enTelisaTotalM,
+                            'Ubicacion': ''
+                        }
+                    )
 
                     exportFormat.push(
                         {
@@ -500,10 +532,36 @@ export default {
                     let cpMedium3 = this.filterBodega(cpMedium, 3)
                     let cpLiner3 = this.filterBodega(cpLiner, 3)
 
-                    cpWt3.forEach( el => { exportFormat.push(el) })
-                    cpMedium3.forEach( el => { exportFormat.push(el) })
-                    cpLiner3.forEach( el => { exportFormat.push(el) })
+                    let enSislocarAll = cpWt3.concat(cpMedium3, cpLiner3)
 
+                    enSislocarAll.sort((a, b) => {
+                        let aCustom = a['Tipo papel'] + a['Gramaje-Ancho']
+                        let bCustom = b['Tipo papel'] + b['Gramaje-Ancho']
+                        if (aCustom < bCustom) return -1
+                        if(aCustom > bCustom) return 1
+                        return 0
+                    })
+
+                    let enSislocarTotalK = 0
+                    let enSislocarTotalM = 0
+                    let enSislocarTotalC = 0
+                    enSislocarAll.forEach( el => {
+                        exportFormat.push(el)
+
+                        enSislocarTotalK += Number(el['Peso total (Kgs)'])
+                        enSislocarTotalM += Number(el['Metros total'])
+                        enSislocarTotalC += Number(el['Cantidad de rollos'])
+                    })
+
+                    exportFormat.push({
+                        'Fecha de reporte': '',
+                        'Tipo papel': '',
+                        'Gramaje-Ancho': '**Total**',
+                        'Cantidad de rollos': enSislocarTotalC,
+                        'Peso total (Kgs)': enSislocarTotalK,
+                        'Metros total': enSislocarTotalM,
+                        'Ubicacion': ''
+                    })
                     exportFormat.push({
                         'Fecha de reporte': '',
                         'Tipo papel': '',
@@ -519,9 +577,36 @@ export default {
                     let cpMedium4 = this.filterBodega(cpMedium, 4)
                     let cpLiner4 = this.filterBodega(cpLiner, 4)
 
-                    cpWt4.forEach( el => { exportFormat.push(el) })
-                    cpMedium4.forEach( el => { exportFormat.push(el) })
-                    cpLiner4.forEach( el => { exportFormat.push(el) })
+                    let bodegaAll = cpWt4.concat(cpMedium4, cpLiner4)
+
+
+                    bodegaAll.sort((a, b) => {
+                        let aCustom = a['Tipo papel'] + a['Gramaje-Ancho']
+                        let bCustom = b['Tipo papel'] + b['Gramaje-Ancho']
+                        if (aCustom < bCustom) return -1
+                        if(aCustom > bCustom) return 1
+                        return 0
+                    })
+
+                    let enBodegaTotalK = 0
+                    let enBodegaTotalM = 0
+                    let enBodegaTotalC = 0
+                    bodegaAll.forEach( el => {
+                        exportFormat.push(el)
+
+                        enBodegaTotalK += Number(el['Peso total (Kgs)'])
+                        enBodegaTotalM += Number(el['Metros total'])
+                        enBodegaTotalC += Number(el['Cantidad de rollos'])
+                    })
+
+                    exportFormat.push(
+                        {
+                            'Fecha de reporte': '', 'Tipo papel': '',
+                            'Gramaje-Ancho': '**Total**', 'Cantidad de rollos': enBodegaTotalC,
+                            'Peso total (Kgs)': enBodegaTotalK, 'Metros total': enBodegaTotalM,
+                            'Ubicacion': ''
+                        }
+                    )
 
                     exportFormat.push(
                         {
@@ -538,9 +623,35 @@ export default {
                     let cpMedium5 = this.filterBodega(cpMedium, 5)
                     let cpLiner5 = this.filterBodega(cpLiner, 5)
 
-                    cpWt5.forEach( el => { exportFormat.push(el) })
-                    cpMedium5.forEach( el => { exportFormat.push(el) })
-                    cpLiner5.forEach( el => { exportFormat.push(el) })
+                    let plantaAll = cpWt5.concat(cpMedium5, cpLiner5)
+
+                    plantaAll.sort((a, b) => {
+                        let aCustom = a['Tipo papel'] + a['Gramaje-Ancho']
+                        let bCustom = b['Tipo papel'] + b['Gramaje-Ancho']
+                        if (aCustom < bCustom) return -1
+                        if(aCustom > bCustom) return 1
+                        return 0
+                    })
+                    let plantaTotalK = 0
+                    let plantaTotalM = 0
+                    let plantaTotalC = 0
+
+                    plantaAll.forEach( el => {
+                        exportFormat.push(el)
+
+                        plantaTotalK += Number(el['Peso total (Kgs)'])
+                        plantaTotalM += Number(el['Metros total'])
+                        plantaTotalC += Number(el['Cantidad de rollos'])
+                    })
+
+                    exportFormat.push(
+                        {
+                            'Fecha de reporte': '', 'Tipo papel': '',
+                            'Gramaje-Ancho': '**Total**', 'Cantidad de rollos': plantaTotalC,
+                            'Peso total (Kgs)': plantaTotalK, 'Metros total': plantaTotalM,
+                            'Ubicacion': ''
+                        }
+                    )
                 }
 
             })
@@ -588,14 +699,14 @@ export default {
             let typeReport = ''
             if (this.groupBy === 1) typeReport = 'agrupado por ubicacion'
             if(this.groupBy === 2) typeReport = 'agrupado por tipo papel'
-            if(this.groupBy === 3) typeReport = 'por totales'
+            if(this.groupBy === 3) typeReport = 'agrupado por totales'
 
             let day = fecha.getDate() < 9 ? '0' + fecha.getDate() : fecha.getDate()
             let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMoth()+1)
 
             let fechaFormat = `${day}/${month}/${fecha.getFullYear()}`
 
-            let nameReport = `${colinas}\n REPORTE EXISTENCIAS\nAL: ${fechaFormat}`
+            let nameReport = `${colinas}\n REPORTE DE EXISTENCIAS DE ROLLOS\nAL: ${fechaFormat}`
 
             // Or JavaScript:
             doc.autoTable({
