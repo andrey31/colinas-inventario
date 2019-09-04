@@ -108,7 +108,10 @@
   <b-table :items="rollosEnTransitoFilter" :fields="fieldsRolls" :per-page="perPage"
            :current-page="currentPage">
     <template slot="kgs" slot-scope="row">
-      {{Number(row.item.kgs).toFixed(2)}}
+      {{Math.round(Number(row.item.kgs)).toLocaleString('en-us')}}
+    </template>
+    <template slot="meters" slot-scope="row">
+      {{Math.round(Number(row.item.meters)).toLocaleString('en-us')}}
     </template>
     <template slot="enTransito" slot-scope="row">
       <label v-if="row.item.enTransito">Sí</label>
