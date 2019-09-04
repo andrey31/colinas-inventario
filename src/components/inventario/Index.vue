@@ -686,7 +686,9 @@ export default{
           this.db.ref('/Pre-historial_Inventario').orderByChild('idNumber')
             .equalTo(this.modalRow.idNumber).once('value').then( snap => {
               let key = Object.keys(snap.val())[0]
-              this.db.ref('/Pre-historial_Inventario').update(obj).then( data => {
+              delete obj['bodega']
+              delete obj['enUso']
+              this.db.ref('/Pre-historial_Inventario').child(key).update(obj).then( data => {
                 this.modalShow = false
               })
             })
