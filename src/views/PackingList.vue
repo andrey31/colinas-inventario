@@ -82,17 +82,22 @@
   <b-modal v-model="showModalDeleteOrder"
            hide-header
            hide-footer
+           no-close-on-backdrop
            >
     <b-container  class="text-center">
       <b-row>
         <b-col>
-          <h3>¿Esta seguro de eliminar el packing-list?</h3>
+          <h3>¿Esta seguro de eliminar el packing list?</h3>
         </b-col>
       </b-row>
       <b-row class="pt-4">
         <b-col>
           <b-button block variant="danger" class="mr-2" @click="showModalDeleteOrder = false">No</b-button>
-          <b-button block variant="primary" class="mr-2" @click="deleteOrder()">Si</b-button>
+          <b-button block variant="primary" class="mr-2" @click="deleteOrder()" :disabled="spinnerDelete">
+            <label for="" v-if="!spinnerDelete">Si</label>
+            <b-spinner variant="white" v-else></b-spinner>
+          </b-button>
+
       </b-col>
     </b-row>
   </b-container>
@@ -162,22 +167,68 @@ export default{
       rollosEnTransito: [],
       search: '',
       showModalDeleteOrder: false,
-      orderDelete: ''
+      orderDelete: '',
+      spinnerDelete: false
     }
   },
   methods: {
     setModalDeleteOrder: function(order){
+      this.spinnerDelete = false
       this.showModalDeleteOrder = true
       this.orderDelete = order
     },
+    changeApply: function(change, ubication, rolls){
+      let d = new Date()
+      let month = '' + (d.getMonth() + 1)
+      let day = '' + d.getDate()
+      let year = d.getFullYear()
+
+      let hour = d.getHours()
+      let minutes = d.getMinutes()
+      let seconds = d.getSeconds()
+      let tz = hour < 12 ? ' am.' : ' pm.'
+
+      rolls.forEach( r => {
+        let changeObj = {
+
+          cambioRealizado: change,
+          fecha: day + '-' + month + '-' + year,
+          hora: hour + ':' + minutes + ':' + seconds + tz,
+          numRollo: r.idNumber,
+          nota: '',
+          ubicacion: ubication,
+          usuario: this.currentUser.email,
+
+        }
+        let key = this.db.ref('CambiosRealizados').push().key
+
+        this.db.ref('CambiosRealizados').child(key).set(changeObj).then(data => {
+          console.log('cambio realizado')
+        }).catch( error => {
+          console.log(error + ' al cambiar')
+        })
+
+      })
+    },
     deleteOrder: function(){
+      this.spinnerDelete = true
       let key = this.orderDelete.key
       let rolls = this.orderDelete.packingList
       let almacen = this.orderDelete.almacen
 
       this.db.ref('/order').child(key).remove()
+      let i = 0
       rolls.forEach( rol => {
-        this.db.ref(almacen+'EnTransito').child(rol.key).remove()
+
+        this.db.ref(almacen+'EnTransito').child(rol.key).remove().then( ()=> {
+          i++
+          if(i === rolls.length) {
+            this.changeApply('Rollo borrado desde packing list', 'En transito', rolls)
+          }
+
+        }).catch( error => {
+          console.log('error')
+        })
       })
 
       let xls = firebase.storage().ref().child('packing-list/'+key+'.xlsx')
@@ -226,7 +277,7 @@ export default{
                 'typePaper': p.typePaper,
                 'kgs': p.kgs,
                 'weight': p.weight,
-                'width': `${p.width}\"`,
+                'width': p.width,
                 'comments': p.comments,
                 'enTransito': p.enTransito,
                 'almacen': almacen,

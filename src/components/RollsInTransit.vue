@@ -155,7 +155,7 @@
       <ul>
         <li v-for="roll in rollsNotCheck">
           <b-row class="pt-2">
-            <b-col cols="2" class="pt-1" offset="1">{{roll.idNumber}}</b-col>
+            <b-col cols="2" class="pt-1 mr-4" offset="1">{{roll.idNumber}}</b-col>
             <b-col cols="8">
               <b-form-input v-model="roll.comentarioNoLlego" placeholder="Ingrese comentario"></b-form-input>
             </b-col>
@@ -280,6 +280,7 @@ export default {
   data(){
     return {
       db: firebase.database(),
+      currentUser: firebase.auth().currentUser,
       fieldsRolls: [
         {key: 'typePaper', label: 'Tipo de papel'},
         {key: 'idNumber', label: 'Numero de rollo'},
@@ -306,7 +307,7 @@ export default {
   },
   methods: {
     updateRollInTransito: function(roll, almacen){
-      this.db.ref(almacen).child(roll.idNumber).update(
+      this.db.ref(almacen+'EnTransito').child(roll.idNumber).update(
         {
           comentarioNoLlego: roll.comentarioNoLlego,
           enTransito: false
@@ -314,33 +315,66 @@ export default {
       ).then( (data) => {
         roll.enTransito = false
         roll._rowVariant = 'danger'
+        this.registerChange('Rollo no llego a '+almacen, 'En Transito', roll.comentarioNoLlego, roll)
       })
     },
     updateRollInTransito2: function(roll, almacen){
-      this.db.ref(almacen).child(roll.idNumber).update(
+      this.db.ref(almacen+'EnTransito').child(roll.idNumber).update(
         {
           enTransito: false
         }
       ).then( (data) => {
         this.registerTraslado(roll)
+        this.registerChange('Trasladado a '+almacen, 'En Transito', '', roll)
       })
+    },
+    getFormatDate: function () {
+      let d = new Date()
+      let month = '' + (d.getMonth() + 1)
+      let day = '' + d.getDate()
+      let year = d.getFullYear()
+
+      let hour = d.getHours()
+      let minutes = d.getMinutes()
+      let seconds = d.getSeconds()
+      let tz = hour < 12 ? ' am.' : ' pm.'
+
+      return {
+        date: day + '-' + month + '-' + year,
+        hour: hour + ':' + minutes + ':' + seconds + tz
+      }
+    },
+    registerChange: function(change, ubication, nota, roll){
+      let formatDate = this.getFormatDate()
+
+      let changeObj = {
+
+        cambioRealizado: change,
+        fecha: formatDate.date,
+        hora: formatDate.hour,
+        nota: nota,
+        numRollo: roll.idNumber,
+        ubicacion: ubication,
+        usuario: this.currentUser.email
+
+      }
+      let key = this.db.ref('CambiosRealizados').push().key
+
+      this.db.ref('CambiosRealizados').child(key).set(changeObj).then(data => {
+        console.log('cambio realizado')
+      }).catch( error => {
+        console.log(error + ' al cambiar')
+      })
+
     },
     registerTraslado: function(roll) {
       roll.enTransito = false
       roll._rowVariant = 'danger'
       console.log('en transito actualizado')
-
-      let d = new Date()
-      let month = '' + (d.getMonth() + 1)
-      let day = '' + d.getDate()
-      let year = d.getFullYear()
-      let hour = d.getHours()
-      let minutes = d.getMinutes()
-      let seconds = d.getSeconds()
-      let tz = hour < 12 ? ' am.' : ' pm.'
+      let formatDate = this.getFormatDate()
       let traslado = {
-        fecha: day + '-' + month + '-' + year,
-        hora: hour + ':' + minutes + ':' + seconds + tz,
+        fecha: formatDate.date,
+        hora: formatDate.hour,
         llegada: (roll.almacen).replace(/\b\w/g, l => l.toUpperCase()),
         numRollo: roll.idNumber,
         partida: 'En transito',
@@ -357,21 +391,21 @@ export default {
       })
     },
     sendRollsToAlmacen: function(){
-      this.rollsNotCheck.forEach( roll => {
+      this.rollsNotCheck.forEach( (roll, index, arr) => {
 
         this.db.ref('sislocarEnTransito').child(roll.idNumber).once('value', snap => {
           if(snap.exists()){
-            this.updateRollInTransito(roll, 'sislocarEnTransito')
+            this.updateRollInTransito(roll, 'sislocar')
           }
         })
 
         this.db.ref('telisaEnTransito').child(roll.idNumber).once('value', snap => {
           if(snap.exists()){
-            this.updateRollInTransito(roll, 'telisaEnTransito')
+            this.updateRollInTransito(roll, 'telisa')
           }
         })
 
-
+        if (index === arr.length - 1 ) this.showModalSendRolls = false
       })
 
       this.rollsCheck.forEach( (roll, index, arr) => {
@@ -392,14 +426,14 @@ export default {
           this.db.ref('sislocarEnTransito').child(r.idNumber).once('value', snap => {
             if(snap.exists()){
 
-              this.updateRollInTransito2(roll, 'sislocarEnTransito')
+              this.updateRollInTransito2(roll, 'sislocar')
             }
           })
 
           this.db.ref('telisaEnTransito').child(r.idNumber).once('value', snap => {
             if(snap.exists()){
 
-              this.updateRollInTransito2(roll, 'telisaEnTransito')
+              this.updateRollInTransito2(roll, 'telisa')
             }
         })
 

@@ -115,7 +115,8 @@ export default{
       showAlertError: false,
       textAlertError: '',
       showModal: false,
-      almacen: ''
+      almacen: '',
+      currentUser: firebase.auth().currentUser,
     }
   },
   methods: {
@@ -144,6 +145,7 @@ export default{
     uploadFile: function(){
       this.showModal = false
       this.spinner = true
+      this.disabledUpload = true
       let storageRef = firebase.storage().ref();
 
       let file = this.file
@@ -200,32 +202,81 @@ export default{
                     });
 
     },
+    changeApply: function(change, ubication, arrayKeys){
+      let d = new Date()
+      let month = '' + (d.getMonth() + 1)
+      let day = '' + d.getDate()
+      let year = d.getFullYear()
 
+      let hour = d.getHours()
+      let minutes = d.getMinutes()
+      let seconds = d.getSeconds()
+      let tz = hour < 12 ? ' am.' : ' pm.'
+
+      let idsRegistrados = []
+
+      for (let i in arrayKeys) {
+
+        let changeObj = {
+
+          cambioRealizado: change,
+          fecha: day + '-' + month + '-' + year,
+          hora: hour + ':' + minutes + ':' + seconds + tz,
+          nota: '',
+          numRollo: arrayKeys[i],
+          ubicacion: ubication,
+          usuario: this.currentUser.email
+
+        }
+
+        let key = this.db.ref('CambiosRealizados').push().key
+
+        this.db.ref('CambiosRealizados').child(key).set(changeObj).then(data => {
+          idsRegistrados.push('')
+          this.textSpinner = 'Registrando cambio al rollo '+changeObj.numRollo+' ...'
+
+          if( idsRegistrados.length === arrayKeys.length){
+            this.disabledUpload = true
+            this.showAlert = true
+            this.spinner = false
+          }
+
+
+        }).catch( error => {
+          console.log(error + ' al cambiar')
+        })
+      }
+
+    },
     upload: function(downloadURL, keyOrder){
       // Subir datos a firebase
       this.textSpinner = 'Subiendo datos ...'
       let arrayKeys = []
-
+      let saveIdRegisterChanges = []
       this.rollsNotExistsInDb.forEach( packing => {
         // console.log(packing.idNumber)
         // let key = this.db.ref('packing-list').push().key;
         let almacenCustom = this.almacen + 'EnTransito'
         this.db.ref(almacenCustom).child(packing.idNumber).set(packing)
           .then((data) => {
-            this.spinner = false
+
             console.log('Agregado packing-list')
-            this.disabledUpload = true
-            this.showAlert = true
+            this.textSpinner = 'Packing list cargado, espere por favor...'
+            saveIdRegisterChanges.push(packing.idNumber)
+            arrayKeys.push(packing.idNumber)
+            if(arrayKeys.length === this.rollsNotExistsInDb.length){
+              this.uploadOrder(arrayKeys, downloadURL, keyOrder, arrayKeys)
+            }
           })
           .catch(error => {
             this.textSpinner = 'Ocurrió un error al subir los datos'
           })
-        arrayKeys.push(packing.idNumber)
+
       })
-      arrayKeys.length === this.rollsNotExistsInDb.length ? this.uploadOrder(arrayKeys, downloadURL, keyOrder) : null
+
       // this.uploadFile()
     },
-    uploadOrder: function(uids, downloadURL, keyOrder){
+    uploadOrder: function(uids, downloadURL, keyOrder, arrayKeys){
       this.db.ref('order').child(keyOrder).set({
         'provided': this.provided,
         'date': this.date,
@@ -240,6 +291,10 @@ export default{
         'packing-list': uids,
         'downloadXLS': downloadURL,
         'almacen': this.almacen
+      }).then( () => {
+        this.textSpinner = 'Subiendo datos de orden ...'
+        this.changeApply('Rollo registrado desde packing list', 'En transito', arrayKeys)
+
       })
     },
     load: function(){
