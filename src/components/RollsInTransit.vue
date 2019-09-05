@@ -78,7 +78,7 @@
               Total de kilos <b>{{(getTotalKgsMeters.kg).toLocaleString('en-us')}}</b>
             </b-col>
             <b-col v-if="getTotalKgsMeters.tons > 0">
-              Total de toneladas <b>{{(getTotalKgsMeters.tons).toLocaleString('en-us')}}</b>
+              Total de toneladas <b>{{((getTotalKgsMeters.tons).toFixed(1)).toLocaleString('en-us')}}</b>
             </b-col>
             <b-col v-if="getTotalKgsMeters.meters > 0">
               Total de metros <b>{{(getTotalKgsMeters.meters).toLocaleString('en-us')}}</b>
@@ -305,17 +305,73 @@ export default {
     }
   },
   methods: {
+    updateRollInTransito: function(roll, almacen){
+      this.db.ref(almacen).child(roll.idNumber).update(
+        {
+          comentarioNoLlego: roll.comentarioNoLlego,
+          enTransito: false
+        }
+      ).then( (data) => {
+        roll.enTransito = false
+        roll._rowVariant = 'danger'
+      })
+    },
+    updateRollInTransito2: function(roll, almacen){
+      this.db.ref(almacen).child(roll.idNumber).update(
+        {
+          enTransito: false
+        }
+      ).then( (data) => {
+        this.registerTraslado(roll)
+      })
+    },
+    registerTraslado: function(roll) {
+      roll.enTransito = false
+      roll._rowVariant = 'danger'
+      console.log('en transito actualizado')
+
+      let d = new Date()
+      let month = '' + (d.getMonth() + 1)
+      let day = '' + d.getDate()
+      let year = d.getFullYear()
+      let hour = d.getHours()
+      let minutes = d.getMinutes()
+      let seconds = d.getSeconds()
+      let tz = hour < 12 ? ' am.' : ' pm.'
+      let traslado = {
+        fecha: day + '-' + month + '-' + year,
+        hora: hour + ':' + minutes + ':' + seconds + tz,
+        llegada: (roll.almacen).replace(/\b\w/g, l => l.toUpperCase()),
+        numRollo: roll.idNumber,
+        partida: 'En transito',
+        gramaje: roll.gramaje,
+        width: roll.width
+      }
+
+      let keyTraslado = this.db.ref('Traslados').push().key
+
+      this.db.ref('Traslados').child(keyTraslado).set(traslado).then(data => {
+        console.log('traslado agregado')
+      }).catch( error => {
+        console.log(error + ' en traslado')
+      })
+    },
     sendRollsToAlmacen: function(){
       this.rollsNotCheck.forEach( roll => {
-        this.db.ref(roll.almacen+'EnTransito').child(roll.idNumber).update(
-          {
-            comentarioNoLlego: roll.comentarioNoLlego,
-            enTransito: false
+
+        this.db.ref('sislocarEnTransito').child(roll.idNumber).once('value', snap => {
+          if(snap.exists()){
+            this.updateRollInTransito(roll, 'sislocarEnTransito')
           }
-        ).then( (data) => {
-          roll.enTransito = false
-          roll._rowVariant = 'danger'
         })
+
+        this.db.ref('telisaEnTransito').child(roll.idNumber).once('value', snap => {
+          if(snap.exists()){
+            this.updateRollInTransito(roll, 'telisaEnTransito')
+          }
+        })
+
+
       })
 
       this.rollsCheck.forEach( (roll, index, arr) => {
@@ -332,44 +388,20 @@ export default {
           dua: ''
         }
         this.db.ref(roll.almacen).child(r.idNumber).set(r).then((data) => {
-          let rollId = r.idNumber
-          this.db.ref((roll.almacen)+'EnTransito').child(rollId).update(
-            {
-              enTransito: false
+
+          this.db.ref('sislocarEnTransito').child(r.idNumber).once('value', snap => {
+            if(snap.exists()){
+
+              this.updateRollInTransito2(roll, 'sislocarEnTransito')
             }
-          ).then( (data) => {
-            roll.enTransito = false
-            roll._rowVariant = 'danger'
-            console.log('en transito actualizado')
-
-            let d = new Date()
-            let month = '' + (d.getMonth() + 1)
-            let day = '' + d.getDate()
-            let year = d.getFullYear()
-            let hour = d.getHours()
-            let minutes = d.getMinutes()
-            let seconds = d.getSeconds()
-            let tz = hour < 12 ? ' am.' : ' pm.'
-            let traslado = {
-              fecha: day + '-' + month + '-' + year,
-              hora: hour + ':' + minutes + ':' + seconds + tz,
-              llegada: (roll.almacen).replace(/\b\w/g, l => l.toUpperCase()),
-              numRollo: rollId,
-              partida: 'En transito',
-              gramaje: r.gramaje,
-              width: r.width
-            }
-
-            let keyTraslado = this.db.ref('Traslados').push().key
-
-            this.db.ref('Traslados').child(keyTraslado).set(traslado).then(data => {
-              console.log('traslado agregado')
-            }).catch( error => {
-              console.log(error + ' en traslado')
-            })
-          }).catch( error => {
-            console.log('error')
           })
+
+          this.db.ref('telisaEnTransito').child(r.idNumber).once('value', snap => {
+            if(snap.exists()){
+
+              this.updateRollInTransito2(roll, 'telisaEnTransito')
+            }
+        })
 
           if (index === arr.length - 1 ) this.showModalSendRolls = false
         }).catch( error => {
