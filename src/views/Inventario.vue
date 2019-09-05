@@ -284,7 +284,7 @@ export default{
           'kgs': Math.round(data[key].kgs),
           'kgsConsumidos': typeof data[key].kgsConsumidos !== 'undefined' ? data[key].kgsConsumidos : null,
           'meters': typeof data[key].meters !== 'undefined' ? Math.round(data[key].meters) : null,
-          'width': `${data[key].width}"`,
+          'width': `${data[key].width}`,
           'gramaje': data[key].gramaje,
           'typePaper': data[key].typePaper,
           'comments': data[key].comments,
