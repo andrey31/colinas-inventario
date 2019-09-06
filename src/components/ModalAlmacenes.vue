@@ -20,31 +20,31 @@
   <b-container fluid>
     <b-form class="row">
       <b-form-group class="col-4" id="idNumber" label="Numero de rollo" label-for="input-id">
-        <b-form-input id="input-id" type="text" v-model="modalRow.idNumber" required></b-form-input>
+        <b-form-input id="input-id" type="text" v-model="modalRowCopyC.idNumber" required></b-form-input>
       </b-form-group>
 
       <b-form-group class="col-4" id="idNumber" label="Almacen" label-for="input-almacen">
-        <b-form-select v-model="modalRow.almacen">
+        <b-form-select v-model="modalRowCopyC.almacen">
           <option value="telisa">Telisa</option>
           <option value="sislocar">Sislocar</option>
         </b-form-select>
       </b-form-group>
 
       <b-form-group class="col-4" id="idMeters" label="Metros" label-for="input-meters">
-        <b-form-input id="input-meters" type="text" v-model="modalRow.meters" required></b-form-input>
+        <b-form-input id="input-meters" type="text" v-model="modalRowCopyC.meters" required></b-form-input>
       </b-form-group>
 
       <b-form-group class="col-4" id="idGramaje" label="Gramaje" label-for="input-gramaje">
-        <b-form-input id="input-gramaje" type="text" v-model="modalRow.gramaje" required>
+        <b-form-input id="input-gramaje" type="text" v-model="modalRowCopyC.gramaje" required>
         </b-form-input>
       </b-form-group>
 
       <b-form-group class="col-4" id="idWidth" label="Ancho" label-for="input-width">
-        <b-form-input id="input-width" type="text" v-model="modalRow.width" required></b-form-input>
+        <b-form-input id="input-width" type="text" v-model="modalRowCopyC.width" required></b-form-input>
       </b-form-group>
 
       <b-form-group class="col-4" id="idTypePaper" label="Tipo de papel" label-for="input-typePaper">
-        <b-form-select v-model="modalRow.typePaper">
+        <b-form-select v-model="modalRowCopyC.typePaper">
           <option value="MEDIUM">MEDIUM</option>
           <option value="LINER">LINER</option>
           <option value="LINER R">LINER R</option>
@@ -52,17 +52,16 @@
         </b-form-select>
       </b-form-group>
 
-        <b-form-group class="col-4" id="idKg" label="Kilogramos" label-for="input-kg">
-          <b-form-input id="input-kg" type="text" v-model="modalRow.kgs" required></b-form-input>
+      <b-form-group class="col-4" id="idKg" label="Kilogramos" label-for="input-kg">
+        <b-form-input id="input-kg" type="text" v-model="modalRowCopyC.kgs" required></b-form-input>
         </b-form-group
 
         <b-form-group class="col-12" id="idComment" label="Comentario" label-for="input-comment">
-          <b-form-textarea id="input-comment" type="text" v-model="modalRow.comments" rows="3" max-rows="6" required>
+          <b-form-textarea id="input-comment" type="text" v-model="modalRowCopyC.comments" rows="3" max-rows="6" required>
           </b-form-textarea>
         </b-form-group>
       </b-form>
     </b-container>
-
     <div slot="modal-footer" class="">
       <b-button variant="danger" class="mr-2" @click="setModalShowAlmacen(false)">Cancelar</b-button>
       <b-button variant="primary" @click="saveAlmacen" :disabled="disableSave">Guardar</b-button>
@@ -79,10 +78,20 @@ export default{
     props: ['modalRow'],
     computed: {
         ...mapState(['modalShowAlmacen']),
+        modalRowCopyC: {
+            get: function(){
+                // let cp = assign({}, this.modalRow);
+                this.modalRowCopy = Object.assign({}, this.modalRow)
+                return this.modalRowCopy
+            },
+            set: function(v) {
+                this.modalRowCopy = v
+            }
+        },
         disableSave: function(){
             let disable = false
-            for (let key in this.modalRow){
-                if (this.modalRow[key] === '' || typeof this.modalRow[key] === 'undefined') {
+            for (let key in this.modalRowCopy){
+                if (this.modalRowCopy[key] === '' || typeof this.modalRowCopy[key] === 'undefined') {
                     disable = true
                 }
             }
@@ -92,26 +101,67 @@ export default{
     data(){
         return {
             db: firebase.database(),
+            currentUser: firebase.auth().currentUser,
+            modalRowCopy: {}
         }
     },
     methods: {
         ...mapMutations(['setModalShowAlmacen']),
+        getFormatDate: function () {
+            let d = new Date()
+            let month = '' + (d.getMonth() + 1)
+            let day = '' + d.getDate()
+            let year = d.getFullYear()
+
+            let hour = d.getHours()
+            let minutes = d.getMinutes()
+            let seconds = d.getSeconds()
+            let tz = hour < 12 ? ' am.' : ' pm.'
+
+            return {
+                date: day + '-' + month + '-' + year,
+                hour: hour + ':' + minutes + ':' + seconds + tz
+            }
+        },
+        registerChange: function(change, ubication, nota, roll){
+            let formatDate = this.getFormatDate()
+
+            let changeObj = {
+
+                cambioRealizado: change,
+                fecha: formatDate.date,
+                hora: formatDate.hour,
+                nota: nota,
+                numRollo: roll.idNumber,
+                ubicacion: ubication,
+                usuario: this.currentUser.email
+
+            }
+            let key = this.db.ref('CambiosRealizados').push().key
+
+            this.db.ref('CambiosRealizados').child(key).set(changeObj).then(data => {
+                console.log('cambio realizado')
+            }).catch( error => {
+                console.log(error + ' error al cambiar')
+            })
+
+        },
         saveAlmacen: function(){
-            let almacen = this.modalRow.almacen
-            let key = this.modalRow.idNumber
-            let editar = this.modalRow.editar
+            let almacen = this.modalRowCopy.almacen
+            let key = this.modalRowCopy.idNumber
+            let editar = this.modalRowCopy.editar
 
             let obj = {
-                comments: this.modalRow.comments,
-                gramaje: this.modalRow.gramaje,
-                idNumber: this.modalRow.idNumber,
-                kgs: Number(this.modalRow.kgs),
-                meters: Number(this.modalRow.meters),
-                typePaper: this.modalRow.typePaper,
-                width: Number(this.modalRow.width)
+                comments: this.modalRowCopy.comments,
+                gramaje: this.modalRowCopy.gramaje,
+                idNumber: this.modalRowCopy.idNumber,
+                kgs: Number(this.modalRowCopy.kgs),
+                meters: Number(this.modalRowCopy.meters),
+                typePaper: this.modalRowCopy.typePaper,
+                width: Number(this.modalRowCopy.width)
             }
             if (editar){
-                let fecha = this.modalRow.fecha
+                let fecha = this.modalRowCopy.fecha
 
                 let month = ''+ (fecha.getMonth() + 1)
                 let day = '' + fecha.getDate()
@@ -121,6 +171,22 @@ export default{
                 this.db.ref('sislocar').child(key).set(null).then( data => {
                     this.db.ref('telisa').child(key).set(null).then( data => {
                         this.db.ref(almacen).child(obj.idNumber).set(obj).then( data => {
+                            Object.keys(this.modalRow).forEach( key => {
+                                console.log(key)
+                                if (this.modalRow[key] !== this.modalRowCopy[key]){
+                                    let customKey = key
+
+                                    if (customKey === 'idNumber') customKey = 'número de rollo'
+                                    if (customKey === 'meters') customKey = 'metros'
+                                    if (customKey === 'comments') customKey = 'comentario'
+                                    if (customKey === 'width') customKey = 'ancho'
+
+                                    // change, ubication, nota, roll
+                                    let change = `Se cambio ${customKey}: ${this.modalRow[key]} a ${this.modalRowCopy[key]}`
+                                    this.registerChange(change, 'Almacenes', '', this.modalRow)
+
+                                }
+                            })
                             this.setModalShowAlmacen(false)
                         }).catch( error => {
                             console.log(error)
