@@ -569,6 +569,7 @@ export default{
       showFilterDate: false,
       modalShow: false,
       modalRow: {},
+      modalRowCopy: {},
       modalDeleteShow: false,
       keyRoll: 0,
       db: firebase.database(),
@@ -591,6 +592,7 @@ export default{
       }
 
       this.modalRow = Object.assign({}, row)
+      this.modalRowCopy = Object.assign({}, row)
       let w = (this.modalRow.width).substr(0,2) //Remover comillas de pulgadas
 
       if (this.modalRow.fecha) {
@@ -624,8 +626,11 @@ export default{
           width: this.modalRow.width
         }
 
-        this.db.ref('HistorialInventario').child(key).set(roll)
-        this.db.ref('Inventario').child(this.keyRoll).remove()
+        this.db.ref('HistorialInventario').child(key).set(roll).then( () => {
+          this.db.ref('Inventario').child(this.keyRoll).remove()
+          this.registerChange('Movida a comsumo', 'Inventario', '', roll)
+        })
+
       }
       else if(this.selectedMoveHistory === 'false') {
 
@@ -635,6 +640,10 @@ export default{
           .equalTo(this.modalRow.idNumber).once('value').then( snap => {
             let key = Object.keys(snap.val())[0]
             this.db.ref('/Pre-historial_Inventario').child(key).remove()
+
+            //Para registrar cambio al borrar
+
+            this.registerChange('Bobina eliminada', 'Inventario', '', this.modalRow)
           })
       }
       this.modalDeleteShow = false
@@ -646,19 +655,23 @@ export default{
         this.modalChangeAddHistorial = true
       }else if(this.actualTab === 1){
         this.modalDeleteShow = false
-        this.db.ref('InventarioSobrantes').child(this.keyRoll).remove()
+        this.db.ref('InventarioSobrantes').child(this.keyRoll).remove().then( () => {
+          this.registerChange('Bobina eliminada', 'Sobrantes', '', this.modalRow)
+        })
       }else if(this.actualTab === 2){
         this.modalDeleteShow = false
-        this.db.ref('HistorialInventario').child(this.keyRoll).remove()
+        this.db.ref('HistorialInventario').child(this.keyRoll).remove().then( () => {
+          this.registerChange('Bobina eliminada', 'Consumos', '', this.modalRow)
+        })
       }
 
 
     },
     formatDate: function (date) {
       var d = new Date(date),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate(),
-        year = d.getFullYear();
+          month = '' + (d.getMonth() + 1),
+          day = '' + d.getDate(),
+          year = d.getFullYear();
 
       if (month.length < 2) month = '0' + month;
       if (day.length < 2) day = '0' + day;
@@ -682,7 +695,7 @@ export default{
         }
         this.db.ref('Inventario').child(key).update(obj).then( (data) => {
           // this.modalShow = false
-
+          this.registerChangeByInventario(obj, 'Inventario')
           this.db.ref('/Pre-historial_Inventario').orderByChild('idNumber')
             .equalTo(this.modalRow.idNumber).once('value').then( snap => {
               let key = Object.keys(snap.val())[0]
@@ -704,9 +717,9 @@ export default{
           causaDesperdicio: (typeof this.causaDesperdicio !== 'undefined') ? this.causaDesperdicio : null,
           diametro: this.modalRow.diametro,
           enUso: this.modalRow.enUso,
-          fecha: this.modalRow.fecha,
+          // fecha: this.modalRow.fecha,
           gramaje: this.modalRow.gramaje,
-          hora: this.modalRow.hora,
+          // hora: this.modalRow.hora,
           idNumber: this.modalRow.idNumber,
           kgs: Number(this.modalRow.kgs),
           kgsConsumidos: Number(this.modalRow.kgsConsumidos),
@@ -715,6 +728,7 @@ export default{
           width: Number(this.modalRow.width)
         }
         this.db.ref('InventarioSobrantes').child(key).update(obj).then( (data) => {
+          this.registerChangeByInventario(obj, 'Sobrantes')
           this.modalShow = false
         }).catch( error => {
           console.log(error)
@@ -725,7 +739,7 @@ export default{
         let obj = {
           comments: this.modalRow.comments,
           desperdicio: this.modalRow.desperdicio,
-          Fecha: this.modalRow.fecha,
+          // Fecha: this.modalRow.fecha,
           gramaje: this.modalRow.gramaje,
           idNumber: this.modalRow.idNumber,
           kgs: Number(this.modalRow.kgs),
@@ -735,6 +749,7 @@ export default{
         }
 
         this.db.ref('HistorialInventario').child(key).update(obj).then( data => {
+          this.registerChangeByInventario(obj, 'Consumos')
           this.modalShow = false
         }).catch( error => {
           console.log(error)
@@ -754,8 +769,65 @@ export default{
       XLSX.utils.book_append_sheet(wb, sheet, 'datos')
       XLSX.writeFile(wb, 'datos.xlsx')
 
-    }
+    },
+    getFormatDate: function () {
+      let d = new Date()
+      let month = '' + (d.getMonth() + 1)
+      let day = '' + d.getDate()
+      let year = d.getFullYear()
+
+      let hour = d.getHours()
+      let minutes = d.getMinutes()
+      let seconds = d.getSeconds()
+      let tz = hour < 12 ? ' am.' : ' pm.'
+
+      return {
+        date: day + '-' + month + '-' + year,
+        hour: hour + ':' + minutes + ':' + seconds + tz
+      }
+    },
+    registerChangeByInventario: function(obj, site){
+      Object.keys(obj).forEach( key => {
+
+        if (this.modalRow[key] !== this.modalRowCopy[key]) {
+          let customKey = key
+
+          if (customKey === 'idNumber') customKey = 'número de rollo'
+          if (customKey === 'meters') customKey = 'metros'
+          if (customKey === 'comments') customKey = 'comentario'
+          if (customKey === 'width') customKey = 'ancho'
+
+          // change, ubication, nota, roll
+          let change = `Se cambio ${customKey}: ${this.modalRowCopy[key]} a ${this.modalRow[key]}`
+          this.registerChange(change, site, '', this.modalRow)
+
+        }
+      })
+    },
+    registerChange: function(change, ubication, nota, roll){
+      let formatDate = this.getFormatDate()
+
+      let changeObj = {
+
+        cambioRealizado: change,
+        fecha: formatDate.date,
+        hora: formatDate.hour,
+        nota: nota,
+        numRollo: roll.idNumber,
+        ubicacion: ubication,
+        usuario: this.currentUser.email
+
+      }
+      let key = this.db.ref('CambiosRealizados').push().key
+
+      this.db.ref('CambiosRealizados').child(key).set(changeObj).then(data => {
+        console.log('cambio realizado')
+      }).catch( error => {
+        console.log(error + ' error al cambiar')
+      })
+
+    },
   }
 
 }
-</script>
+ </script>
