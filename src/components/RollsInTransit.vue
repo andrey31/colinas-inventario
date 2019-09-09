@@ -325,7 +325,7 @@ export default {
         }
       ).then( (data) => {
         this.registerTraslado(roll)
-        // this.registerChange('Trasladado a '+almacen, 'En Transito', '', roll)
+        this.registerChange('Trasladado a '+roll.almacen, 'En Transito', '', roll)
       })
     },
     getFormatDate: function () {
