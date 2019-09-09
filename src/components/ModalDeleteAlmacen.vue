@@ -49,7 +49,7 @@ export default {
     },
     deleteRoll: function(){
       this.db.ref(this.almacen).child(this.idNumber).remove().then( () => {
-        this.registerChange( 'Rollo eliminado', 'Almacenes', '', this.idNumber)
+        this.registerChange( 'Bobina eliminada', 'Almacenes', '', this.idNumber)
       })
       this.setModalDeleteAlmacen(false)
     },

@@ -37,7 +37,8 @@ const router = new Router({
       meta: {
         requiresAuth: true,
         permissionAdmin: true,
-        permissionCol: true
+        permissionCol: true,
+        permissionSuperAdmin: true
       }
     },
     {
@@ -109,8 +110,23 @@ router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some( record => record.meta.requiresAuth)
   const permissionAdmin = to.matched.some(record => record.meta.permissionAdmin)
   const permissionCol = to.matched.some(record => record.meta.permissionCol)
+  const permissionSuperAdmin = to.matched.some(record => record.meta.permissionSuperAdmin)
 
-  if (requiresAuth && permissionAdmin && permissionCol){
+  if (requiresAuth && permissionSuperAdmin) {
+
+    if(currentUser){
+      if(checkEmail(currentUser).superAdmin){
+        next()
+      }else if(checkEmail(currentUser)) {
+        next( { path: 'packing-list'})
+      }else {
+        next('login')
+      }
+    }else {
+      next('login')
+    }
+
+  }else if (requiresAuth && permissionAdmin && permissionCol){
     if (currentUser){
       if (checkEmail(currentUser).admin && checkEmail(currentUser).col) {
         next()
@@ -165,19 +181,24 @@ function checkEmail( currentUser ){
     'jose.rodriguez@corrugadosaltavista.com',
     'contabilidad@corrugadosaltavista.com',
     'jose.mora@corrugadosaltavista.com',
-    'montacargas1@corrugadosaltavista.com',
-    'montacargas2@corrugadosaltavista.com',
-    'operador1@corrugadosaltavista.com',
-    'operador2@corrugadosaltavista.com',
-    'jennifer@corrugadosaltavista.com'
+    'jennifer@corrugadosaltavista.com',
+    'ronny@corrugadosaltavista.com',
+    'eduardo@corrugadosaltavista.com',
+    'rigo@corrugadosaltavista.com',
+    'alexander@corrugadosaltavista.com',
+    'jackson@corrugadosaltavista.com',
+    'josue@corrugadosaltavista.com',
+    'sandro@corrugadosaltavista.com'
   ]
 
   for(let email in emails){
-    if (emails[email] === currentUser.email && emails[email] === emails[0]) return { 'access': true, 'admin': true, 'col': true}
-    else if( emails[email] === currentUser.email && emails[email] === emails[1]) return { 'access': true, 'admin': true, 'col': true}
-    else if( emails[email] === currentUser.email && emails[email] === emails[10]) return { 'access': true, 'admin': true, 'col': false}
-    else if(emails[email] === currentUser.email) return {'access': true, 'admin': false, 'col': true}
-    else if( email === (emails.length - 1) ) return {'access': false, 'admin': false}
+    if (emails[email] === currentUser.email && emails[email] === emails[0]) return { 'access': true, 'admin': true, 'col': true, superAdmin: true}
+    else if( emails[email] === currentUser.email && emails[email] === emails[1]) return { 'access': true, 'admin': true, 'col': true, superAdmin: true}
+    else if( emails[email] === currentUser.email && emails[email] === emails[2]) return { 'access': true, 'admin': true, 'col': true, superAdmin: false}
+    else if( emails[email] === currentUser.email && emails[email] === emails[3]) return { 'access': true, 'admin': true, 'col': true, superAdmin: false}
+    else if( emails[email] === currentUser.email && emails[email] === emails[6]) return { 'access': true, 'admin': true, 'col': false, superAdmin: false}
+    else if(emails[email] === currentUser.email) return {'access': true, 'admin': false, 'col': true, superAdmin: false}
+    else if( email === (emails.length - 1) ) return {'access': false, 'admin': false, superAdmin: false}
   }
 
 }
