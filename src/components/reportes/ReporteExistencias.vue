@@ -78,7 +78,7 @@ export default {
       xlsOrPdf: 'xls',
       disableButtonXLS: false,
       disableButtonPDF: false,
-      groupBy: 1,
+      groupBy: '1',
       groupByOptions: [
         { text: 'Ubicacion', value: 1},
         { text: 'Tipo papel', value: 2},
