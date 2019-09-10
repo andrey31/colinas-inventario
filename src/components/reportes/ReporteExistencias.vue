@@ -78,7 +78,7 @@ export default {
       xlsOrPdf: 'xls',
       disableButtonXLS: false,
       disableButtonPDF: false,
-      groupBy: '1',
+      groupBy: 1,
       groupByOptions: [
         { text: 'Ubicacion', value: 1},
         { text: 'Tipo papel', value: 2},
@@ -381,7 +381,7 @@ export default {
         exportFormat.push({
           'Fecha de reporte': '',
           'Tipo papel': '',
-          'Gramaje-Ancho': '',
+          'Gramaje-Ancho': '**Total**',
           'Cantidad de rollos': rollosTotal,
           'Peso total (Kgs)': pesoTotal,
           'Metros total': metrosTotal,
