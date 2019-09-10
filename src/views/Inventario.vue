@@ -163,12 +163,16 @@ export default{
           sortable: true
         },
         {
-          key: 'kgs',
-          label: 'Kgs'
+          key: 'kgsOriginales',
+          label: 'Kgs Orig.'
+        },
+        {
+          key: 'kgsActuales',
+          label: 'Kgs Act.'
         },
         {
           key: 'kgsConsumidos',
-          label: 'Kgs Consum'
+          label: 'Kgs Consum.'
         },
         {
           key: 'gramaje',
@@ -282,6 +286,8 @@ export default{
           'bodega': data[key].bodega,
           'enUso': data[key].enUso,
           'kgs': Math.round(data[key].kgs),
+          'kgsOriginales': typeof data[key].kgsOriginales !== 'undefined' ? Math.round(data[key].kgsOriginales) : null,
+          'kgsActuales': typeof data[key].kgsActuales !== 'undefined' ? Math.round(data[key].kgsActuales) : null,
           'kgsConsumidos': typeof data[key].kgsConsumidos !== 'undefined' ? data[key].kgsConsumidos : null,
           'meters': typeof data[key].meters !== 'undefined' ? Math.round(data[key].meters) : null,
           'width': `${data[key].width}`,

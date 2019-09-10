@@ -192,6 +192,12 @@
       <template v-if="row.item.kgs" slot="kgs" slot-scope="row">
         <b>{{(row.item.kgs).toLocaleString('en-us')}}</b>
       </template>
+      <template v-if="row.item.kgsOriginales" slot="kgsOriginales" slot-scope="row">
+        <b>{{(row.item.kgsOriginales).toLocaleString('en-us')}}</b>
+      </template>
+      <template v-if="row.item.kgsActuales" slot="kgsActuales" slot-scope="row">
+        <b>{{(row.item.kgsActuales).toLocaleString('en-us')}}</b>
+      </template>
       <template slot="kgsConsumidos" slot-scope="row">
         <b v-if="row.item.kgsConsumidos">{{(row.item.kgsConsumidos).toLocaleString('en-us')}}</b>
         <b v-else>0</b>
@@ -263,6 +269,28 @@
             id="input-kg"
             type="text"
             v-model="modalRow.kgs"
+            required>
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group class="col-4" id="idKgOrig" label="Kgs Originales" label-for="input-kgOriginales"
+                      v-if="actualTab === 1">
+          <b-form-input
+            id="input-kgOrig"
+            type="number"
+            min="0" step="0.001"
+            v-model="modalRow.kgsOriginales"
+            required>
+          </b-form-input>
+        </b-form-group>
+
+        <b-form-group class="col-4" id="idKgOrig" label="Kgs Actuales" label-for="input-kgActuales"
+                      v-if="actualTab === 1">
+          <b-form-input
+            id="input-kgAct"
+            type="number"
+            min="0" step="0.001"
+            v-model="modalRow.kgsActuales"
             required>
           </b-form-input>
         </b-form-group>
@@ -721,8 +749,10 @@ export default{
           gramaje: this.modalRow.gramaje,
           // hora: this.modalRow.hora,
           idNumber: this.modalRow.idNumber,
-          kgs: Number(this.modalRow.kgs),
+          kgsOriginales: Number(this.modalRow.kgsOriginales),
+          kgsActuales: Number(this.modalRow.kgsActuales),
           kgsConsumidos: Number(this.modalRow.kgsConsumidos),
+          kgs: Number(this.modalRow.kgsOriginales),
           typePaper: this.modalRow.typePaper,
           desperdicio: this.modalRow.desperdicio,
           width: Number(this.modalRow.width)
