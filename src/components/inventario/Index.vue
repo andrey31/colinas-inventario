@@ -264,7 +264,7 @@
           </b-form-input>
         </b-form-group>
 
-        <b-form-group class="col-4" id="idKg" label="Kgs" label-for="input-kg">
+        <b-form-group class="col-4" id="idKg" label="Kgs" label-for="input-kg" v-if="actualTab === 0 || actualTab === 2">
           <b-form-input
             id="input-kg"
             type="text"
@@ -752,7 +752,7 @@ export default{
           kgsOriginales: Number(this.modalRow.kgsOriginales),
           kgsActuales: Number(this.modalRow.kgsActuales),
           kgsConsumidos: Number(this.modalRow.kgsConsumidos),
-          kgs: Number(this.modalRow.kgsOriginales),
+          kgs: Number(this.modalRow.kgsActuales),
           typePaper: this.modalRow.typePaper,
           desperdicio: this.modalRow.desperdicio,
           width: Number(this.modalRow.width)
