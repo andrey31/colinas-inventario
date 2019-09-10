@@ -24,14 +24,14 @@
     <b-col class="pt-4" cols="12">
 
         <b-button variant="success" size="lg" class="mr-2 p-2"
-                  @click="exportReport('xls')">
-          <!-- <b-spinner label="Spinning" v-if="exportExcel"></b-spinner> -->
+                  @click="exportReport('xls')" :disabled="disableButtonXLS">
+          <b-spinner label="Spinning" v-if="exportExcel"></b-spinner>
           EXCEL
           <v-icon class="ml-2" name="file-excel" scale="2"></v-icon>
         </b-button>
         <b-button variant="danger" size="lg"
-                   @click="exportReport('pdf')">
-          <!-- <b-spinner label="Spinning" v-if="exportPDF"></b-spinner> -->
+                   @click="exportReport('pdf')" :disabled="disableButtonPDF">
+          <b-spinner label="Spinning" v-if="exportPDF"></b-spinner>
           PDF
           <v-icon class="ml-2"name="file-pdf" scale="2"></v-icon>
         </b-button>
@@ -57,6 +57,10 @@ export default{
       rolls: [],
       dateFilterBeginData: '',
       dateFilterFinishData: '',
+      exportExcel: false,
+      exportPDF: false,
+      disableButtonXLS: false,
+      disableButtonPDF: false
     }
   },
   computed: {
@@ -85,6 +89,12 @@ export default{
   },
   methods: {
     exportReport: function(xlsOrPdf){
+      this.disableButtonXLS = true
+      this.disableButtonPDF = true
+
+      if(xlsOrPdf === 'xls') this.exportExcel = true
+      else this.exportPDF = true
+
       let sobrantes = []
       this.rolls = []
       this.db.ref('/InventarioSobrantes').once('value').then( snap => {
@@ -228,9 +238,10 @@ export default{
         doc.putTotalPages(totalPagesExp);
       }
 
-      let nameSave = `Reporte_al_${fecha.getDate()}/${fecha.getMonth()+1}/${fecha.getFullYear()}.pdf`
+      let nameSave = `Reporte_de_consumos.pdf`
       this.exportPDF = false
       this.disableButtonPDF = false
+      this.disableButtonXLS = false
       this.textExport = ''
       doc.save(nameSave)
     },
@@ -241,6 +252,7 @@ export default{
       this.textExport = ''
       this.disableButtonXLS = false
       this.exportExcel = false
+      this.disableButtonPDF = false
       XLSX.utils.book_append_sheet(wb, wswt, 'resumen')
       let nameXLS = `reporteConsumosDel:${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}.xlsx`
       XLSX.writeFile(wb, nameXLS)
@@ -254,7 +266,14 @@ export default{
       let cpLiner = (groupByTypePaper.liner).slice()
       let exportFormat = []
 
-      let fecha = new Date()
+      let wtPesoTotal = 0
+      let mPesoTotal = 0
+      let lPesoTotal = 0
+
+      // let fecha = new Date()
+      let dbegin = this.dateFilterBeginData.split('-')
+      let dfinish = this.dateFilterFinishData.split('-')
+      let fecha = `${dbegin[2]}/${dbegin[1]}/${dbegin[0]} AL ${dfinish[2]}/${dfinish[1]}/${dfinish[0]}`
       exportFormat.unshift(
         {
           'Fecha de reporte': fecha, 'Tipo papel': '',
@@ -264,9 +283,6 @@ export default{
       )
       if (cpWt.length > 0) {
 
-
-        let wtRollosTotal = 0
-        let wtPesoTotal = 0
 
         cpWt.sort( (a, b) => {
 
@@ -288,7 +304,7 @@ export default{
         exportFormat.push(
           {
             'Fecha de reporte': '', 'Tipo papel': '',
-            'Gramaje-Ancho': '**Total**', // 'Cantidad de rollos': wtRollosTotal,
+            'Gramaje-Ancho': '**Total kgs**', // 'Cantidad de rollos': wtRollosTotal,
             'Kgs consumidos': (wtPesoTotal)
           }
         )
@@ -305,8 +321,6 @@ export default{
       if (cpMedium.length > 0) {
 
         let rollosTotal = 0
-        let pesoTotal = 0
-        let metrosTotal = 0
 
 
         cpMedium.sort( (a, b) => {
@@ -321,7 +335,7 @@ export default{
         cpMedium.forEach( m => {
           // rollosTotal += m['Cantidad de rollos']
           let p = m['Kgs consumidos']
-          pesoTotal += Number(p)
+          mPesoTotal += Number(p)
 
           exportFormat.push(m)
         })
@@ -329,8 +343,8 @@ export default{
         exportFormat.push(
           {
             'Fecha de reporte': '', 'Tipo papel': '',
-            'Gramaje-Ancho': '**Total**', // 'Cantidad de rollos': rollosTotal,
-            'Kgs consumidos': pesoTotal
+            'Gramaje-Ancho': '**Total kgs**', // 'Cantidad de rollos': rollosTotal,
+            'Kgs consumidos': mPesoTotal
           }
         )
         exportFormat.push(
@@ -346,7 +360,6 @@ export default{
 
 
         let rollosTotal = 0
-        let pesoTotal = 0
 
         cpLiner.sort( (a, b) => {
 
@@ -360,7 +373,7 @@ export default{
         cpLiner.forEach( m => {
           // rollosTotal += m['Cantidad de rollos']
           let p = m['Kgs consumidos']
-          pesoTotal += Number(p)
+          lPesoTotal += Number(p)
 
           exportFormat.push(m)
         })
@@ -368,17 +381,18 @@ export default{
         exportFormat.push({
           'Fecha de reporte': '',
           'Tipo papel': '',
-          'Gramaje-Ancho': '**Total**',
+          'Gramaje-Ancho': '**Total kgs**',
           // 'Cantidad de rollos': rollosTotal,
-          'Kgs consumidos': pesoTotal,
+          'Kgs consumidos': lPesoTotal,
         })
 
+        let granTotal = wtPesoTotal + mPesoTotal + lPesoTotal
         exportFormat.push({
           'Fecha de reporte': '',
           'Tipo papel': '',
-          'Gramaje-Ancho': '',
+          'Gramaje-Ancho': '**Gran total kgs**',
           // 'Cantidad de rollos': '',
-          'Kgs consumidos': ''
+          'Kgs consumidos': granTotal
         })
         // exportFormat.push({})
       }
