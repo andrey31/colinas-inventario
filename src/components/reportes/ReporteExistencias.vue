@@ -381,7 +381,7 @@ export default {
         exportFormat.push({
           'Fecha de reporte': '',
           'Tipo papel': '',
-          'Gramaje-Ancho': '',
+          'Gramaje-Ancho': '**Total**',
           'Cantidad de rollos': rollosTotal,
           'Peso total (Kgs)': pesoTotal,
           'Metros total': metrosTotal,
@@ -728,120 +728,122 @@ export default {
         head,
         body,
         styles: {overflow: 'ellipsize', cellWidth: 'wrap'},
-                headStyles: {
-                    fillColor: [204, 152, 62],
-                },
-                columnStyles:  {
-                    0: {halign: 'center'}, 1: {halign: 'center'}, 2: {halign: 'center'},
-                    3: {halign: 'center', cellWidth: 'auto'}, 4: {halign: 'center'}, 5: {halign: 'center'}
-                },
-                didParseCell: function(data) {
-                    if (data.cell.text[0] === '' && data.row.index !== 0) {
-                        data.cell.text = '--'
-                        // 228, 233, 240
-                        data.cell.styles.fillColor = [228, 233, 240];
-                    }
+        headStyles: {
+          fillColor: [204, 152, 62],
+        },
+        columnStyles:  {
+          0: {halign: 'center'}, 1: {halign: 'center'}, 2: {halign: 'center'},
+          3: {halign: 'center', cellWidth: 'auto'}, 4: {halign: 'center'}, 5: {halign: 'center'}
+        },
+        didParseCell: function(data) {
+          if (data.cell.text[0] === '' && data.row.index !== 0) {
+            data.cell.text = '--'
+            // 228, 233, 240
+            data.cell.styles.fillColor = [228, 233, 240];
+          }
 
-
-                },
-                didDrawPage: function (data) {
-                    // Header
-                    doc.setFontSize(16);
-                    doc.setTextColor(40);
-                    doc.setFontStyle('normal');
-
-                    doc.addImage(base64Img, 'png', data.settings.margin.left, 15, 25, 25);//imagen base64 en archivo aparte
-                    doc.addImage(base64Img, 'png', (doc.internal.pageSize.getWidth()-40), 15, 25, 25);
-                    let pw = (((doc.internal.pageSize).getWidth()))/2
-
-                    // if (doc.internal.getNumberOfPages() === 1) {
-                    //     doc.text(nameReport, pw, 22, { align: 'center', width: 100})
-                    // }
-                    doc.text(nameReport, pw, 22, { align: 'center', width: 100})
-
-                    // Footer
-
-                    let hour = fecha.getHours() < 10 ? `0${fecha.getHours()}` : fecha.getHours()
-                    let minutes = fecha.getMinutes() < 10 ? `0${fecha.getMinutes()}` : fecha.getMinutes()
-                    let seconds = fecha.getHours() < 10 ? `0${fecha.getSeconds()}` : fecha.getSeconds()
-
-                    var str =  `Página ${doc.internal.getNumberOfPages()}`
-
-                    if (typeof doc.putTotalPages === 'function') {
-                        str = `${str} de ${totalPagesExp} `
-                    }
-                    doc.setFontSize(8);
-
-                    var pageSize = doc.internal.pageSize
-                    var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
-                    doc.text(str, data.settings.margin.left, pageHeight - 10)
-                    let str2 = `Generado a las ${hour}:${minutes}:${seconds} ${typeReport}`
-                    doc.text(str2, data.settings.margin.left, pageHeight - 6)
-                },
-
-                margin: {top: 45}
-            })
-
-            if (typeof doc.putTotalPages === 'function') {
-                doc.putTotalPages(totalPagesExp);
-            }
-
-            let nameSave = `Reporte_al_${fecha.getDate()}/${fecha.getMonth()+1}/${fecha.getFullYear()}.pdf`
-            this.exportPDF = false
-            this.disableButtonPDF = false
-            this.textExport = ''
-            doc.save(nameSave);
 
         },
-        exportToExcel: function(exportFormat){
-            let fecha = new Date()
-            let wswt = XLSX.utils.json_to_sheet(exportFormat)
-            let wb = XLSX.utils.book_new()
-            this.textExport = ''
-            this.disableButtonXLS = false
-            this.exportExcel = false
-            XLSX.utils.book_append_sheet(wb, wswt, 'resumen')
-            let nameXLS = `reporteDel:${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}.xlsx`
-            XLSX.writeFile(wb, nameXLS)
+        didDrawPage: function (data) {
+          // Header
+          doc.setFontSize(16);
+          doc.setTextColor(40);
+          doc.setFontStyle('normal');
+
+          doc.addImage(base64Img, 'png', data.settings.margin.left, 15, 25, 25);//imagen base64 en archivo aparte
+          doc.addImage(base64Img, 'png', (doc.internal.pageSize.getWidth()-40), 15, 25, 25);
+          let pw = (((doc.internal.pageSize).getWidth()))/2
+
+          // if (doc.internal.getNumberOfPages() === 1) {
+          //     doc.text(nameReport, pw, 22, { align: 'center', width: 100})
+          // }
+          doc.text(nameReport, pw, 22, { align: 'center', width: 100})
+
+          // Footer
+
+          let hour = fecha.getHours() < 10 ? `0${fecha.getHours()}` : fecha.getHours()
+          let minutes = fecha.getMinutes() < 10 ? `0${fecha.getMinutes()}` : fecha.getMinutes()
+          let seconds = fecha.getHours() < 10 ? `0${fecha.getSeconds()}` : fecha.getSeconds()
+
+          var str =  `Página ${doc.internal.getNumberOfPages()}`
+
+          if (typeof doc.putTotalPages === 'function') {
+            str = `${str} de ${totalPagesExp} `
+          }
+          doc.setFontSize(8);
+
+          var pageSize = doc.internal.pageSize
+          var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
+          doc.text(str, data.settings.margin.left, pageHeight - 10)
+          let str2 = `Generado a las ${hour}:${minutes}:${seconds} ${typeReport}`
+          doc.text(str2, data.settings.margin.left, pageHeight - 6)
         },
-        filterBodega: function (arr, bodega){
-            let filt = []
-            if(bodega === 1){
-                filt = arr.filter( r => {
-                    return r['Ubicacion'] === 'En transito'
-                })
-            }else if(bodega === 2) {
-                filt = arr.filter(r => {
-                    return r['Ubicacion'] === 'Telisa'
-                })
-            }else if(bodega === 3) {
-                filt = arr.filter(r => {
-                    return r['Ubicacion'] === 'Sislocar'
-                })
-            }else if(bodega === 4) {
-                filt = arr.filter(r => {
-                    return r['Ubicacion'] === 'Bodega 1'
-                })
-            }else if(bodega === 5) {
-                filt = arr.filter(r => {
-                    return r['Ubicacion'] === 'Planta'
-                })
-            }
-            return filt
-        },
-        exportReport: function(xlsOrPdf){
-            if(xlsOrPdf === 'xls'){
-                this.exportExcel = true
-                this.disableButtonXLS = true
-                this.xlsOrPdf = 'xls'
-            }else {
-                this.exportPDF = true
-                this.disableButtonPDF = true
-                this.xlsOrPdf = 'pdf'
-            }
-            let allRolls = []
-            let ubicacionesTotal = this.ubicationSelected.length
-            this.ubicationSelected.forEach ( u => {
+
+        margin: {top: 45}
+      })
+
+      if (typeof doc.putTotalPages === 'function') {
+        doc.putTotalPages(totalPagesExp);
+      }
+
+      let nameSave = `Reporte_al_${fecha.getDate()}/${fecha.getMonth()+1}/${fecha.getFullYear()}.pdf`
+      this.exportPDF = false
+      this.disableButtonPDF = false
+      this.disableButtonXLS = false
+      this.textExport = ''
+      doc.save(nameSave);
+
+    },
+    exportToExcel: function(exportFormat){
+      let fecha = new Date()
+      let wswt = XLSX.utils.json_to_sheet(exportFormat)
+      let wb = XLSX.utils.book_new()
+      this.textExport = ''
+      this.disableButtonXLS = false
+      this.disableButtonPDF = false
+      this.exportExcel = false
+      XLSX.utils.book_append_sheet(wb, wswt, 'resumen')
+      let nameXLS = `reporteDel:${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}.xlsx`
+      XLSX.writeFile(wb, nameXLS)
+    },
+    filterBodega: function (arr, bodega){
+      let filt = []
+      if(bodega === 1){
+        filt = arr.filter( r => {
+          return r['Ubicacion'] === 'En transito'
+        })
+      }else if(bodega === 2) {
+        filt = arr.filter(r => {
+          return r['Ubicacion'] === 'Telisa'
+        })
+      }else if(bodega === 3) {
+        filt = arr.filter(r => {
+          return r['Ubicacion'] === 'Sislocar'
+        })
+      }else if(bodega === 4) {
+        filt = arr.filter(r => {
+          return r['Ubicacion'] === 'Bodega 1'
+        })
+      }else if(bodega === 5) {
+        filt = arr.filter(r => {
+          return r['Ubicacion'] === 'Planta'
+        })
+      }
+      return filt
+    },
+    exportReport: function(xlsOrPdf){
+      this.disableButtonXLS = true
+      this.disableButtonPDF = true
+      if(xlsOrPdf === 'xls'){
+        this.exportExcel = true
+        this.xlsOrPdf = 'xls'
+      }else {
+        this.exportPDF = true
+        this.xlsOrPdf = 'pdf'
+      }
+      let allRolls = []
+      let ubicacionesTotal = this.ubicationSelected.length
+      this.ubicationSelected.forEach ( u => {
                 if (u === 'enTransito') ubicacionesTotal++
             })
             this.ubicationSelected.forEach( u => {
