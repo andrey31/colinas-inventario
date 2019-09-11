@@ -366,6 +366,26 @@
             required>
           </b-form-input>
         </b-form-group>
+
+        <b-form-group class="col-4" id="idDua" label="DUA" label-for="input-dua"
+                      v-if="actualTab === 0 || actualTab === 2">
+          <b-form-input
+            id="input-dua"
+            type="text"
+            v-model="modalRow.numeroDUA"
+            required>
+          </b-form-input>
+        </b-form-group>
+        <b-form-group class="col-4" id="idBoleta" label="Boleta" label-for="input-boleta"
+                      v-if="actualTab === 0 || actualTab === 2">
+          <b-form-input
+            id="input-boleta"
+            type="text"
+            v-model="modalRow.numeroBoleta"
+            required>
+          </b-form-input>
+        </b-form-group>
+
         <b-form-group class="col-12" id="idComment" label="Comentario" label-for="input-comment" v-if="!isUndefinedComment">
 
           <b-form-textarea
@@ -719,6 +739,8 @@ export default{
           kgs: Number(this.modalRow.kgs),
           meters: Number(this.modalRow.meters),
           typePaper: this.modalRow.typePaper,
+          numeroDUA: this.modalRow.numeroDUA,
+          numeroBoleta: this.modalRow.numeroBoleta,
           width: Number(this.modalRow.width)
         }
         this.db.ref('Inventario').child(key).update(obj).then( (data) => {
@@ -775,7 +797,9 @@ export default{
           kgs: Number(this.modalRow.kgs),
           meters: Number(this.modalRow.meters),
           typePaper: this.modalRow.typePaper,
-          width: Number(this.modalRow.width)
+          width: Number(this.modalRow.width),
+          numeroDUA: this.modalRow.numeroDUA,
+          numeroBoleta: this.modalRow.numeroBoleta
         }
 
         this.db.ref('HistorialInventario').child(key).update(obj).then( data => {
@@ -826,7 +850,14 @@ export default{
           if (customKey === 'meters') customKey = 'metros'
           if (customKey === 'comments') customKey = 'comentario'
           if (customKey === 'width') customKey = 'ancho'
-
+          if (customKey === 'numeroDUA') {
+            customKey = 'número de dua'
+            if(this.modalRowCopy[key] === null) this.modalRowCopy[key] = 'sin dato'
+          }
+          if (customKey === 'numeroBoleta') {
+            customKey = 'número de bodega'
+            if(this.modalRowCopy[key] === null) this.modalRowCopy[key] = 'sin dato'
+          }
           // change, ubication, nota, roll
           let change = `Se cambio ${customKey}: ${this.modalRowCopy[key]} a ${this.modalRow[key]}`
           this.registerChange(change, site, '', this.modalRow)

@@ -125,6 +125,14 @@ export default{
           sortable: true
         },
         {
+          key: 'numeroDUA',
+          label: 'DUA'
+        },
+        {
+          key: 'numeroBoleta',
+          label: 'Boleta'
+        },
+        {
           key: 'comments',
           label: 'Coment'
         },
@@ -240,6 +248,14 @@ export default{
           label: 'Tipo Papel',
           sortable: true
         },
+        {
+          key: 'numeroDUA',
+          label: 'DUA'
+        },
+        {
+          key: 'numeroBoleta',
+          label: 'Boleta'
+        },
         'desperdicio',
         {
           key: 'comments',
@@ -293,6 +309,8 @@ export default{
           'width': `${data[key].width}`,
           'gramaje': data[key].gramaje,
           'typePaper': data[key].typePaper,
+          'numeroDUA': typeof data[key].numeroDUA !== 'undefined' ? (data[key].numeroDUA).toString() : null,
+          'numeroBoleta': typeof data[key].numeroBoleta !== 'undefined' ? (data[key].numeroBoleta).toString() : null,
           'comments': data[key].comments,
           'desperdicio': data[key].desperdicio,
           'causaDesperdicio': data[key].causaDesperdicio,
