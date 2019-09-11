@@ -89,7 +89,7 @@ export default {
       let filter = this.traslados.filter ( el => {
         return el.partida.indexOf(this.filterStart) > -1 &&
           el.llegada.indexOf(this.filterEnd) > -1 &&
-          el.numRollo.indexOf(this.filterRoll) > -1 &&
+          el.numRollo.toString().indexOf(this.filterRoll) > -1 &&
           el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
           el.width.toString().indexOf(this.filterWidth) > -1 &&
           el.fecha >= new Date(this.filterDateBegin + 'T00:00:00-06:00') &&

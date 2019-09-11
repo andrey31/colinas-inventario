@@ -310,19 +310,20 @@ export default{
           'download': data[key].downloadXLS,
           'packingList': this.loadPackingList(data[key]['packing-list'], data[key].almacen)
         })
-      }
+      }                         //
     },
     loadRollosEnTransito: function(){
       this.rollosEnTransito = []
       this.db.ref('sislocarEnTransito').once('value').then(snap => {
         let roll = snap.val()
         for (let key in roll){
+          if(typeof roll[key].idNumber === 'undefined') console.log(key)
           this.rollosEnTransito.push({
-            'idNumber': roll[key].idNumber,
+            'idNumber': roll[key].idNumber.toString(),
             'fecha': roll[key].fecha,
             'kgs': roll[key].kgs,
             'meters': roll[key].meters,
-            'gramaje': roll[key].gramaje,
+            'gramaje': roll[key].gramaje.toString(),
             'width': roll[key].width,
             'typePaper': roll[key].typePaper,
             'comments': roll[key].comments,
@@ -337,10 +338,10 @@ export default{
         let roll = snap.val()
         for (let key in roll){
           this.rollosEnTransito.push({
-            'idNumber': roll[key].idNumber,
+            'idNumber': roll[key].idNumber.toString(),
             'kgs': roll[key].kgs,
             'meters': roll[key].meters,
-            'gramaje': roll[key].gramaje,
+            'gramaje': (roll[key].gramaje).toString(),
             'fecha': roll[key].fecha,
             'width': roll[key].width,
             'typePaper': roll[key].typePaper,
