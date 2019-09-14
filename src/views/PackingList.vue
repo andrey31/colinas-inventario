@@ -217,23 +217,25 @@ export default{
       let almacen = this.orderDelete.almacen
 
       this.db.ref('/order').child(key).remove()
-      let i = 0
-      rolls.forEach( rol => {
 
-        this.db.ref(almacen+'EnTransito').child(rol.key).remove().then( ()=> {
-          i++
-          if(i === rolls.length) {
-            this.changeApply('Rollo borrado desde packing list', 'En transito', rolls)
-          }
-
-        }).catch( error => {
-          console.log('error')
-        })
-      })
 
       let xls = firebase.storage().ref().child('packing-list/'+key+'.xlsx')
       xls.delete().then( () => {
-        this.showModalDeleteOrder = false
+        let i = 0
+        rolls.forEach( rol => {
+
+          this.db.ref(almacen+'EnTransito').child(rol.key).remove().then( ()=> {
+            i++
+            if(i === rolls.length) {
+              this.showModalDeleteOrder = false
+              this.changeApply('Rollo borrado desde packing list', 'En transito', rolls)
+            }
+
+          }).catch( error => {
+            console.log('error')
+          })
+        })
+
         console.log('borrado')
       }).catch( (error) => {
         console.log(error)

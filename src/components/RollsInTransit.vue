@@ -107,6 +107,32 @@
 
   <b-table :items="rollosEnTransitoFilter" :fields="fieldsRolls" :per-page="perPage"
            :current-page="currentPage">
+    <template v-slot:thead-top="data">
+      <!-- <th colspan="8"></th> -->
+
+      <tr>
+        <th colspan="8"></th>
+
+        <th>
+          <b-row><b-col>Todos en almacen</b-col></b-row>
+          <b-row>
+            <b-col>
+              <b-form-checkbox v-model="allInAlmacenCheck" @change="allInAlmacen"></b-form-checkbox>
+            </b-col>
+          </b-row>
+        </th>
+
+        <th>
+          <b-row><b-col>Todos no llegaron</b-col></b-row>
+          <b-row>
+            <b-col>
+              <b-form-checkbox v-model="allInNotAlmacenCheck" @change="allInNotAlmacen"></b-form-checkbox>
+            </b-col>
+          </b-row>
+        </th>
+
+      </tr>
+    </template>
     <template slot="kgs" slot-scope="row">
       {{Math.round(Number(row.item.kgs)).toLocaleString('en-us')}}
     </template>
@@ -302,7 +328,9 @@ export default {
       filterWidth: '',
       filterAlmacen: '',
       perPage: 25,
-      currentPage: 1
+      currentPage: 1,
+      allInAlmacenCheck: false,
+      allInNotAlmacenCheck: false
     }
   },
   methods: {
@@ -445,6 +473,24 @@ export default {
       this.rollsCheck = []
       this.rollsNotCheck = []
     },
+    allInAlmacen: function(select){
+      if (select) {
+        this.rollsNotCheck = []
+        this.allInNotAlmacenCheck = false
+        this.rollsCheck = this.rollosEnTransitoFilter
+      }else {
+        this.rollsCheck = []
+      }
+    },
+    allInNotAlmacen: function(select){
+      if (select) {
+        this.rollsCheck = []
+        this.allInAlmacenCheck = false
+        this.rollsNotCheck = this.rollosEnTransitoFilter
+      }else {
+        this.rollsNotCheck = []
+      }
+    }
   }
 }
 </script>

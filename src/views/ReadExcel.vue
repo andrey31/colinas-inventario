@@ -17,7 +17,11 @@
       <b-button @click="showModalUpload" variant="primary" class="mx-2" :disabled="disabledUpload">
         <v-icon name="cloud-upload-alt" scale="1.5"></v-icon> Subir a base de datos</b-button>
     </b-col>
-
+    <b-col cols="12" class="mb-4 text-danger" v-if="errores.length > 0">
+      <ul>
+        <li v-for="(error, index) in errores" :key="index"><b>{{error.roll}} {{error.info}}</b></li>
+      </ul>
+    </b-col>
     <b-modal v-model="showModal">
       <h3>Escoja el almacen fiscal</h3>
       <b-container class="p-4">
@@ -117,6 +121,7 @@ export default{
       showModal: false,
       almacen: '',
       currentUser: firebase.auth().currentUser,
+      errores: []
     }
   },
   methods: {
@@ -141,6 +146,7 @@ export default{
       this.disabledUpload = true,
       this.rollsExistsInDb = [],
       this.rollsNotExistsInDb = []
+      this.errores = []
     },
     uploadFile: function(){
       this.showModal = false
@@ -354,60 +360,105 @@ export default{
         this.textAlertError = 'Estos rollos ya se encuentran en la base de datos'
 
         let pivot = []
-        let almacenes = ['sislocarEnTransito', 'telisaEnTransito', 'otroEnTransito']
+        this.errores = []
+        let almacenes = ['sislocar', 'telisa', 'Inventario', 'InventarioSobrantes', 'HistorialInventario',
+                         'sislocarEnTransito', 'telisaEnTransito', 'otroEnTransito']
 
-        for (let almacen in almacenes){
+
           this.arrayData.forEach( data => {
+            for (let almacen in almacenes){
+              this.db.ref(almacenes[almacen]).child(data.idNumber).once('value')
+                .then(snapshot => {
+                  if(snapshot.val()) {
+                    data._rowVariant = 'danger'
 
-            this.db.ref(almacenes[almacen]).child(data.idNumber).once('value')
-              .then(snapshot => {
-                if(snapshot.val()) {
-                  data._rowVariant = 'danger'
-                  this.rollsExistsInDb.push(data)
-                }
-                pivot.push(data)
+                    if( almacen == 0 ) {
+                      this.errores.push({
+                        roll: data.idNumber,
+                        info: 'Este rollo esta registrado en sislocar'
+                      })
+                      this.rollsExistsInDb.push(data)
+                    }else if (almacen == 1) {
+                      this.errores.push({
+                        roll: data.idNumber,
+                        info: 'Este rollo esta registrado en telisa'
+                      })
+                      this.rollsExistsInDb.push(data)
+                    }else if (almacen == 2){
+                      this.errores.push({
+                        roll: data.idNumber,
+                        info: 'Este rollo esta registrado en inventario'
+                      })
+                      this.rollsExistsInDb.push(data)
+                    }else if (almacen == 3){
+                      this.errores.push({
+                        roll: data.idNumber,
+                        info: 'Este rollo esta registrado en sobrantes'
+                      })
+                      this.rollsExistsInDb.push(data)
+                    }else if (almacen == 4){
 
-                if(pivot.length/3 === this.arrayData.length){
+                      this.errores.push({
+                        roll: data.idNumber,
+                        info: 'Este rollo esta registrado en consumos'
+                      })
+                      this.rollsExistsInDb.push(data)
 
-                  if(this.rollsExistsInDb.length === this.arrayData.length){
-                    this.showAlertError = true
-                    this.disabledUpload = true
-                    console.log('todos los rollos existen en db')
-                  }else{
-                    this.arrayData.forEach( roll => {
-                      if(this.rollsExistsInDb.indexOf(roll) === -1){
-                        roll.enTransito = true
-                        roll.dua = ''
+                    }else if ( Number(almacen) > 4){
+                      let roll = snapshot.val()
 
-                        //Borrar espacios en el tipo de papel para evitar problemas en los filtros
-                        let typePaper = roll.typePaper
-                        if (typePaper.includes('WHITE TOP')) {
-                          roll.typePaper = 'WHITE TOP'
-                        }
-                        else if (typePaper.includes('LINER R')){
-                          roll.typePaper = 'LINER R'
-                        }else if (typePaper.includes('LINER')){
-                          roll.typePaper = 'LINER'
-                        }else if(typePaper.includes('MEDIUM')){
-                          roll.typePaper = 'MEDIUM'
-                        }
-
-                        this.rollsNotExistsInDb.push({...roll})
-                        roll._rowVariant = 'primary'
+                      if( roll.enTransito ){
+                        this.errores.push({
+                          roll: data.idNumber,
+                          info: 'Este rollo esta registrado en transito'
+                        })
+                        this.rollsExistsInDb.push(data)
                       }
-                    })
-                    this.disabledUpload = false
+
+
+                    }
+
+                  }
+                  pivot.push(data)
+
+                  if(pivot.length/8 === this.arrayData.length){
+
+                    if(this.rollsExistsInDb.length === this.arrayData.length){
+                      this.showAlertError = true
+                      this.disabledUpload = true
+                      console.log('todos los rollos existen en db')
+                    }else{
+                      this.arrayData.forEach( roll => {
+                        if(this.rollsExistsInDb.indexOf(roll) === -1){
+                          roll.enTransito = true
+                          roll.dua = ''
+
+                          //Borrar espacios en el tipo de papel para evitar problemas en los filtros
+                          let typePaper = roll.typePaper
+                          if (typePaper.includes('WHITE TOP')) {
+                            roll.typePaper = 'WHITE TOP'
+                          }
+                          else if (typePaper.includes('LINER R')){
+                            roll.typePaper = 'LINER R'
+                          }else if (typePaper.includes('LINER')){
+                            roll.typePaper = 'LINER'
+                          }else if(typePaper.includes('MEDIUM')){
+                            roll.typePaper = 'MEDIUM'
+                          }
+
+                          this.rollsNotExistsInDb.push({...roll})
+                          roll._rowVariant = 'primary'
+                        }
+                      })
+                      this.disabledUpload = false
+
+                    }
 
                   }
 
-                }
-
-              })
-
+                })
+            }
           })
-
-
-        }
       }
 
 
