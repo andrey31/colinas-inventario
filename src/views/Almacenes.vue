@@ -252,8 +252,29 @@ export default{
 
     // },
     rollsFilter: function(){
+      let idNumberArray = this.filterNumberRoll.split(' ')
+      let filterGlobal = []
 
-      let filter = this.allRolls.filter( el => {
+      if (idNumberArray.length > 1){
+
+        for(let i in idNumberArray) {
+          let filter = this.allRolls.filter( el => {
+            return el.almacen.indexOf(this.filterAlmacen.toLowerCase()) > -1 &&
+              el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
+              el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
+              el.width.toString().indexOf(this.filterWidth) > -1 &&
+              el.idNumber.toString().toLowerCase() === idNumberArray[i].toString().toLowerCase() &&
+              el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00') &&
+              el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
+          })
+
+          filter.forEach( f => {
+            filterGlobal.push(f)
+          })
+        }
+      }else {
+
+        filterGlobal = this.allRolls.filter( el => {
         return el.almacen.indexOf(this.filterAlmacen.toLowerCase()) > -1 &&
           el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
           el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
@@ -262,7 +283,10 @@ export default{
           el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00') &&
           el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
       })
-      return filter
+
+      }
+
+      return filterGlobal
     },
     totalRolls: function(){
       let total = {}

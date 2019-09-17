@@ -522,7 +522,7 @@ export default{
       let desperdicio = 0
       let diametro = 0
       // let listNumberRoll = []
-      this.rollsFilter.forEach( roll=> {
+      this.getRolls.forEach( roll=> {
         kg += parseFloat(roll.kgs)
         if (roll.meters ) meters += parseFloat(roll.meters)
         if (roll.desperdicio) desperdicio += parseFloat(roll.desperdicio)
@@ -536,46 +536,82 @@ export default{
       return kgsM
     },
     getRolls(){
-      this.rollsFilter = this.items.filter( el => {
-        let bodega = el.bodega
-        el.kgsConsumidos = Math.round(el.kgsConsumidos)
-        typeof bodega === 'undefined' ? this.disabledBodega = true : this.disabledBodega = false
+      let idNumberArray = this.filterNumberRoll.split(' ')
+      let filterGlobal = []
+      if (idNumberArray.length > 1){
+          for(let i in idNumberArray){
+            let filter = this.items.filter( el => {
+            let bodega = el.bodega
+            el.kgsConsumidos = Math.round(el.kgsConsumidos)
+            typeof bodega === 'undefined' ? this.disabledBodega = true : this.disabledBodega = false
 
-        this.showFilterDate = el.fecha === null ? false : true
+            this.showFilterDate = el.fecha === null ? false : true
 
 
-        let r = el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
-            el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
-            el.width.indexOf(this.filterWidth) > -1 &&
-            el.idNumber.toString().indexOf(this.filterNumberRoll) > -1
+            let r = el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
+                el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
+                el.width.indexOf(this.filterWidth) > -1 &&
+                (el.idNumber.toString() === idNumberArray[i].toString())
 
-        if (typeof el.enUso !== 'undefined') {
-          r = r && el.enUso.toLowerCase().indexOf(this.filterEnUso) > -1
+            if (typeof el.enUso !== 'undefined') {
+              r = r && el.enUso.toLowerCase().indexOf(this.filterEnUso) > -1
+            }
+            if(el.fecha !== null){
+              r = r && el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00')
+                && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
+            }
+
+            if(typeof bodega === 'undefined') {
+              return r
+            }
+            else {
+              return r && el.bodega.toString().indexOf(this.filterBodega) > -1
+            }
+
+
+          })
+          filter.forEach( f => {
+            filterGlobal.push(f)
+          })
         }
-        if(el.fecha !== null){
-          r = r && el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00')
-            && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
-        }
+      } else {
+        filterGlobal = this.items.filter( el => {
+          let bodega = el.bodega
+          el.kgsConsumidos = Math.round(el.kgsConsumidos)
+          typeof bodega === 'undefined' ? this.disabledBodega = true : this.disabledBodega = false
 
-        // if(this.actualTab === 0 && el.fechaTraslado){
-        //   r = r && el.fechaTraslado >= new Date(this.dateFilterBeginT + 'T00:00:00-06:00')
-        //     && el.fechaTraslado <= new Date(this.dateFilterFinishT + 'T00:00:00-06:00')
-        // }
-
-        if(typeof bodega === 'undefined') {
-          return r
-        }
-        else {
-          return r && el.bodega.toString().indexOf(this.filterBodega) > -1
-        }
+          this.showFilterDate = el.fecha === null ? false : true
 
 
-      })
-      return this.rollsFilter
+          let r = el.gramaje.toString().indexOf(this.filterGramaje) > -1 &&
+              el.typePaper.toLowerCase().indexOf(this.filterType.toLowerCase()) > -1 &&
+              el.width.indexOf(this.filterWidth) > -1 &&
+              el.idNumber.toString().indexOf(this.filterNumberRoll) > -1
+
+          if (typeof el.enUso !== 'undefined') {
+            r = r && el.enUso.toLowerCase().indexOf(this.filterEnUso) > -1
+          }
+          if(el.fecha !== null){
+            r = r && el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00')
+              && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
+          }
+
+          if(typeof bodega === 'undefined') {
+            return r
+          }
+          else {
+            return r && el.bodega.toString().indexOf(this.filterBodega) > -1
+          }
+
+
+        })
+      }
+
+      return filterGlobal
     },
     totalRolls(){
       let total = {}
-      total.length = this.rollsFilter.length
+      total.length = this.getRolls.length
 
       // this.rollsFilter.forEach( roll => {
       //     console.log(roll.meters)
@@ -584,7 +620,7 @@ export default{
       // total.meters = this.rollsFilter.reduce( (a, b) => a + b.meters, 0).toFixed(2)
 
       let rollsByGramaje = {}
-      this.rollsFilter.forEach( roll => {
+      this.getRolls.forEach( roll => {
 
         //Borrar espacios en el tipo de papel para evitar problemas en los filtros
         let typePaper = roll.typePaper
@@ -629,7 +665,6 @@ export default{
       filterEnUso: '',
       filterBodega: '',
       filterNumberRoll: '',
-      rollsFilter: [],
       dateFilterBegin: new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10).toString(),
       dateFilterFinish: new Date().toISOString().slice(0, 10).toString(),
       disabledBodega: false,
