@@ -282,8 +282,13 @@ export default{
 
       // this.uploadFile()
     },
+    formatDate: function(){
+      let d = new Date()
+      return (d.getDate()) + '/' + (d.getMonth()+1) + '/' + (d.getFullYear())
+    },
     uploadOrder: function(uids, downloadURL, keyOrder, arrayKeys){
       this.db.ref('order').child(keyOrder).set({
+        'uploadDate': this.formatDate(),
         'provided': this.provided,
         'date': this.date,
         'shipped': this.shipped,
@@ -479,7 +484,7 @@ export default{
     transformDate: function(date){
       //Tranformar fecha excel la devuelve en entero
       let d = new Date(Math.round((date - 25569)*86400*1000));
-      let f = new Date()
+      /* let f = new Date() */
       let format = (d.getDate()) + '/' + (d.getMonth()+1) + '/' + (d.getFullYear())
       return format
     },

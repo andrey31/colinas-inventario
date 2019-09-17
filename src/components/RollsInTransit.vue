@@ -57,7 +57,7 @@
       <b-card bg-variant="light" text-variant="dark" title="Rollos información">
         <b-card-text>
           <b-row>
-            <div v-for="gramaje, index in totalRolls.rollsByGramaje" :key="index">
+            <div v-for="(gramaje, index) in totalRolls.rollsByGramaje" :key="index">
 
               <b-col >
                 <b>
@@ -166,7 +166,7 @@
     <div class="text-center" v-if="rollsCheck.length > 0">
       <b>Se registrarán los siguientes rollos en el almacen:</b>
       <ul>
-        <li v-for="roll in rollsCheck">
+        <li v-for="(roll, index) in rollsCheck" :key="index">
           <b-row class="pt-2">
             <b-col>{{roll.idNumber}}</b-col>
             <b-col><b-form-radio v-model="roll.almacen" :name="roll.idNumber" value="telisa">Telisa</b-form-radio></b-col>
@@ -179,7 +179,7 @@
     <div class="text-center pt-2" v-if="rollsNotCheck.length > 0">
       <b>Por favor, ingrese un comentario de porque el rollo no llegó:</b>
       <ul>
-        <li v-for="roll in rollsNotCheck">
+        <li v-for="(roll, index) in rollsNotCheck" :key="index">
           <b-row class="pt-2">
             <b-col cols="2" class="pt-1 mr-4" offset="1">{{roll.idNumber}}</b-col>
             <b-col cols="8">
@@ -440,7 +440,7 @@ export default {
 
         let r = {
           comments: roll.comments,
-          fecha: roll.fecha,
+          fecha: this.getFormatDate().date,
           gramaje: roll.gramaje,
           idNumber: roll.idNumber,
           kgs: roll.kgs,

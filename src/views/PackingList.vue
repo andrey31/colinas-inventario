@@ -150,7 +150,7 @@ export default{
       comment: '',
       ourOrder: '',
       yourOrder: '',
-      fields: ['provided', 'date', 'shipped', 'shipment', 'carrier', 'vehicle',
+      fields: ['provided', 'uploadDate', 'date', 'shipped', 'shipment', 'carrier', 'vehicle',
                'booking', 'comment', 'ourOrder', 'yourOrder', 'almacen', 'download', 'rolls', 'delete'],
       fieldsRolls: [
         {key: 'typePaper', label: 'Tipo de papel'},
@@ -299,6 +299,7 @@ export default{
         this.order.push({
           'key': key,
           'provided': data[key].provided,
+          'uploadDate': data[key].uploadDate,
           'date': data[key].date,
           'shipment': data[key].shipment,
           'carrier': data[key].carrier,

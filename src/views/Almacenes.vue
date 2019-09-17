@@ -134,7 +134,7 @@
         <b>{{(row.item.kgs).toLocaleString('en-us')}}</b>
       </template>
       <template slot="fecha" slot-scope="row">
-        {{row.item.fecha.toISOString().slice(0, 10)}}
+        {{row.item.fecha.toLocaleDateString()}}
       </template>
       <template slot="dua" slot-scope="row">
         <b-row>

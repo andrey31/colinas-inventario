@@ -71,7 +71,7 @@
     head-variant="dark"
     >
     <template slot="fecha" slot-scope="row">
-      {{row.item.fecha.toISOString().slice(0, 10)}}
+      {{row.item.fecha.toLocaleDateString()}}
     </template>
 
   </b-table>

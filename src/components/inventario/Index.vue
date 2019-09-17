@@ -206,7 +206,7 @@
         <b>{{(row.item.meters).toLocaleString('en-us')}}</b>
       </template>
       <template v-if="row.item.fecha" slot="fecha" slot-scope="row">
-        {{row.item.fecha.toISOString().slice(0, 10)}}
+        {{row.item.fecha.toLocaleDateString()}}
       </template>
       <!-- <template slot="fechaTraslado" slot-scope="row"> -->
       <!--   <label for="" v-if="row.item.fechaTraslado">{{row.item.fechaTraslado.toISOString().slice(0, 10)}}</label> -->
@@ -463,33 +463,52 @@ export default{
           'Numero rollo': (data[key].idNumber).toString(),
         }
         if (typeof data[key].bodega !== 'undefined'){
-          obj.bodega = data[key].bodega
+          obj['Bodega'] = data[key].bodega
         }
-        obj.kgs = data[key].kgs
 
-        if(typeof data[key].bodega !== 'undefined'){
-          obj['kgs Consumidos'] = data[key].kgsConsumidos
+        if (this.actualTab === 0 || this.actualTab === 2){
+          obj['Kgs'] = data[key].kgs
+        }
+
+        if(this.actualTab === 1){
+          obj['Kgs origin.'] = data[key].kgsOriginales
+        }
+
+        if(this.actualTab === 1){
+          obj['Kgs act.'] = data[key].kgsActuales
+        }
+
+        if(this.actualTab === 1){
+          obj['Kgs Consumidos'] = data[key].kgsConsumidos
         }
 
         if(typeof data[key].meters !== 'undefined'){
-          obj.metros = data[key].meters
+          obj['Metros'] = data[key].meters
         }
 
-        obj.gramaje = data[key].gramaje
-        obj.width = data[key].width
+        obj['Gramaje'] = data[key].gramaje
+        obj['Ancho'] = data[key].width
         obj['Tipo papel'] = data[key].typePaper
 
+        if(typeof data[key].numeroBoleta !== 'undefined'){
+          obj['Boleta'] = data[key].numeroBoleta
+        }
+
+        if(typeof data[key].numeroDUA !== 'undefined'){
+          obj['DUA']= data[key].numeroDUA
+        }
+
         if(typeof data[key].comments !== 'undefined'){
-          obj.comentario = data[key].comments
+          obj['Comentario'] = data[key].comments
         }
         if (typeof data[key].fecha !== 'undefined'){
-          obj.fecha = this.formatDate(data[key].fecha)
+          obj['Fecha'] = this.formatDate(data[key].fecha)
         }
         if (typeof data[key].hora !== 'undefined'){
-          obj.hora = data[key].hora
+          obj['Hora'] = data[key].hora
         }
         if (typeof data[key].desperdicio !== 'undefined'){
-          obj.desperdicio = data[key].desperdicio
+          obj['Desperdicio'] = data[key].desperdicio
         }
         fin.push(obj)
       }
