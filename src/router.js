@@ -156,6 +156,8 @@ router.beforeEach((to, from, next) => {
       }else {
         next('login')
       }
+    }else {
+      next('login')
     }
   }
   else if(requiresAuth) {
@@ -183,8 +185,8 @@ function checkEmail( currentUser ){
     'jose.mora@corrugadosaltavista.com',
     'jennifer@corrugadosaltavista.com',
     'ronny@corrugadosaltavista.com',
-    'eduardo@corrugadosaltavista.com',
-    'rigo@corrugadosaltavista.com',
+    /* 'eduardo@corrugadosaltavista.com',
+    'rigo@corrugadosaltavista.com', */
     'alexander@corrugadosaltavista.com',
     'jackson@corrugadosaltavista.com',
     'josue@corrugadosaltavista.com',

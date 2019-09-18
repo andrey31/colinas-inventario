@@ -31,8 +31,8 @@
             <option value="jose.mora@corrugadosaltavista.com">jose.mora@corrugadosaltavista.com</option>
             <option value="jennifer@corrugadosaltavista.com">jennifer@corrugadosaltavista.com</option>
             <option value="ronny@corrugadosaltavista.com">ronny@corrugadosaltavista.com</option>
-            <option value="eduardo@corrugadosaltavista.com">eduardo@corrugadosaltavista.com</option>
-            <option value="rigo@corrugadosaltavista.com">rigo@corrugadosaltavista.com</option>
+            <!-- <option value="eduardo@corrugadosaltavista.com">eduardo@corrugadosaltavista.com</option>
+            <option value="rigo@corrugadosaltavista.com">rigo@corrugadosaltavista.com</option> -->
             <option value="alexander@corrugadosaltavista.com">alexander@corrugadosaltavista.com</option>
             <option value="jackson@corrugadosaltavista.com">jackson@corrugadosaltavista.com</option>
             <option value="josue@corrugadosaltavista.com">josue@corrugadosaltavista.com</option>
@@ -53,7 +53,7 @@
           <!--   placeholder="Ingrese su email" -->
           <!--   > -->
 
-          </b-form-input>
+         <!--  </b-form-input> -->
 
         </b-form-group>
 

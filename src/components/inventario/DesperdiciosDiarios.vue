@@ -20,7 +20,7 @@
           <b-card-text>
             <b-row>
                 <b-col>
-                  Cantidad Total: {{getTotalCantidad.kg}}
+                  Cantidad Total (Kgs): <b>{{(getTotalCantidad.kg)}}</b>
                 </b-col>
 
             </b-row>
@@ -59,7 +59,7 @@ export default{
       this.getItems.forEach( roll => {
         kg += parseFloat(roll.cantidad)
       })
-      kgsM.kg = kg.toFixed(2)
+      kgsM.kg = kg.toLocaleString('en-us')
       return kgsM
     }
 

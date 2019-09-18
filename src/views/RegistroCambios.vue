@@ -6,15 +6,17 @@
       <b-input-group>
         <b-input-group-text slot="prepend">Usuario</b-input-group-text>
         <b-form-select v-model="filters.usuario">
+          <option value="">Todos</option>
           <option value="omar.duran">Omar</option>
-          <option value="guillermo.hernandez">Guillermo</option>
-          <option value="Jose Rodriguez">Jose Rodriguez</option>
-          <option value="Contabilidad">Contabilidad</option>
-          <option value="Jose Mora">Jose Mora</option>
-          <option value="Montacarguista 1">Montacargas 1</option>
-          <option value="Montacarguista 2">Montacargas 2</option>
-          <option value="Operador 1">Operador 1</option>
-          <option value="Operador 2">Operador 2</option>
+          <option value="guillermo">Guillermo</option>
+          <option value="jose.rodriguez">Jose Rodriguez</option>
+          <option value="contabilidad">Contabilidad</option>
+          <option value="jose.mora">Jose Mora</option>
+          <option value="jennifer">Jennifer</option>
+          <option value="ronny">Ronny</option>
+          <option value="jackson">Jackson</option>
+          <option value="josue">Josue</option>
+          <option value="sandro">Sandro</option>
         </b-form-select>
       </b-input-group>
     </b-col>
@@ -79,7 +81,7 @@ export default {
         return el.fecha >= new Date(this.filters.fechaInicio + 'T00:00:00-06:00') &&
           el.fecha <= new Date(this.filters.fechaFinal + 'T00:00:00-06:00') &&
           el.numRollo.toString().indexOf(this.filters.idNumber) > -1 &&
-          el.usuario.indexOf(this.filters.usuario) > -1
+          el.usuario.toLowerCase().indexOf((this.filters.usuario).toLowerCase()) > -1
       })
       return it
     }

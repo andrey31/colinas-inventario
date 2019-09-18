@@ -80,7 +80,7 @@ export default{
       itemsSobrantes: [],
       itemsHistorial: [],
       desperdiciosDiariosItems: [],
-      desperdiciosDiariosFields: ['fecha', 'cantidad', 'turno'],
+      desperdiciosDiariosFields: ['fecha', { key: 'cantidad', label: 'Cantidad (Kgs)'}, 'turno'],
       actualTab: ''
 
     }
@@ -329,7 +329,6 @@ export default{
           let data = snapshot.val()
           for (let key in data){
             let fechaArray = data[key].fecha.split('-')
-            console.log(fechaArray)
             let day = fechaArray[0]
             let month = fechaArray[1] - 1
             let year = fechaArray[2]

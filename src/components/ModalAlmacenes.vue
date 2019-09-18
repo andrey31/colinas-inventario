@@ -19,7 +19,7 @@
   </template>
   <b-container fluid>
     <b-form class="row">
-      <b-form-group class="col-4" id="idNumber" label="Numero de rollo" label-for="input-id">
+      <b-form-group v-if="!modalRow.editar" class="col-4" id="idNumber" label="Numero de rollo" label-for="input-id">
         <b-col cols="12">
 
           <b-row>
@@ -32,7 +32,7 @@
               <b-spinner small label="Small Spinner" variant="primary"></b-spinner>
               Verificando rollo...
             </b-col>
-            <b-col class="text-danger text-center" v-else-if="rollExist === 1">
+            <b-col class="text-danger text-center" v-else-if="rollExist === 1 && !modalRow.editar">
               <v-icon name="times-circle"></v-icon>
               Este rollo ya existe
             </b-col>
@@ -116,7 +116,8 @@ export default{
           disable = true
         }
       }
-      return disable || Number(this.rollExist) >= 0
+      if (this.modalRow.editar) return disable
+      else return (disable || Number(this.rollExist) >= 0)
     },
   },
   data(){

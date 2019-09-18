@@ -72,7 +72,7 @@
         <b-card bg-variant="light" text-varbiant="dark" title="Rollos información">
           <b-card-text>
             <b-row>
-              <div v-for="gramaje, index in totalRolls.rollsByGramaje">
+              <div v-for="(gramaje, index) in totalRolls.rollsByGramaje" :key="index">
 
                 <b-col >
 
