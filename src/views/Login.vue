@@ -37,6 +37,7 @@
             <option value="jackson@corrugadosaltavista.com">jackson@corrugadosaltavista.com</option>
             <option value="josue@corrugadosaltavista.com">josue@corrugadosaltavista.com</option>
             <option value="sandro@corrugadosaltavista.com">sandro@corrugadosaltavista.com</option>
+            <option value="wilmar@corrugadosaltavista.com">wilmar@corrugadosaltavista.com</option>
             <!-- <option value="montacargas1@corrugadosaltavista.com">montacargas1@corrugadosaltavista.com</option> -->
             <!-- <option value="montacargas2@corrugadosaltavista.com">montacargas2@corrugadosaltavista.com</option> -->
             <!-- <option value="operador1@corrugadosaltavista.com">operador1@corrugadosaltavista.com</option> -->

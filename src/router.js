@@ -35,10 +35,8 @@ const router = new Router({
       name: 'home',
       component: ReadExcel,
       meta: {
+        permissionReadExcel: true,
         requiresAuth: true,
-        permissionAdmin: true,
-        permissionCol: true,
-        permissionSuperAdmin: true
       }
     },
     {
@@ -47,7 +45,7 @@ const router = new Router({
       component: PackingList,
       meta: {
         requiresAuth: true,
-        permissionAdmin: true
+        permissionPackingList: true,
       }
     },
     {
@@ -55,7 +53,8 @@ const router = new Router({
       name: 'almacenes',
       component: Almacenes,
       meta: {
-        requiresAuth: true
+        requiresAuth: true,
+        permissionAlmacenes: true
       }
     },
     {
@@ -64,7 +63,7 @@ const router = new Router({
       component: Inventario,
       meta: {
         requiresAuth: true,
-        permissionCol: true
+        permissionInventario: true
       }
     },
     {
@@ -73,7 +72,7 @@ const router = new Router({
       component: Traslados,
       meta: {
         requiresAuth: true,
-        permissionCol: true
+        permissionTraslado: true
       }
     },
     {
@@ -82,7 +81,7 @@ const router = new Router({
       component: RegistroCambios,
       meta: {
         requiresAuth: true,
-        permissionCol: true
+        permissionRegistros: true
       }
     },
     {
@@ -91,7 +90,7 @@ const router = new Router({
       component: Reportes,
       meta: {
         requiresAuth: true,
-        permissionCol: true
+        permissionReportes: true
       }
     },
     {
@@ -108,70 +107,54 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   const currentUser = firebase.auth().currentUser;
   const requiresAuth = to.matched.some( record => record.meta.requiresAuth)
-  const permissionAdmin = to.matched.some(record => record.meta.permissionAdmin)
+  const permissionReadExcel = to.matched.some( record => record.meta.permissionReadExcel)
+  const permissionPackingList = to.matched.some( record => record.meta.permissionPackingList)
+  const permissionAlmacenes = to.matched.some( record => record.meta.permissionAlmacenes)
+  const permissionInventario = to.matched.some( record => record.meta.permissionInventario)
+  const permissionTraslado = to.matched.some( record => record.meta.permissionTraslado)
+  const permissionRegistros = to.matched.some( record => record.meta.permissionRegistros)
+  const permissionReportes = to.matched.some( record => record.meta.permissionReportes)
+  /* const permissionAdmin = to.matched.some(record => record.meta.permissionAdmin)
   const permissionCol = to.matched.some(record => record.meta.permissionCol)
-  const permissionSuperAdmin = to.matched.some(record => record.meta.permissionSuperAdmin)
+  const permissionSuperAdmin = to.matched.some(record => record.meta.permissionSuperAdmin) */
 
-  if (requiresAuth && permissionSuperAdmin) {
+  if (requiresAuth && permissionReadExcel){
+    if ( currentUser ){
+      if (checkEmail(currentUser).readExcel) next()
+      else if(checkEmail(currentUser)) next( {path: 'packing-list'} )
+    }else next('login')
 
-    if(currentUser){
-      if(checkEmail(currentUser).superAdmin){
-        next()
-      }else if(checkEmail(currentUser)) {
-        next( { path: 'packing-list'})
-      }else {
-        next('login')
-      }
-    }else {
-      next('login')
-    }
-
-  }else if (requiresAuth && permissionAdmin && permissionCol){
+  }else if(requiresAuth && permissionPackingList) {
     if (currentUser){
-      if (checkEmail(currentUser).admin && checkEmail(currentUser).col) {
-        next()
-      }else if( checkEmail(currentUser)){
-        next( { path: 'packing-list'})
-      }else {
-        next('login')
-      }
-    }
-  }else if (requiresAuth && permissionAdmin){
+      if (checkEmail(currentUser).packingList) next()
+      else if(checkEmail(currentUser)) next( {path: 'almacenes'} )
+    }else next('login')
+  }else if (requiresAuth && permissionAlmacenes) {
+    if (currentUser) {
+      if ( checkEmail(currentUser).almacenes ) next()
+      else if (checkEmail(currentUser)) next( {path: 'inventario'} )
+    }else next('login')
+  }else if (requiresAuth && permissionInventario){
     if (currentUser){
-      if (checkEmail(currentUser).admin) {
-        next()
-      }else if( checkEmail(currentUser)){
-        next( { path: 'almacenes'})
-      }else {
-        next('login')
-      }
-    }
-  }else if (requiresAuth && permissionCol){
-
-    if(currentUser){
-      if(checkEmail(currentUser).access && checkEmail(currentUser).col){
-        next()
-      }else if (checkEmail(currentUser)){
-        next( {path: 'almacenes'} )
-      }else {
-        next('login')
-      }
-    }else {
-      next('login')
-    }
-  }
-  else if(requiresAuth) {
+      if (checkEmail(currentUser).inventario) next()
+      else if (checkEmail(currentUser)) next( {path: 'traslados'})
+    }else next('login')
+  }else if (requiresAuth && permissionTraslado){
     if (currentUser){
-      if (checkEmail(currentUser).access) {
-        next()
-      }else {
-        next('login')
-      }
+      if ( checkEmail(currentUser).traslados ) next()
+      else if (checkEmail(currentUser)) next({path: 'registro-cambios'})
+    }else next('login')
+  }else if (requiresAuth && permissionRegistros){
+    if (currentUser) {
+      if (checkEmail(currentUser).registros) next()
+      else if(checkEmail(currentUser)) next({path: 'reportes'})
     }
-    else next('login')
-
-  }
-  else next()
+  }else if (requiresAuth && permissionReportes){
+    if (currentUser){
+      if(checkEmail(currentUser).reportes) next()
+      else if (checkEmail(currentUser)) next({path: 'almacenes'})
+    }else next('login')
+  } else next()
 })
 
 function checkEmail( currentUser ){
@@ -185,22 +168,86 @@ function checkEmail( currentUser ){
     'jose.mora@corrugadosaltavista.com',
     'jennifer@corrugadosaltavista.com',
     'ronny@corrugadosaltavista.com',
-    /* 'eduardo@corrugadosaltavista.com',
-    'rigo@corrugadosaltavista.com', */
     'alexander@corrugadosaltavista.com',
     'jackson@corrugadosaltavista.com',
     'josue@corrugadosaltavista.com',
-    'sandro@corrugadosaltavista.com'
+    'sandro@corrugadosaltavista.com',
+    'wilmar@corrugadosaltavista.com'
   ]
 
   for(let email in emails){
-    if (emails[email] === currentUser.email && emails[email] === emails[0]) return { 'access': true, 'admin': true, 'col': true, superAdmin: true}
-    else if( emails[email] === currentUser.email && emails[email] === emails[1]) return { 'access': true, 'admin': true, 'col': true, superAdmin: true}
-    else if( emails[email] === currentUser.email && emails[email] === emails[2]) return { 'access': true, 'admin': true, 'col': true, superAdmin: false}
-    else if( emails[email] === currentUser.email && emails[email] === emails[3]) return { 'access': true, 'admin': true, 'col': true, superAdmin: false}
-    else if( emails[email] === currentUser.email && emails[email] === emails[6]) return { 'access': true, 'admin': true, 'col': false, superAdmin: false}
-    else if(emails[email] === currentUser.email) return {'access': true, 'admin': false, 'col': true, superAdmin: false}
-    else if( email === (emails.length - 1) ) return {'access': false, 'admin': false, superAdmin: false}
+    if ((emails[email] === currentUser.email && emails[email] === emails[0]) ||
+      (emails[email] === currentUser.email && emails[email] === emails[1])){
+      return {
+        'access': true,
+        'readExcel': true,
+        'packingList': true,
+        'almacenes': true,
+        'inventario': true,
+        'traslados': true,
+        'registros': true,
+        'reportes': true
+      }
+    }else if (emails[email] === currentUser.email &&
+      (emails[email] === emails[2] || emails[email] === emails[3])){
+        return {
+          'access': true,
+          'readExcel': false,
+          'packingList': true,
+          'almacenes': true,
+          'inventario': true,
+          'traslados': true,
+          'registros': true,
+          'reportes': true
+
+        }
+    }else if (emails[email] === currentUser.email &&
+      (emails[email] === emails[2] || emails[email] === emails[6])){
+        return {
+          'access': true,
+          'readExcel': false,
+          'packingList': true,
+          'almacenes': true,
+          'inventario': false,
+          'traslados': false,
+          'registros': false,
+          'reportes': false
+        }
+    }else if (emails[email] === currentUser.email &&
+      (emails[email] === emails[2] || emails[email] === emails[12])){
+        return {
+          'access': true,
+          'readExcel': false,
+          'packingList': false,
+          'almacenes': false,
+          'inventario': true,
+          'traslados': false,
+          'registros': false,
+          'reportes': false
+        }
+    }else if(emails[email] === currentUser.email){
+      return {
+        'access': true,
+        'readExcel': false,
+        'packingList': false,
+        'almacenes': true,
+        'inventario': true,
+        'traslados': true,
+        'registros': true,
+        'reportes': true
+      }
+    }else if (email === (emails.length -1)) {
+      return {
+        'access': false,
+        'readExcel': false,
+        'packingList': false,
+        'almacenes': false,
+        'inventario': false,
+        'traslados': false,
+        'registros': false,
+        'reportes': false
+      }
+    }
   }
 
 }
