@@ -80,7 +80,7 @@ export default{
       itemsSobrantes: [],
       itemsHistorial: [],
       desperdiciosDiariosItems: [],
-      desperdiciosDiariosFields: ['fecha', { key: 'cantidad', label: 'Cantidad (Kgs)'}, 'turno'],
+      desperdiciosDiariosFields: ['fecha', { key: 'cantidad', label: 'Cantidad (Kgs)'}, 'turno', 'detalles'],
       actualTab: ''
 
     }
@@ -322,7 +322,7 @@ export default{
       }
     },
     loadDesperdicios: function(){
-
+      console.log()
       this.db.ref('/DesperdiciosDiarios')
         .once('value').then( snapshot => {
           this.desperdiciosDiariosItems = []
@@ -336,12 +336,33 @@ export default{
             this.desperdiciosDiariosItems.push({
               'fecha': new Date(year, month, day),
               'cantidad': data[key].cantidad,
-              'turno': data[key].turno
+              'turno': data[key].turno,
+              'centro': Number(data[key].centro),
+              'fallaMecanica': Number(data[key].fallaMecanica),
+              'golpes': Number(data[key].golpes),
+              'superficie': Number(data[key].superficie),
+              'desperdicioPorRollo': this.loadRollsByDesperdicio(data[key].fecha, data[key].turno)
             })
           }
 
         })
 
+    },
+    loadRollsByDesperdicio: function(fecha, turno){
+      let arr = []
+      this.db.ref('DesperdicioPorRollo').orderByChild('fecha').equalTo(fecha).once('value').then(snap => {
+        let data = snap.val()
+        for (let key in data){
+          if (data[key].turno === turno){
+            arr.push({
+              'cantidad (Kgs)': data[key].cantidad,
+              'causa': data[key].causa,
+              'numeroRollo': data[key].numeroRollo
+            })
+          }
+        }
+      })
+      return arr
     }
   }
 }

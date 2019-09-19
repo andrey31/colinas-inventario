@@ -53,4 +53,10 @@ export default{
 .table-red-custom{
     background-color: #f12222;
 }
+.bg-brown-custom{
+  background-color: #d2c9ab;
+}
+.bg-gray-custom{
+  background-color: #f0f1f2;
+}
 </style>
