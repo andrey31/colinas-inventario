@@ -429,7 +429,8 @@ export default{
         kgs: row.kgs,
         comments: row.comments,
         fecha: row.fecha,
-        editar: true
+        editar: true,
+        inAlmacenes: true
       }
       this.setModalShowAlmacen(true)
 

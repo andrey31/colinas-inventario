@@ -19,7 +19,7 @@
   </template>
   <b-container fluid>
     <b-form class="row">
-      <b-form-group v-if="!modalRow.editar" class="col-4" id="idNumber" label="Numero de rollo" label-for="input-id">
+      <b-form-group class="col-4" id="idNumber" label="Numero de rollo" label-for="input-id">
         <b-col cols="12">
 
           <b-row>
@@ -75,7 +75,7 @@
 
       <b-form-group class="col-4" id="idKg" label="Kilogramos" label-for="input-kg">
         <b-form-input id="input-kg" type="text" v-model="modalRowCopyC.kgs" required></b-form-input>
-        </b-form-group
+        </b-form-group>
 
         <b-form-group class="col-12" id="idComment" label="Comentario" label-for="input-comment">
           <b-form-textarea id="input-comment" type="text" v-model="modalRowCopyC.comments" rows="3" max-rows="6" required>
@@ -172,7 +172,7 @@ export default{
     },
     saveAlmacen: function(){
       let almacen = this.modalRowCopy.almacen
-      let key = this.modalRowCopy.idNumber
+      let key = this.modalRow.idNumber
       let editar = this.modalRowCopy.editar
 
       let obj = {
@@ -185,15 +185,27 @@ export default{
         width: Number(this.modalRowCopy.width)
       }
       if (editar){
-        let fecha = this.modalRowCopy.fecha
+        let fecha = this.modalRow.fecha
+        let almacenSis = 'sislocar'
+        let almacenTeli = 'telisa'
+        if (this.modalRow.inAlmacenes){
 
-        let month = ''+ (fecha.getMonth() + 1)
-        let day = '' + fecha.getDate()
-        let year = fecha.getFullYear()
+          let month = ''+ (fecha.getMonth() + 1)
+          let day = '' + fecha.getDate()
+          let year = fecha.getFullYear()
+          obj.fecha = day + '-' + month + '-' + year
+        }else{
+          obj.fecha = fecha
+          almacenSis = almacenSis+'EnTransito'
+          almacenTeli = almacenTeli+'EnTransito'
+          almacen = almacen+'EnTransito'
+          console.log(almacenTeli)
+          obj.weight = this.modalRow.weight
+          console.log(key)
+        }
 
-        obj.fecha = day + '-' + month + '-' + year
-        this.db.ref('sislocar').child(key).set(null).then( data => {
-          this.db.ref('telisa').child(key).set(null).then( data => {
+        this.db.ref(almacenSis).child(key).set(null).then( data => {
+          this.db.ref(almacenTeli).child(key).set(null).then( data => {
             this.db.ref(almacen).child(obj.idNumber).set(obj).then( data => {
               Object.keys(this.modalRow).forEach( key => {
                 console.log(key)
@@ -216,10 +228,10 @@ export default{
               console.log(error)
             })
           }).catch( error => {
-            console.log('error al borrar de telisa')
+            console.log('error al borrar de '+almacenTeli)
           })
         }).catch( error => {
-          console.log('error al borrar de sislocar')
+          console.log('error al borrar de '+almacenSis)
         })
 
 

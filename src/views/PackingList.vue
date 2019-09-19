@@ -69,6 +69,11 @@
               <label v-if="!row.item.enTransito && row.item.comentarioNoLlego">{{row.item.comentarioNoLlego}}</label>
               <label v-if="!row.item.enTransito && !row.item.comentarioNoLlego">Registrado en almacen</label>
             </template>
+            <template slot="actions" slot-scope="row">
+               <b-button variant="primary" @click="editRoll(row.item)">
+                 <v-icon name="edit"></v-icon>
+               </b-button>
+            </template>
           </b-table>
 
         </template>
@@ -102,12 +107,15 @@
     </b-row>
   </b-container>
 </b-modal>
+<modal-almacenes :modalRow="modalRow"></modal-almacenes>
 </b-container>
 </template>
 
 <script>
 import firebase from 'firebase/app'
 import RollsInTransit from '@/components/RollsInTransit'
+import ModalAlmacenes from '@/components/ModalAlmacenes.vue'
+import { mapMutations } from 'vuex';
 
 export default{
   name: 'PackingList',
@@ -117,7 +125,8 @@ export default{
     this.loadRollosEnTransito()
   },
   components: {
-    RollsInTransit
+    RollsInTransit,
+    ModalAlmacenes
   },
   computed: {
     countSelectRolls(){
@@ -161,6 +170,7 @@ export default{
         {key: 'meters', label: 'Metros lineales'},
         'enTransito',
         {key: 'comments', label: 'Comentario'},
+        {key: 'actions', label: 'Editar'}
       ],
       perPage: 20,
       currentPage: 1,
@@ -168,10 +178,12 @@ export default{
       search: '',
       showModalDeleteOrder: false,
       orderDelete: '',
-      spinnerDelete: false
+      spinnerDelete: false,
+      modalRow: {}
     }
   },
   methods: {
+    ...mapMutations(['setModalShowAlmacen']),
     setModalDeleteOrder: function(order){
       this.spinnerDelete = false
       this.showModalDeleteOrder = true
@@ -375,6 +387,23 @@ export default{
       // }
       // this.rollsCheck = []
 
+    },
+    editRoll: function(row){
+      this.modalRow = {
+        idNumber: row.idNumber,
+        almacen: row.almacen,
+        meters: row.meters,
+        gramaje: row.gramaje,
+        width: row.width,
+        typePaper: row.typePaper,
+        kgs: row.kgs,
+        comments: row.comments,
+        fecha: row.fecha,
+        editar: true,
+        inAlmacenes: false,
+        weight: row.weight
+      }
+      this.setModalShowAlmacen(true)
     }
   }
 
