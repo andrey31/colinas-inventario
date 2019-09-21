@@ -207,6 +207,7 @@ export default{
         'diametro',
         'fecha',
         'hora',
+        'loteProduccion',
         this.disableActions ? null : 'acciones'
       ]
       this.db.ref('/InventarioSobrantes')
@@ -248,6 +249,7 @@ export default{
           label: 'Tipo Papel',
           sortable: true
         },
+        'desperdicio',
         {
           key: 'numeroDUA',
           label: 'DUA'
@@ -256,11 +258,11 @@ export default{
           key: 'numeroBoleta',
           label: 'Boleta'
         },
-        'desperdicio',
         {
           key: 'comments',
           label: 'Comentario'
         },
+        'loteProduccion',
         this.disableActions ? null : 'acciones'
       ]
       this.db.ref('/HistorialInventario')
@@ -317,9 +319,13 @@ export default{
           'diametro': data[key].diametro,
           'fecha': fechaFormat,
           'hora': data[key].hora,
+          'loteProduccion': typeof data[key].loteProduccion !== 'undefined' ? this.loteProduccionToArray((data[key].loteProduccion)) : null
           // 'fechaTraslado': fechaTrasladoFormat
         })
       }
+    },
+    loteProduccionToArray: function(lote){
+      return (lote.toString()).split('&')
     },
     loadDesperdicios: function(){
       console.log()

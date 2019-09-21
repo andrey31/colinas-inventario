@@ -43,7 +43,6 @@
           <b-input-group-text slot="prepend">Ancho</b-input-group-text>
           <b-form-input v-model="filterWidth"></b-form-input>
         </b-input-group>
-
       </b-col>
     </b-row>
     <b-row>
@@ -74,7 +73,7 @@
         </b-input-group>
       </b-col>
 
-      <b-col cols="6" v-if="showFilterDate">
+      <b-col cols="4" v-if="showFilterDate">
         <b-input-group>
           <b-input-group-text slot="prepend" >Fecha Inicio</b-input-group-text>
           <b-form-input v-model="dateFilterBegin" type="date"></b-form-input>
@@ -85,10 +84,16 @@
       <!--   <b-form-input type="time" :disabled="disabledBodega"></b-form-input> -->
       <!-- </b-input-group> -->
 
-      <b-col cols="6" v-if="showFilterDate">
+      <b-col cols="4" v-if="showFilterDate">
         <b-input-group>
           <b-input-group-text slot="prepend" >Fecha Final</b-input-group-text>
           <b-form-input v-model="dateFilterFinish" type="date"></b-form-input>
+        </b-input-group>
+      </b-col>
+       <b-col cols="4" v-if="actualTab === 1 || actualTab === 2">
+        <b-input-group>
+          <b-input-group-text slot="prepend">Lote producción</b-input-group-text>
+          <b-form-input v-model="filterLoteProduccion"></b-form-input>
         </b-input-group>
       </b-col>
 
@@ -113,7 +118,7 @@
         <b-card bg-variant="light" text-variant="dark" title="Rollos información">
           <b-card-text>
             <b-row>
-              <div v-for="gramaje, index in totalRolls.rollsByGramaje" :key="index">
+              <div v-for="(gramaje, index) in totalRolls.rollsByGramaje" :key="index">
 
                 <b-col >
                   <b>
@@ -183,6 +188,7 @@
       :current-page="currentPage"
       head-variant="dark"
       responsive
+
       >
 
       <!-- <template slot="enUso" slot-scope="row"> -->
@@ -217,19 +223,53 @@
           {{row.item.typePaper}}
         </label>
       </template>
+      <template slot="loteProduccion" slot-scope="row">
+        <b-button variant="secondary" @click="row.toggleDetails">
+          <v-icon name="box"></v-icon>
+          <!-- <img alt="" class="text-white" src="../../assets/toilet-paper-solid.svg" width="26"/> -->
+        </b-button>
+        <!-- <a href=""@click.stop.prevent=""><img alt="" src="../../assets/box.svg" width="40"/></a> -->
+      </template>
       <template slot="acciones" slot-scope="row">
         <b-row>
-          <b-col cols="6" class="mx-0 px-0">
+          <b-col cols="6" class="mx-0 pl-0 pr-3">
             <a class="btn btn-primary mr-2" href="" @click.stop.prevent="modalShowEdit(row.item)">
               <v-icon name="edit"></v-icon>
             </a>
           </b-col>
-          <b-col cols="6" class="mx-0 px-0">
+          <b-col cols="6" class="mx-0 pl-0">
             <a class="btn btn-danger" href="" @click.stop.prevent="modalDeleteShowEdit(row.item)">
               <v-icon name="trash-alt"></v-icon>
             </a>
           </b-col>
         </b-row>
+      </template>
+      <template slot="row-details" slot-scope="row">
+        <b-container class="bg-secondary p-4" v-if="(row.item.loteProduccion)">
+          <b-row>
+            <b-col class="text-white">
+              <h5>Lotes de producción para el rollo <b>{{row.item.idNumber}}</b></h5>
+            </b-col>
+          </b-row>
+          <b-row >
+            <b-col cols="6" offset="3">
+              <!-- <ul>
+                <li v-for="(it, index) in row.item.loteProduccion" :key="index">{{it}}</li>
+              </ul> -->
+              <b-list-group horizontal class="justify-content-center">
+                <b-list-group-item v-for="(it, index) in row.item.loteProduccion" :key="index">
+                  <b>{{it}}</b>
+                </b-list-group-item>
+              </b-list-group>
+            </b-col>
+          </b-row>
+        </b-container>
+        <b-container class="bg-secondary p-4" v-else>
+          <b-row>
+            <b-col><h5>No hay lotes de producción registrados</h5></b-col>
+          </b-row>
+        </b-container>
+         <!-- <hr style="border-top: 4px dashed;"> -->
       </template>
     </b-table>
 
@@ -560,7 +600,10 @@ export default{
               r = r && el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00')
                 && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
             }
-
+            if (el.loteProduccion) {
+              console.log(el.loteProduccion)
+              r = r && (el.loteProduccion).indexOf(this.filterLoteProduccion) > -1
+            }
             if(typeof bodega === 'undefined') {
               return r
             }
@@ -594,6 +637,12 @@ export default{
           if(el.fecha !== null){
             r = r && el.fecha >= new Date(this.dateFilterBegin + 'T00:00:00-06:00')
               && el.fecha <= new Date(this.dateFilterFinish + 'T00:00:00-06:00')
+          }
+
+          if (this.filterLoteProduccion.length >= 1){
+            r = r && (el.loteProduccion) &&
+            (el.loteProduccion).toString().indexOf(this.filterLoteProduccion) > -1
+              /* r = r && (el.loteProduccion[0]) === this.filterLoteProduccion &&  */
           }
 
           if(typeof bodega === 'undefined') {
@@ -667,6 +716,7 @@ export default{
       filterNumberRoll: '',
       dateFilterBegin: new Date(new Date().getFullYear(), 0, 1).toISOString().slice(0, 10).toString(),
       dateFilterFinish: new Date().toISOString().slice(0, 10).toString(),
+      filterLoteProduccion: '',
       disabledBodega: false,
       showFilterDate: false,
       modalShow: false,
@@ -941,7 +991,7 @@ export default{
         console.log(error + ' error al cambiar')
       })
 
-    },
+    }
   }
 
 }

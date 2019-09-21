@@ -12,6 +12,7 @@ import 'vue-awesome/icons/file-excel'
 import 'vue-awesome/icons/file-pdf'
 import 'vue-awesome/icons/check-circle'
 import 'vue-awesome/icons/times-circle'
+import 'vue-awesome/icons/box'
 
 import Icon from 'vue-awesome/components/Icon'
 
