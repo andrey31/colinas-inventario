@@ -328,7 +328,6 @@ export default{
       return (lote.toString()).split('&')
     },
     loadDesperdicios: function(){
-      console.log()
       this.db.ref('/DesperdiciosDiarios')
         .once('value').then( snapshot => {
           this.desperdiciosDiariosItems = []

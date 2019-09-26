@@ -33,7 +33,7 @@
                    @click="exportReport('pdf')" :disabled="disableButtonPDF">
           <b-spinner label="Spinning" v-if="exportPDF"></b-spinner>
           PDF
-          <v-icon class="ml-2"name="file-pdf" scale="2"></v-icon>
+          <v-icon class="ml-2" name="file-pdf" scale="2"></v-icon>
         </b-button>
         <!-- <b-button variant="primary" @click="exportReport" block >Generar reporte</b-button> -->
     </b-col>
@@ -185,7 +185,7 @@ export default{
         },
         columnStyles:  {
           0: {halign: 'center'}, 1: {halign: 'center'}, 2: {halign: 'center'},
-          3: {halign: 'center', cellWidth: 'auto'}, 4: {halign: 'center'}, 5: {halign: 'center'}
+          /* 3: {halign: 'center', cellWidth: 'auto'}, 4: {halign: 'center'}, 5: {halign: 'center'} */
         },
         didParseCell: function(data) {
           if (data.cell.text[0] === '' && data.row.index !== 0) {

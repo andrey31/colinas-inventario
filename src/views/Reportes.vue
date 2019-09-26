@@ -8,6 +8,14 @@
     <b-tab title="Reporte de consumos">
       <reporte-consumos></reporte-consumos>
     </b-tab>
+    <b-tab title="Reporte de desperdicios">
+      <label slot="title">Reporte de desperdicios <b-badge variant="warning">en prueba</b-badge></label>
+      <reporte-desperdicios></reporte-desperdicios>
+    </b-tab>
+    <b-tab title="Reporte de producción">
+      <label slot="title">Reporte de producción <b-badge variant="warning">en prueba</b-badge></label>
+      <reporte-produccion></reporte-produccion>
+    </b-tab>
     <!-- <b-tab title="Reporte por cantidad" disabled> -->
     <!--   <inventario-por-cantidad></inventario-por-cantidad> -->
     <!-- </b-tab> -->
@@ -19,14 +27,19 @@
 import InventarioPorCantidad from '@/components/reportes/InventarioPorCantidad'
 import ReporteExistencias from '@/components/reportes/ReporteExistencias'
 import ReporteConsumos from '@/components/reportes/ReporteConsumos'
+import ReporteDesperdicios from '@/components/reportes/ReporteDesperdicios'
+import ReporteProduccion from '@/components/reportes/ReporteProduccion'
 
 import firebase from 'firebase/app'
 import XLSX from 'xlsx'
+
 export default {
     components: {
         InventarioPorCantidad,
         ReporteExistencias,
-        ReporteConsumos
+        ReporteConsumos,
+        ReporteDesperdicios,
+        ReporteProduccion
     }
 
 }

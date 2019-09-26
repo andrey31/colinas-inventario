@@ -44,7 +44,7 @@
                   :disabled="ubicationSelected.length === 0 || disableButtonPDF" @click="exportReport('pdf')">
           <b-spinner label="Spinning" v-if="exportPDF"></b-spinner>
           PDF
-          <v-icon class="ml-2"name="file-pdf" scale="2"></v-icon>
+          <v-icon class="ml-2" name="file-pdf" scale="2"></v-icon>
         </b-button>
         <!-- <b-button variant="primary" @click="exportReport" block >Generar reporte</b-button> -->
       </b-col>
@@ -803,7 +803,7 @@ export default {
       this.disableButtonPDF = false
       this.exportExcel = false
       XLSX.utils.book_append_sheet(wb, wswt, 'resumen')
-      let nameXLS = `reporteDel:${fecha.getDate()}/${fecha.getMonth()}/${fecha.getFullYear()}.xlsx`
+      let nameXLS = `reporteDel:${fecha.getDate()}/${fecha.getMonth()+1}/${fecha.getFullYear()}.xlsx`
       XLSX.writeFile(wb, nameXLS)
     },
     filterBodega: function (arr, bodega){
