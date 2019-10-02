@@ -3,12 +3,6 @@
 <b-container fluid>
   <template>
     <b-row class="">
-      <!-- <b-col cols="4"> -->
-      <!--   <b-input-group> -->
-      <!--     <b-input-group-text slot="prepend">Almacen</b-input-group-text> -->
-      <!--     <b-form-input v-model="filterAlmacen"></b-form-input> -->
-      <!--   </b-input-group> -->
-      <!-- </b-col> -->
       <b-col cols="4">
         <b-input-group>
           <b-input-group-text slot="prepend">Gramaje</b-input-group-text>
@@ -27,17 +21,6 @@
           </b-form-select>
         </b-input-group>
       </b-col>
-
-
-      <!-- <b-col cols="12" md="4" offset-md="7"> -->
-      <!--   <b-input-group> -->
-      <!--     <b-input-group-prepend is-text> -->
-      <!--       <v-icon name="search"></v-icon> -->
-      <!--     </b-input-group-prepend> -->
-      <!--     <b-form-input v-model="filter" placeholder="Busqueda"> -->
-      <!--     </b-form-input> -->
-      <!--   </b-input-group> -->
-      <!-- </b-col> -->
       <b-col cols="4">
         <b-input-group>
           <b-input-group-text slot="prepend">Ancho</b-input-group-text>
@@ -90,7 +73,7 @@
           <b-form-input v-model="dateFilterFinish" type="date"></b-form-input>
         </b-input-group>
       </b-col>
-       <b-col cols="4" v-if="actualTab === 1 || actualTab === 2">
+      <b-col cols="4" v-if="actualTab === 1 || actualTab === 2">
         <b-input-group>
           <b-input-group-text slot="prepend">Lote producción</b-input-group-text>
           <b-form-input v-model="filterLoteProduccion"></b-form-input>
@@ -188,7 +171,6 @@
       :current-page="currentPage"
       head-variant="dark"
       responsive
-
       >
 
       <!-- <template slot="enUso" slot-scope="row"> -->
@@ -224,10 +206,14 @@
         </label>
       </template>
       <template slot="loteProduccion" slot-scope="row">
-        <b-button variant="secondary" @click="row.toggleDetails">
+
+        <b-button variant="secondary" @click="row.toggleDetails" v-if="row.item.loteProduccion">
           <v-icon name="box"></v-icon>
           <!-- <img alt="" class="text-white" src="../../assets/toilet-paper-solid.svg" width="26"/> -->
         </b-button>
+        <label for="" v-else>
+          No registrado
+        </label>
         <!-- <a href=""@click.stop.prevent=""><img alt="" src="../../assets/box.svg" width="40"/></a> -->
       </template>
       <template slot="acciones" slot-scope="row">
@@ -440,8 +426,11 @@
       </b-form>
     </b-container>
     <div slot="modal-footer" class="">
-      <b-button variant="danger" class="mr-2" @click="modalShow = false">Cancelar</b-button>
-      <b-button variant="primary" @click="editar">Guardar</b-button>
+      <b-button variant="danger" class="mr-2" @click="modalShow = false" :disabled="clickSave">Cancelar</b-button>
+      <b-button variant="primary" @click="editar" :disabled="clickSave">
+        <template v-if="!clickSave">Guardar</template>
+        <b-spinner v-else variant="white" label="Loading..." small/>
+      </b-button>
     </div>
   </b-modal>
 
@@ -730,7 +719,8 @@ export default{
       modalChangeAddHistorial: false,
       selectedMoveHistory: 'false',
       perPage: 100,
-      currentPage: 1
+      currentPage: 1,
+      clickSave: false
     }
   },
   methods: {
@@ -832,7 +822,7 @@ export default{
     },
     editar: function(){
       let key = this.modalRow.key
-
+      this.clickSave = true
       if (this.actualTab === 0){
         let obj = {
           bodega: this.modalRow.bodega.toString(),
@@ -857,6 +847,7 @@ export default{
               delete obj['enUso']
               this.db.ref('/Pre-historial_Inventario').child(key).update(obj).then( data => {
                 this.modalShow = false
+                this.clickSave = false
               })
             })
 
@@ -886,6 +877,7 @@ export default{
         this.db.ref('InventarioSobrantes').child(key).update(obj).then( (data) => {
           this.registerChangeByInventario(obj, 'Sobrantes')
           this.modalShow = false
+          this.clickSave = false
         }).catch( error => {
           console.log(error)
         })
@@ -908,6 +900,7 @@ export default{
 
         this.db.ref('HistorialInventario').child(key).update(obj).then( data => {
           this.registerChangeByInventario(obj, 'Consumos')
+          this.clickSave = false
           this.modalShow = false
         }).catch( error => {
           console.log(error)
