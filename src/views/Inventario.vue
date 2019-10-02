@@ -43,7 +43,9 @@
 
       </desperdicios-diarios>
     </b-tab>
-
+    <b-tab title="Ajustes por salida" v-if="habilitadoAjusteSalida" @click="loadSalida">
+      <ajuste-salida :items="itemsSalida"></ajuste-salida>
+    </b-tab>
   </b-tabs>
 </div>
 </template>
@@ -52,14 +54,24 @@
 import firebase from 'firebase/app'
 import IndexInventario from '../components/inventario/Index.vue'
 import DesperdiciosDiarios from '../components/inventario/DesperdiciosDiarios.vue'
-
+import AjusteSalida from '../components/inventario/AjusteSalida.vue'
 export default{
   name: 'Inventario',
   components: {
     DesperdiciosDiarios,
-    IndexInventario
+      IndexInventario,
+      AjusteSalida
   },
   computed: {
+    habilitadoAjusteSalida(){
+      if(this.currentUser.email === 'omar.duran@corrugadosaltavista.com' ||
+         this.currentUser.email === 'admin@corrugadosaltavista.com' ||
+         this.currentUser.email === 'ronny@corrugadosaltavista.com'){
+        return true
+      }else {
+        return false
+      }
+    },
     disableActions(){
       if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com' ||
       this.currentUser.email === 'guillermo.hernandez@corrugadosaltavista.com' ||
@@ -79,6 +91,7 @@ export default{
       items: [],
       itemsSobrantes: [],
       itemsHistorial: [],
+      itemsSalida: [],
       desperdiciosDiariosItems: [],
       desperdiciosDiariosFields: ['fecha', { key: 'cantidad', label: 'Cantidad (Kgs)'}, 'turno', 'detalles'],
       actualTab: ''
@@ -89,61 +102,19 @@ export default{
     loadIndex: function(){
       this.actualTab = 0
       this.fields = [
-        {
-          key: 'idNumber',
-          label: 'Num Rollo'
-        },
-        {
-          key: 'bodega',
-          sortable: true
-        },
-        {
-          key: 'enUso',
-          label: 'En Uso',
-          sortable: true
-        },
-        {
-          key: 'kgs',
-          label: 'Kgs'
-        },
-        {
-          key: 'meters',
-          label: 'Metros'
-        },
-        {
-          key: 'gramaje',
-          label: 'Gramaje',
-          sortable: true
-        },
-        {
-          key: 'width',
-          label: 'Ancho'
-        },
-        {
-          key: 'typePaper',
-          label: 'Tipo Papel',
-          sortable: true
-        },
-        {
-          key: 'numeroDUA',
-          label: 'DUA'
-        },
-        {
-          key: 'numeroBoleta',
-          label: 'Boleta'
-        },
-        {
-          key: 'comments',
-          label: 'Coment'
-        },
-        {
-          key: 'fecha',
-          label: 'Fecha Ingreso'
-        },
-        {
-          key: 'hora',
-          label: 'Hora Ingreso'
-        },
+        { key: 'idNumber', label: 'Num Rollo' },
+        { key: 'bodega', sortable: true },
+        { key: 'enUso', label: 'En Uso', sortable: true },
+        { key: 'kgs', label: 'Kgs' },
+        { key: 'meters', label: 'Metros' },
+        { key: 'gramaje', label: 'Gramaje', sortable: true },
+        { key: 'width', label: 'Ancho' },
+        { key: 'typePaper', label: 'Tipo Papel', sortable: true },
+        { key: 'numeroDUA', label: 'DUA' },
+        { key: 'numeroBoleta', label: 'Boleta' },
+        { key: 'comments', label: 'Coment' },
+        { key: 'fecha', label: 'Fecha Ingreso' },
+        { key: 'hora', label: 'Hora Ingreso' },
         // 'fechaTraslado',
         this.disableActions ? null : 'acciones'
       ]
@@ -152,58 +123,20 @@ export default{
           this.items = []
           this.loadData(snapshot.val(), this.items)
         })
-      // this.db.ref('/Inventario')
-      //   .once('value').then( snapshot => {
-      //     this.items = []
-      //     this.loadData( snapshot.val(), this.items)
-      //   })
     },
     loadSobrantes: function(){
       this.actualTab = 1
       this.fields = [
-        {
-          key: 'idNumber',
-          label: 'Num Rollo',
-        },
-        {
-          key: 'enUso',
-          label: 'En Uso',
-          sortable: true
-        },
-        {
-          key: 'kgsOriginales',
-          label: 'Kgs Orig.'
-        },
-        {
-          key: 'kgsActuales',
-          label: 'Kgs Act.'
-        },
-        {
-          key: 'kgsConsumidos',
-          label: 'Kgs Consum.'
-        },
-        {
-          key: 'gramaje',
-          sortable: true
-        },
-        {
-          key: 'width',
-          label: 'Ancho',
-          sortable: true
-        },
-        {
-          key: 'typePaper',
-          label: 'Tipo Papel',
-          sortable: true
-        },
-        {
-          key: 'desperdicio',
-          label: 'Hojas desperd'
-        },
-        {
-          key: 'causaDesperdicio',
-          label: 'Causa Desperd'
-        },
+        {key: 'idNumber', label: 'Num Rollo'},
+        { key: 'enUso', label: 'En Uso', sortable: true },
+        { key: 'kgsOriginales', label: 'Kgs Orig.' },
+        { key: 'kgsActuales', label: 'Kgs Act.' },
+        { key: 'kgsConsumidos', label: 'Kgs Consum.' },
+        { key: 'gramaje', sortable: true },
+        { key: 'width', label: 'Ancho', sortable: true },
+        { key: 'typePaper', label: 'Tipo Papel', sortable: true },
+        { key: 'desperdicio', label: 'Hojas desperd' },
+        { key: 'causaDesperdicio', label: 'Causa Desperd' },
         'diametro',
         'fecha',
         'hora',
@@ -219,49 +152,17 @@ export default{
     loadHistorial: function(){
       this.actualTab = 2
       this.fields = [
-        {
-          key: 'idNumber',
-          label: 'Num Rollo'
-        },
-        {
-          key: 'fecha',
-          label: 'Fecha'
-        },
-        {
-          key: 'kgs',
-          label: 'Kgs'
-        },
-        {
-          key: 'meters',
-          label: 'Metros'
-        },
-        {
-          key: 'gramaje',
-          sortable: true
-        },
-        {
-          key: 'width',
-          label: 'Ancho',
-          sortable: true
-        },
-        {
-          key: 'typePaper',
-          label: 'Tipo Papel',
-          sortable: true
-        },
+        { key: 'idNumber', label: 'Num Rollo' },
+        { key: 'fecha', label: 'Fecha' },
+        { key: 'kgs', label: 'Kgs' },
+        { key: 'meters', label: 'Metros' },
+        { key: 'gramaje', sortable: true },
+        { key: 'width', label: 'Ancho', sortable: true },
+        { key: 'typePaper', label: 'Tipo Papel', sortable: true },
         'desperdicio',
-        {
-          key: 'numeroDUA',
-          label: 'DUA'
-        },
-        {
-          key: 'numeroBoleta',
-          label: 'Boleta'
-        },
-        {
-          key: 'comments',
-          label: 'Comentario'
-        },
+        { key: 'numeroDUA', label: 'DUA' },
+        { key: 'numeroBoleta', label: 'Boleta' },
+        { key: 'comments', label: 'Comentario' },
         'loteProduccion',
         this.disableActions ? null : 'acciones'
       ]
@@ -286,17 +187,6 @@ export default{
           let year = fechaArray[2]
           fechaFormat = new Date(year, month, day)
         }
-        // let fechaTraslado = typeof data[key].fechaTraslado !== 'undefined' ? data[key].fechaTraslado : null
-
-        // let fechaTrasladoFormat = null
-        // if(fechaTraslado){
-        //   let fechaArray = fechaTraslado.split('-')
-        //   let day = fechaArray[0]
-        //   let month = fechaArray[1] - 1
-        //   let year = fechaArray[2]
-
-        //   fechaTrasladoFormat = new Date(year, month, day);
-        // }
 
         items.push({
           'key': key,
@@ -326,6 +216,16 @@ export default{
     },
     loteProduccionToArray: function(lote){
       return (lote.toString()).split('&')
+    },
+    loadSalida: function(){
+      this.db.ref('/AjustesPorSalida').on('value', snap => {
+        this.itemsSalida = []
+        let data = snap.val()
+
+        for (let key in data){
+          this.itemsSalida.push(data[key])
+        }
+      })
     },
     loadDesperdicios: function(){
       this.db.ref('/DesperdiciosDiarios')
