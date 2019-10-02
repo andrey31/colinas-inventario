@@ -113,7 +113,7 @@ export default {
         let data = []
         let fecha = e.fecha
         let day = fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()
-        let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMoth()+1)
+        let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMonth()+1)
         let fechaFormat = `${day}/${month}/${fecha.getFullYear()}`
 
         data.push(fechaFormat)
@@ -135,7 +135,7 @@ export default {
       let dfinish = this.dateFilterFinishData.split('-')
       let fechaFormat = `${dbegin[2]}/${dbegin[1]}/${dbegin[0]} AL ${dfinish[2]}/${dfinish[1]}/${dfinish[0]}`
 
-      let nameReport = `${colinas}\n REPORTE DE PRODUCCIÓN\nDEL: ${fechaFormat}`
+      let nameReport = `${colinas}\n REPORTE DE LOTES DE PRODUCCIÓN\nDEL: ${fechaFormat}`
 
       doc.autoTable({
         head,
@@ -186,7 +186,7 @@ export default {
           var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
           doc.text(str, data.settings.margin.left, pageHeight - 10)
           let day = fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()
-          let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMoth()+1)
+          let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMonth()+1)
           let str2 = `Generado el ${day}/${month}/${fecha.getFullYear()} a las ${hour}:${minutes}:${seconds} ${typeReport}`
           doc.text(str2, data.settings.margin.left, pageHeight - 6)
         },

@@ -93,6 +93,8 @@ export default {
         [
           'Fecha', 'Cantidad (Kgs)',
           'Turno', 'Centro (Kgs)', 'Falla mécanica (Kgs)', 'Golpes (Kgs)', 'Superficie (Kgs)',
+          // 'Kgs consumidos',
+          '% Afectado (según consumo)',
           'Rollos afectados'
         ]
       ]
@@ -105,7 +107,7 @@ export default {
         /*  data.push(e['fecha']) */
         let fecha = e.fecha
         let day = fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()
-        let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMoth()+1)
+        let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMonth()+1)
         let fechaFormat = `${day}/${month}/${fecha.getFullYear()}`
 
         data.push(fechaFormat)
@@ -119,7 +121,12 @@ export default {
         else data.push('')
         if (e.superficie >= 0) data.push((e.superficie).toLocaleString('en-us'))
         else data.push('')
-        /* if (e.desperdicioPorRollo.length > 0) data.push(e.desperdicioPorRollo[0].numeroRollo) */
+        if (e.consumo[0].totalConsumido > 0) {
+          let porcentaje = (e.cantidad * 100) / e.consumo[0].totalConsumido
+          data.push((porcentaje.toFixed(1)).toLocaleString('en-us') + '%')
+        }else {
+          data.push('')
+        }
         if (e.desperdicioPorRollo.length > 0) data.push('Detalles al final')
         body.push(data)
       })
@@ -187,7 +194,7 @@ export default {
           var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
           doc.text(str, data.settings.margin.left, pageHeight - 10)
           let day = fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()
-          let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMoth()+1)
+          let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMonth()+1)
           let str2 = `Generado el ${day}/${month}/${fecha.getFullYear()} a las ${hour}:${minutes}:${seconds} ${typeReport}`
           doc.text(str2, data.settings.margin.left, pageHeight - 6)
         },
@@ -262,13 +269,13 @@ export default {
             var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
             doc.text(str, data.settings.margin.left, pageHeight - 10)
             let day = fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()
-            let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMoth()+1)
+            let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMonth()+1)
             let str2 = `Generado el ${day}/${month}/${fecha.getFullYear()} a las ${hour}:${minutes}:${seconds} ${typeReport}`
-          doc.text(str2, data.settings.margin.left, pageHeight - 6)
-        },
+            doc.text(str2, data.settings.margin.left, pageHeight - 6)
+          },
 
-        margin: {top: 60}
-      })
+          margin: {top: 60}
+        })
       }
       if (typeof doc.putTotalPages === 'function') {
         doc.putTotalPages(totalPagesExp);
@@ -287,6 +294,10 @@ export default {
       let fecha = new Date()
       let exportFormat = []
       this.desperdiciosDiariosItems.forEach( e => {
+        let porcentaje = 0
+        if (e.consumo[0].totalConsumido > 0) {
+          porcentaje = (e.cantidad * 100) / e.consumo[0].totalConsumido
+        }
         exportFormat.push({
           'Fecha': e.fecha,
           'Cantidad (Kgs)': e.cantidad,
@@ -294,8 +305,9 @@ export default {
           'Centro (Kgs)': e.centro ? e.centro : 0,
           'Falla mécanica (Kgs)': e.fallaMecanica ? e.fallaMecanica : 0,
           'Golpes (Kgs)': e.golpes ? e.golpes : 0,
-          'Superficie (Kgs)': e.superficie ? e.superficie : 0
-
+          'Superficie (Kgs)': e.superficie ? e.superficie : 0,
+          'Consumido (Kgs)': e.consumo[0].totalConsumido,
+          '% Afectado (según consumo)': porcentaje > 0 ? porcentaje.toFixed(1) : 'No definido'
         })
       })
       let wswt = XLSX.utils.json_to_sheet(exportFormat)
@@ -330,7 +342,8 @@ export default {
               'golpes': Number(data[key].golpes),
               'superficie': Number(data[key].superficie),
               /* 'desperdicioPorRollo': [ { "cantidad (Kgs)": 400, "numeroRollo": "000999" } ] */
-              'desperdicioPorRollo': this.loadRollsByDesperdicio(data[key].fecha, data[key].turno)
+              'desperdicioPorRollo': this.loadRollsByDesperdicio(data[key].fecha, data[key].turno),
+              'consumo': this.loadConsumo(data[key].fecha, data[key].turno)
             })
           }
           setTimeout( () => {
@@ -339,7 +352,7 @@ export default {
                 return el.fecha >= new Date(this.dateFilterBeginData + 'T00:00:00-06:00') &&
                   el.fecha <= new Date(this.dateFilterFinishData + 'T00:00:00-06:00')
 
-            })
+              })
             if (this.exportExcel) this.exportToExcel()
             else this.exportToPDF()
           }, 3000)
@@ -356,6 +369,23 @@ export default {
           } */
         })
 
+    },
+    loadConsumo: function (fecha, turno) {
+      let arr = []
+      this.db.ref('ConsumoRollos').orderByChild('fecha').equalTo(fecha).once('value').then( snap => {
+        let data = snap.val()
+        let totalConsumido = 0
+        for(let key in data){
+          if (data[key].turno === turno){
+            totalConsumido += data[key].kgsConsumidos
+          }
+        }
+        arr.push({
+          totalConsumido
+        })
+
+      })
+      return arr
     },
     loadRollsByDesperdicio: function(fecha, turno){
       let arr = []

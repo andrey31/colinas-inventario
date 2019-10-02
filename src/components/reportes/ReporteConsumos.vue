@@ -226,7 +226,7 @@ export default{
           var pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight()
           doc.text(str, data.settings.margin.left, pageHeight - 10)
           let day = fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()
-          let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMoth()+1)
+          let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMonth()+1)
           let str2 = `Generado el ${day}/${month}/${fecha.getFullYear()} a las ${hour}:${minutes}:${seconds} ${typeReport}`
           doc.text(str2, data.settings.margin.left, pageHeight - 6)
         },

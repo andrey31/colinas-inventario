@@ -9,11 +9,11 @@
       <reporte-consumos></reporte-consumos>
     </b-tab>
     <b-tab title="Reporte de desperdicios">
-      <label slot="title">Reporte de desperdicios <b-badge variant="warning">en prueba</b-badge></label>
+      <label slot="title">Reporte de desperdicios</label>
       <reporte-desperdicios></reporte-desperdicios>
     </b-tab>
     <b-tab title="Reporte de producción">
-      <label slot="title">Reporte de producción <b-badge variant="warning">en prueba</b-badge></label>
+      <label slot="title">Reporte de lotes de producción</label>
       <reporte-produccion></reporte-produccion>
     </b-tab>
     <!-- <b-tab title="Reporte por cantidad" disabled> -->

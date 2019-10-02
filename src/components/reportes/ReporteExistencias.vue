@@ -717,7 +717,7 @@ export default {
       if(this.groupBy === 3) typeReport = 'agrupado por totales'
 
       let day = fecha.getDate() < 10 ? '0' + fecha.getDate() : fecha.getDate()
-      let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMoth()+1)
+      let month = fecha.getMonth() < 9 ? '0' + (fecha.getMonth()+1) : (fecha.getMonth()+1)
 
       let fechaFormat = `${day}/${month}/${fecha.getFullYear()}`
 
