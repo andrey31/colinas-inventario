@@ -59,8 +59,8 @@ export default{
   name: 'Inventario',
   components: {
     DesperdiciosDiarios,
-      IndexInventario,
-      AjusteSalida
+    IndexInventario,
+    AjusteSalida
   },
   computed: {
     habilitadoAjusteSalida(){
@@ -74,9 +74,9 @@ export default{
     },
     disableActions(){
       if (this.currentUser.email === 'omar.duran@corrugadosaltavista.com' ||
-      this.currentUser.email === 'guillermo.hernandez@corrugadosaltavista.com' ||
-      this.currentUser.email === 'jose.rodriguez@corrugadosaltavista.com' ||
-      this.currentUser.email === 'admin@corrugadosaltavista.com') return false
+          this.currentUser.email === 'guillermo.hernandez@corrugadosaltavista.com' ||
+          this.currentUser.email === 'jose.rodriguez@corrugadosaltavista.com' ||
+          this.currentUser.email === 'admin@corrugadosaltavista.com') return false
       else return true
     },
   },
@@ -223,7 +223,24 @@ export default{
         let data = snap.val()
 
         for (let key in data){
-          this.itemsSalida.push(data[key])
+          let fechaArray = data[key].fecha.split('-')
+          let day = fechaArray[0]
+          let month = fechaArray[1] - 1
+          let year = fechaArray[2]
+          this.itemsSalida.push({
+            'comentario': data[key].comments,
+            'fecha': new Date(year, month, day),
+            'hora': data[key].hora,
+            'kgs': data[key].kgs,
+            'llegada': data[key].llegada,
+            'meters': data[key].meters,
+            'numRollo': data[key].numRollo,
+            'gramaje': data[key].gramaje,
+            'ancho': data[key].ancho,
+            'typePaper': data[key].typePaper,
+            'dua': data[key].dua,
+            'boleta': data[key].boleta
+          })
         }
       })
     },
