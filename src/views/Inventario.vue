@@ -259,7 +259,7 @@ export default{
               'fecha': new Date(year, month, day),
               'cantidad': data[key].cantidad,
               'turno': data[key].turno,
-              'centro': Number(data[key].centro),
+              'trim': Number(data[key].trim) || Number(data[key].centro),
               'fallaMecanica': Number(data[key].fallaMecanica),
               'golpes': Number(data[key].golpes),
               'superficie': Number(data[key].superficie),

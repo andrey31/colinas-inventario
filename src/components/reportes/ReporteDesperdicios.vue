@@ -91,11 +91,13 @@ export default {
 
       let head = [
         [
-          'Fecha', 'Cantidad (Kgs)',
-          'Turno', 'Centro (Kgs)', 'Falla mécanica (Kgs)', 'Golpes (Kgs)', 'Superficie (Kgs)',
-          // 'Kgs consumidos',
-          '% Afectado (según consumo)',
-          'Rollos afectados'
+          'Fecha', 'Turno', 'Superficie (Kgs)',
+          'Golpes (Kgs)', 'F. Mec (Kgs)', 'Trim (Kgs)',
+          'Desp. Turno', 'Proc. (Kgs)', '% Afectado'
+          // 'Fecha', 'Turno','Cantidad (Kgs)', 'Trim (Kgs)',
+          // 'F. mécanica (Kgs)', 'Golpes (Kgs)', 'Superficie (Kgs)',
+          // 'Consumido (Kgs)',
+          // '% Afectado'
         ]
       ]
 
@@ -111,23 +113,26 @@ export default {
         let fechaFormat = `${day}/${month}/${fecha.getFullYear()}`
 
         data.push(fechaFormat)
-        data.push(e.cantidad.toLocaleString('en-us'))
         data.push(e.turno)
-        if (e.centro >= 0) data.push((e.centro).toLocaleString('en-us'))
-        else data.push('')
-        if (e.fallaMecanica >= 0) data.push((e.fallaMecanica).toLocaleString('en-us'))
+        if (e.superficie >= 0) data.push((e.superficie).toLocaleString('en-us'))
         else data.push('')
         if (e.golpes >= 0) data.push((e.golpes).toLocaleString('en-us'))
         else data.push('')
-        if (e.superficie >= 0) data.push((e.superficie).toLocaleString('en-us'))
+        if (e.fallaMecanica >= 0) data.push((e.fallaMecanica).toLocaleString('en-us'))
         else data.push('')
+        if (e.trim >= 0) data.push((e.trim).toLocaleString('en-us'))
+        else data.push('')
+
+        data.push(e.cantidad.toLocaleString('en-us'))
         if (e.consumo[0].totalConsumido > 0) {
+          data.push((Math.round(Number(e.consumo[0].totalConsumido))).toLocaleString('en-us'))
           let porcentaje = (e.cantidad * 100) / e.consumo[0].totalConsumido
           data.push((porcentaje.toFixed(1)).toLocaleString('en-us') + '%')
         }else {
           data.push('')
+          data.push('')
         }
-        if (e.desperdicioPorRollo.length > 0) data.push('Detalles al final')
+        // if (e.desperdicioPorRollo.length > 0) data.push('Detalles al final')
         body.push(data)
       })
 
@@ -146,14 +151,15 @@ export default {
       doc.autoTable({
         head,
         body,
-        /* styles: {overflow: 'ellipsize', cellWidth: 'wrap'}, */
+        // styles: {overflow: 'ellipsize'},
+        /* styles: {overflow: 'ellipsize',cellWidth: 'wrap'}, */
         headStyles: {
           fillColor: [204, 152, 62],
           halign: 'center'
         },
         /* columnStyles: {text: {cellWidth: 'auto'}}, */
         columnStyles:  {
-          0: {halign: 'center', cellWidth: 'wrap'}, 1: {halign: 'center'}, 2: {halign: 'center'},
+          0: {halign: 'center', cellWidth: 'wrap'}, 1: {halign: 'center', cellWidth: 15}, 2: {halign: 'center'},
           3: {halign: 'center', cellWidth: 'auto'}, 4: {halign: 'center'}, 5: {halign: 'center'},
           6: {halign: 'center'}, 7: {halign: 'center'}, 8: {halign: 'center', cellWidth: 'auto'}
         },
@@ -202,7 +208,7 @@ export default {
         margin: {top: 45}
       })
 
-      let head2 = [[ 'Fecha', 'Turno ', 'Cantidad (Kgs)', 'Causa', 'Numero rollo']]
+      let head2 = [[ 'Fecha', 'Turno', 'Cantidad (Kgs)', 'Causa', 'Numero rollo']]
       let nameReport2 = nameReport + '\n\n\nRollos afectados'
       let firstPage = true
       let body2 = []
@@ -300,14 +306,14 @@ export default {
         }
         exportFormat.push({
           'Fecha': e.fecha,
-          'Cantidad (Kgs)': e.cantidad,
           'Turno ': e.turno,
-          'Centro (Kgs)': e.centro ? e.centro : 0,
-          'Falla mécanica (Kgs)': e.fallaMecanica ? e.fallaMecanica : 0,
-          'Golpes (Kgs)': e.golpes ? e.golpes : 0,
           'Superficie (Kgs)': e.superficie ? e.superficie : 0,
-          'Consumido (Kgs)': e.consumo[0].totalConsumido,
-          '% Afectado (según consumo)': porcentaje > 0 ? porcentaje.toFixed(1) : 'No definido'
+          'Golpes (Kgs)': e.golpes ? e.golpes : 0,
+          'Falla mécanica (Kgs)': e.fallaMecanica ? e.fallaMecanica : 0,
+          'Trim (Kgs)': e.trim ? e.trim : 0,
+          'Desp. Turno (Kgs)': e.cantidad,
+          'Proc. (Kgs)': e.consumo[0].totalConsumido,
+          '% Afectado': porcentaje > 0 ? Number(porcentaje.toFixed(1)) : 'No definido'
         })
       })
       let wswt = XLSX.utils.json_to_sheet(exportFormat)
@@ -337,7 +343,7 @@ export default {
               'fechaAlt': data[key].fecha,
               'cantidad': data[key].cantidad,
               'turno': data[key].turno,
-              'centro': Number(data[key].centro),
+              'trim': Number(data[key].trim) || Number(data[key].centro),
               'fallaMecanica': Number(data[key].fallaMecanica),
               'golpes': Number(data[key].golpes),
               'superficie': Number(data[key].superficie),

@@ -46,7 +46,7 @@
         <b-row>
           <b-col>
             <b-list-group >
-              <b-list-group-item class="bg-gray-custom" v-if="row.item.centro >= 0"><b>Centro: {{row.item.centro}} kgs.</b></b-list-group-item>
+              <b-list-group-item class="bg-gray-custom" v-if="row.item.trim >= 0"><b>Trim: {{row.item.trim}} kgs.</b></b-list-group-item>
               <b-list-group-item class="bg-gray-custom" v-if="row.item.fallaMecanica >= 0"><b>Falla mécanica: {{row.item.fallaMecanica}} kgs.</b></b-list-group-item>
               <b-list-group-item class="bg-gray-custom" v-if="row.item.golpes >= 0"><b>Golpes: {{row.item.golpes}} kgs.</b></b-list-group-item>
               <b-list-group-item class="bg-gray-custom" v-if="row.item.superficie >= 0"><b>Superficie: {{row.item.superficie}} kgs.</b></b-list-group-item>
