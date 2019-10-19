@@ -157,6 +157,11 @@ export default {
       Object.keys(rollsByGramaje).forEach( key => {
 
         rollsByGramaje[key].forEach( roll => {
+
+          if (!(Number(roll.gramaje) === 42 && roll.width === 69) && !(Number(roll.gramaje) === 41 && roll.width === 69)) {
+            if (roll.width === 70 || roll.width === 69) roll.width += .5
+            else if (roll.width === 75) roll.width += .25
+          }
           let keyGramajeType = `${key} en ${roll.width}-${roll.typePaper}-${roll.ubicacion}`
           rollsByGramajeType[keyGramajeType] = rollsByGramajeType[keyGramajeType] || []
           rollsByGramajeType[keyGramajeType].push({kgs: roll.kgs, meters: roll.meters})
