@@ -13,7 +13,7 @@
     "jspdf": "^1.5.3",
     "jspdf-autotable": "^3.2.4",
     "vue": "^2.6.6",
-    "vue-awesome": "^3.4.0",
+    "vue-awesome": "^3.5.4",
     "vue-json-excel": "^0.2.98",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
